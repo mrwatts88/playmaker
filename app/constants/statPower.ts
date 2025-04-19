@@ -56,3 +56,5 @@ export const leagueStatPower: Record<(typeof leagueType.enumValues)[number], Lea
     outfield: 0,
   },
 };
+
+export const startingContestantXp = 1000;

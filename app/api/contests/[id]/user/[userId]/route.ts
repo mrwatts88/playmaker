@@ -1,5 +1,5 @@
 import { enterContestSchema } from "@/app/api/schemas";
-import { leagueStatPower } from "@/app/constants/statPower";
+import { leagueStatPower, startingContestantXp } from "@/app/constants/statPower";
 import { db } from "@/db/db";
 import { contestants, contests, users } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
@@ -72,8 +72,8 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       .values({
         contestId: result.data.id,
         userId: result.data.userId,
-        totalXp: 0,
-        spendableXp: 0,
+        totalXp: startingContestantXp,
+        spendableXp: startingContestantXp,
         statPower: leagueStatPower[contest.league],
       })
       .returning();

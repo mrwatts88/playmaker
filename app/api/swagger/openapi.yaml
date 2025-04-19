@@ -85,18 +85,18 @@ paths:
         "201":
           description: Contestant created
 
-  /contests/{id}/draftable-athletes:
-    get:
-      summary: Get draftable athletes for a contest
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: List of athletes
+  # /contests/{id}/draftable-athletes:
+  #   get:
+  #     summary: Get draftable athletes for a contest
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "200":
+  #         description: List of athletes
 
   /contestants/{id}/roster:
     post:
@@ -122,18 +122,18 @@ paths:
         "201":
           description: Roster submitted
 
-  /contestants/{id}:
-    get:
-      summary: Get contestant details
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Contestant details
+  # /contestants/{id}:
+  #   get:
+  #     summary: Get contestant details
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "200":
+  #         description: Contestant details
 
   /contests/{id}/game:
     get:
@@ -148,49 +148,49 @@ paths:
         "200":
           description: Contest state including contestants, event feed, and boosts
 
-  /contestants/{id}/boosts:
-    post:
-      summary: Buy a boost
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                boostId:
-                  type: string
-      responses:
-        "201":
-          description: Boost purchased
+  # /contestants/{id}/boosts:
+  #   post:
+  #     summary: Buy a boost
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             properties:
+  #               boostId:
+  #                 type: string
+  #     responses:
+  #       "201":
+  #         description: Boost purchased
 
-  /contestants/{id}/stats:
-    patch:
-      summary: Spend XP to upgrade stat power
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                stat:
-                  type: string
-                  enum: [points, rebounds, assists]
-                xpSpent:
-                  type: integer
-      responses:
-        "200":
-          description: Stat power updated
+  # /contestants/{id}/stats:
+  #   patch:
+  #     summary: Spend XP to upgrade stat power
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             properties:
+  #               stat:
+  #                 type: string
+  #                 enum: [points, rebounds, assists]
+  #               xpSpent:
+  #                 type: integer
+  #     responses:
+  #       "200":
+  #         description: Stat power updated
