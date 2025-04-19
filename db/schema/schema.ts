@@ -35,6 +35,7 @@ export const contests = pgTable("contests", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   // consider adding teamIds to show teams in a contest
+  // consider adding athleteIds to this table to show athletes in a contest (aka draftable athletes)
   // consider adding gameIds to this table to show game events and contestgames
 });
 
