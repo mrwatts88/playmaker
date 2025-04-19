@@ -1,9 +1,28 @@
+import { contestIdSchema } from "@/app/api/schemas";
 import { db } from "@/db/db";
 import { contests } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { contestIdSchema } from "@/app/api/schemas";
 
+/**
+ * @swagger
+ * /api/contests/{id}:
+ *   get:
+ *     summary: Get contest details
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Contest details
+ *       404:
+ *         description: Contest not found
+ *       500:
+ *         description: Internal server error
+ */
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
   const result = contestIdSchema.safeParse({ id });

@@ -28,10 +28,10 @@ export const athletes = pgTable("athletes", {
 
 export const contests = pgTable("contests", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name"),
+  name: text("name").notNull(),
   startTime: timestamp("start_time"),
   status: contestStatus("status"),
-  league: leagueType("league"),
+  league: leagueType("league").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -96,7 +96,6 @@ export const contestants = pgTable(
     userId: uuid("user_id")
       .references(() => users.id)
       .notNull(),
-    name: text("name"),
     totalXp: integer("total_xp").default(0).notNull(),
     spendableXp: integer("spendable_xp").default(0).notNull(),
     statPower: jsonb("stat_power").default({}).notNull(),

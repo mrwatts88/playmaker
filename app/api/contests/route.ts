@@ -4,13 +4,29 @@ import { contests } from "@/db/schema/schema";
 import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/contests:
+ *   get:
+ *     summary: List available contests
+ *     parameters:
+ *       - name: league
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of contests
+ *       500:
+ *         description: Internal server error
+ */
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const league = searchParams.get("league");
+    const queryParams = Object.fromEntries(searchParams.entries());
 
-    // Validate query parameters
-    const result = contestQuerySchema.safeParse({ league });
+    const result = contestQuerySchema.safeParse(queryParams);
     if (!result.success) {
       console.error("Invalid query parameters");
       return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
@@ -21,7 +37,7 @@ export async function GET(request: Request) {
     // Only return non-completed contests
     query.where(and(eq(contests.status, "upcoming"), eq(contests.status, "active")));
 
-    // Apply league filter if provided and valid
+    // Apply league filter if provided
     if (result.data.league) {
       query.where(eq(contests.league, result.data.league));
     }

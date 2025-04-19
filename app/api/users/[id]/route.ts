@@ -4,6 +4,25 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { userIdSchema } from "@/app/api/schemas";
 
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     summary: Get user details
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User object
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
   const result = userIdSchema.safeParse({ id });

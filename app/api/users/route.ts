@@ -3,6 +3,28 @@ import { db } from "@/db/db";
 import { users } from "@/db/schema/schema";
 import { createUserSchema } from "../schemas";
 
+/**
+ * @swagger
+ * /api/users:
+ *   post:
+ *     summary: Create a new user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User created
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal server error
+ */
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -19,9 +41,9 @@ export async function POST(request: Request) {
       })
       .returning();
 
-    return NextResponse.json(user);
+    return NextResponse.json(user, { status: 201 });
   } catch (error) {
     console.error("Error creating user:", error);
-    return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
