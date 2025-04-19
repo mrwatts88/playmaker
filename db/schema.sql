@@ -41,10 +41,6 @@ CREATE TABLE athletes (
     cost INTEGER NOT NULL CHECK (cost > 0)
 );
 
--- index for faster athlete lookup by team (for finding draftable athletes)
--- aka contest.games.teams.athletes
-CREATE INDEX idx_athletes_team_id ON athletes(team_id);
-
 -- All known teams of major sports leagues
 -- Updated by cron jobs from sports data API
 -- Not transactional for the app's purposes
