@@ -31,6 +31,7 @@ export const contests = pgTable("contests", {
   name: text("name"),
   startTime: timestamp("start_time"),
   status: contestStatus("status"),
+  league: leagueType("league"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
