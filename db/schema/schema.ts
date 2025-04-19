@@ -1,4 +1,4 @@
-import { pgTable, text, integer, timestamp, primaryKey, jsonb, numeric, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, timestamp, primaryKey, jsonb, numeric, pgEnum, unique } from "drizzle-orm/pg-core";
 
 // Enums
 export const leagueType = pgEnum("league_type", ["nba", "nfl", "nhl", "mlb"]);
@@ -19,7 +19,9 @@ export const teams = pgTable("teams", {
 export const athletes = pgTable("athletes", {
   id: text("id").primaryKey(),
   name: text("name"),
-  teamId: text("team_id").references(() => teams.id),
+  teamId: text("team_id")
+    .references(() => teams.id)
+    .notNull(),
   position: text("position"),
   cost: integer("cost").notNull(),
 });
@@ -38,8 +40,12 @@ export const games = pgTable("games", {
   name: text("name"),
   startTime: timestamp("start_time"),
   status: gameStatus("status"),
-  homeTeamId: text("home_team_id").references(() => teams.id),
-  awayTeamId: text("away_team_id").references(() => teams.id),
+  homeTeamId: text("home_team_id")
+    .references(() => teams.id)
+    .notNull(),
+  awayTeamId: text("away_team_id")
+    .references(() => teams.id)
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -47,8 +53,12 @@ export const games = pgTable("games", {
 export const contestGames = pgTable(
   "contest_games",
   {
-    gameId: text("game_id").references(() => games.id),
-    contestId: text("contest_id").references(() => contests.id),
+    gameId: text("game_id")
+      .references(() => games.id)
+      .notNull(),
+    contestId: text("contest_id")
+      .references(() => contests.id)
+      .notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
   },
@@ -59,7 +69,9 @@ export const contestGames = pgTable(
 
 export const gameEvents = pgTable("game_events", {
   id: text("id").primaryKey(),
-  gameId: text("game_id").references(() => games.id),
+  gameId: text("game_id")
+    .references(() => games.id)
+    .notNull(),
   athleteId: text("athlete_id").references(() => athletes.id),
   eventType: eventType("event_type"),
   value: integer("value"),
@@ -77,8 +89,12 @@ export const contestants = pgTable(
   "contestants",
   {
     id: text("id").primaryKey(),
-    contestId: text("contest_id").references(() => contests.id),
-    userId: text("user_id").references(() => users.id),
+    contestId: text("contest_id")
+      .references(() => contests.id)
+      .notNull(),
+    userId: text("user_id")
+      .references(() => users.id)
+      .notNull(),
     name: text("name"),
     totalXp: integer("total_xp").default(0).notNull(),
     spendableXp: integer("spendable_xp").default(0).notNull(),
@@ -87,15 +103,19 @@ export const contestants = pgTable(
     updatedAt: timestamp("updated_at").defaultNow(),
   },
   (t) => ({
-    uniqueUserContest: primaryKey(t.userId, t.contestId),
+    uniqueUserContest: unique().on(t.userId, t.contestId),
   })
 );
 
 export const rosterMembers = pgTable(
   "roster_members",
   {
-    contestantId: text("contestant_id").references(() => contestants.id),
-    athleteId: text("athlete_id").references(() => athletes.id),
+    contestantId: text("contestant_id")
+      .references(() => contestants.id)
+      .notNull(),
+    athleteId: text("athlete_id")
+      .references(() => athletes.id)
+      .notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
   },
@@ -119,8 +139,12 @@ export const boosts = pgTable("boosts", {
 
 export const contestBoosts = pgTable("contest_boosts", {
   id: text("id").primaryKey(),
-  contestId: text("contest_id").references(() => contests.id),
-  boostId: text("boost_id").references(() => boosts.id),
+  contestId: text("contest_id")
+    .references(() => contests.id)
+    .notNull(),
+  boostId: text("boost_id")
+    .references(() => boosts.id)
+    .notNull(),
   expiresAt: timestamp("expires_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -128,8 +152,12 @@ export const contestBoosts = pgTable("contest_boosts", {
 
 export const contestantBoosts = pgTable("contestant_boosts", {
   id: text("id").primaryKey(),
-  contestantId: text("contestant_id").references(() => contestants.id),
-  boostId: text("boost_id").references(() => boosts.id),
+  contestantId: text("contestant_id")
+    .references(() => contestants.id)
+    .notNull(),
+  boostId: text("boost_id")
+    .references(() => boosts.id)
+    .notNull(),
   expiresAt: timestamp("expires_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
