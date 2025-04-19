@@ -1,0 +1,172 @@
+openapi: 3.0.0
+info:
+  title: Draft XP API
+  version: 1.0.0
+
+paths:
+  /users/{id}:
+    get:
+      summary: Get user details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User object
+
+  /contests:
+    get:
+      summary: List available contests
+      parameters:
+        - name: filter
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of contests
+
+  /contests/{id}/lobby:
+    get:
+      summary: Get contest lobby details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Contest lobby details
+
+  /contests/{contestId}/user/{userId}:
+    post:
+      summary: Enter a contest
+      parameters:
+        - name: contestId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Contestant created
+
+  /contests/{id}/draftable-athletes:
+    get:
+      summary: Get draftable athletes for a contest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of athletes
+
+  /contestants/{id}/roster:
+    post:
+      summary: Submit drafted roster
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                athleteIds:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "201":
+          description: Roster submitted
+
+  /contestants/{id}:
+    get:
+      summary: Get contestant details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Contestant details
+
+  /contests/{id}:
+    get:
+      summary: Get full contest state (polling)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Contest state including contestants, event feed, and boosts
+
+  /contestants/{id}/boosts:
+    post:
+      summary: Buy a boost
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                boostId:
+                  type: string
+      responses:
+        "201":
+          description: Boost purchased
+
+  /contestants/{id}/stats:
+    patch:
+      summary: Spend XP to upgrade stat power
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stat:
+                  type: string
+                  enum: [points, rebounds, assists]
+                xpSpent:
+                  type: integer
+      responses:
+        "200":
+          description: Stat power updated

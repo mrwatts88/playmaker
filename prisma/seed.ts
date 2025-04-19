@@ -7,7 +7,7 @@ const boosts = [
   {
     name: "3x Multiplier",
     description: "Triple your XP for 3 minutes",
-    boostType: "multiplier",
+    type: "multiplier",
     multiplier: 3.0,
     duration: 180,
     cost: 500,
@@ -15,7 +15,7 @@ const boosts = [
   {
     name: "2x Points Multiplier",
     description: "Double XP from points for 2 minutes",
-    boostType: "multiplier",
+    type: "multiplier",
     multiplier: 2.0,
     duration: 120,
     cost: 300,
@@ -25,7 +25,7 @@ const boosts = [
   {
     name: "Quick Score",
     description: "Earn 500 XP if your player scores in the next minute",
-    boostType: "conditional",
+    type: "conditional",
     duration: 60,
     cost: 200,
     conditions: {
@@ -39,7 +39,7 @@ const boosts = [
   {
     name: "Assist Streak",
     description: "Earn 800 XP if your player gets 2 assists in 3 minutes",
-    boostType: "conditional",
+    type: "conditional",
     duration: 180,
     cost: 300,
     conditions: {
@@ -54,7 +54,7 @@ const boosts = [
   {
     name: "Extra Player",
     description: "Add a 6th player for 3 minutes",
-    boostType: "instant",
+    type: "instant",
     duration: 180,
     cost: 1000,
     conditions: { type: "extraPlayer" },
@@ -62,7 +62,7 @@ const boosts = [
   {
     name: "Player Swap",
     description: "Swap out one of your players",
-    boostType: "instant",
+    type: "instant",
     duration: 0,
     cost: 300,
     conditions: { type: "swap" },
@@ -70,7 +70,7 @@ const boosts = [
   {
     name: "Double Double Bonus",
     description: "Earn 1000 XP if your player gets a double-double in 5 minutes",
-    boostType: "conditional",
+    type: "conditional",
     duration: 300,
     cost: 400,
     conditions: {
@@ -83,7 +83,7 @@ const boosts = [
   {
     name: "Rebound Master",
     description: "2.5x XP from rebounds for 2 minutes",
-    boostType: "multiplier",
+    type: "multiplier",
     multiplier: 2.5,
     duration: 120,
     cost: 350,
