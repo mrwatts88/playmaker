@@ -1,63 +1,133 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Header from "../../components/Header";
 import { use } from "react";
-import { useAuth } from "../../providers/AuthProvider";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Header from "@/app/components/Header";
+
+interface Player {
+  id: string;
+  name: string;
+  position: string;
+  rating: number;
+  price: number;
+}
 
 interface Session {
   id: string;
   name: string;
   sessionCode: string;
   status: string;
-  startTime: string;
   userSessions: {
     id: string;
     user: {
-      id: string;
       username: string;
     };
+    isCreator: boolean;
   }[];
 }
 
-export default function SessionPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
-  const [session, setSession] = useState<Session | null>(null);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
+interface PageParams {
+  id: string;
+}
+
+export default function SessionDetail({ params }: { params: Promise<PageParams> }) {
   const router = useRouter();
-  const { username, isAuthenticated } = useAuth();
+  const { id: sessionId } = use(params);
+  const [session, setSession] = useState<Session | null>(null);
+  const [availablePlayers, setAvailablePlayers] = useState<Player[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/login");
+    const storedUsername = localStorage.getItem("username");
+    if (!storedUsername) {
+      router.replace("/login");
       return;
     }
-    fetchSession();
-  }, [id, isAuthenticated, router]);
+    setUsername(storedUsername);
+  }, [router]);
 
-  const fetchSession = async () => {
+  useEffect(() => {
+    if (!username) return;
+
+    const fetchSession = async () => {
+      try {
+        const response = await fetch(`/api/sessions/${sessionId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch session");
+        }
+        const data = await response.json();
+
+        // Check if user is part of this session
+        const isUserInSession = data.userSessions.some((us: { user: { username: string } }) => us.user.username === username);
+
+        if (!isUserInSession) {
+          setError("You are not part of this session");
+          return;
+        }
+
+        setSession(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch session");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchAvailablePlayers = async () => {
+      try {
+        const response = await fetch("/api/players/available");
+        if (!response.ok) {
+          throw new Error("Failed to fetch available players");
+        }
+        const data = await response.json();
+        setAvailablePlayers(data);
+      } catch (err) {
+        console.error("Failed to fetch available players:", err);
+      }
+    };
+
+    fetchSession();
+    fetchAvailablePlayers();
+  }, [sessionId, username, router]);
+
+  const handleStartDraft = async () => {
+    if (!username) return;
+
     try {
-      const response = await fetch(`/api/sessions/${id}`);
-      if (!response.ok) throw new Error("Failed to fetch session");
-      const data = await response.json();
-      setSession(data);
+      const response = await fetch(`/api/sessions/${sessionId}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: "DRAFTING" }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to start draft");
+      }
+
+      // Refresh session data
+      const updatedResponse = await fetch(`/api/sessions/${sessionId}`);
+      if (!updatedResponse.ok) {
+        throw new Error("Failed to fetch updated session");
+      }
+      const updatedData = await updatedResponse.json();
+      setSession(updatedData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch session");
-    } finally {
-      setLoading(false);
+      setError(err instanceof Error ? err.message : "Failed to start draft");
     }
   };
 
   const handleLeaveSession = async () => {
-    if (!username) {
-      router.push("/login");
-      return;
-    }
+    if (!username) return;
 
     try {
-      const response = await fetch(`/api/sessions/${id}/leave`, {
+      const response = await fetch(`/api/sessions/${sessionId}/leave`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,8 +136,8 @@ export default function SessionPage({ params }: { params: Promise<{ id: string }
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to leave session");
+        const data = await response.json();
+        throw new Error(data.error || "Failed to leave session");
       }
 
       router.push("/sessions");
@@ -76,15 +146,16 @@ export default function SessionPage({ params }: { params: Promise<{ id: string }
     }
   };
 
+  if (!username) {
+    return null; // Will redirect in useEffect
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100">
         <Header />
-        <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-            <p className="mt-4 text-gray-700">Loading session...</p>
-          </div>
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">Loading...</div>
         </div>
       </div>
     );
@@ -94,90 +165,66 @@ export default function SessionPage({ params }: { params: Promise<{ id: string }
     return (
       <div className="min-h-screen bg-gray-100">
         <Header />
-        <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
-          <div className="bg-white p-8 rounded-lg shadow-md w-96">
-            <h1 className="text-2xl font-bold mb-4 text-center text-red-600">Error</h1>
-            <p className="text-center text-gray-700">{error}</p>
-            <button
-              onClick={() => router.push("/sessions")}
-              className="mt-4 w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Back to Sessions
-            </button>
-          </div>
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center text-red-500">{error}</div>
         </div>
       </div>
     );
   }
 
   if (!session) {
-    return (
-      <div className="min-h-screen bg-gray-100">
-        <Header />
-        <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
-          <div className="bg-white p-8 rounded-lg shadow-md w-96">
-            <h1 className="text-2xl font-bold mb-4 text-center text-gray-800">Session Not Found</h1>
-            <button
-              onClick={() => router.push("/sessions")}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Back to Sessions
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
-      <div className="py-8">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-6">
-            <button onClick={() => router.push("/sessions")} className="text-indigo-600 hover:text-indigo-800 flex items-center">
-              <svg
-                className="h-5 w-5 mr-1"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Back to All Sessions
-            </button>
-            <button
-              onClick={handleLeaveSession}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            >
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-bold text-gray-800">{session.name}</h1>
+            <Link href="/sessions" className="text-blue-500 hover:text-blue-700">
+              ← Return to all sessions
+            </Link>
+          </div>
+          <p className="text-gray-700 mb-4">Code: {session.sessionCode}</p>
+          <p className="text-gray-700 mb-4">Status: {session.status}</p>
+
+          <h2 className="text-xl font-semibold mb-2 text-gray-800">Players</h2>
+          <ul className="mb-4">
+            {session.userSessions.map((userSession) => (
+              <li key={userSession.id} className="mb-1 text-gray-700">
+                {userSession.user.username}
+                {userSession.isCreator && " (Creator)"}
+              </li>
+            ))}
+          </ul>
+
+          <div className="flex gap-4">
+            {session.status === "WAITING" && (
+              <button onClick={handleStartDraft} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Start Draft
+              </button>
+            )}
+            <button onClick={handleLeaveSession} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
               Leave Session
             </button>
           </div>
-          <div className="bg-white shadow rounded-lg overflow-hidden">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">{session.name}</h1>
-                  <p className="text-sm text-gray-700">Code: {session.sessionCode}</p>
-                </div>
-                <div className="text-sm font-medium text-gray-700">Status: {session.status}</div>
-              </div>
 
-              <div className="border-t border-gray-200 pt-6">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">Players</h2>
-                <div className="space-y-2">
-                  {session.userSessions.map((userSession) => (
-                    <div key={userSession.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="font-medium text-gray-800">{userSession.user.username}</span>
-                    </div>
-                  ))}
-                </div>
+          {session.status === "DRAFTING" && (
+            <div className="mt-4">
+              <h2 className="text-xl font-semibold mb-2 text-gray-800">Available Players</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {availablePlayers.map((player) => (
+                  <div key={player.id} className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                    <h3 className="font-semibold text-gray-800">{player.name}</h3>
+                    <p className="text-gray-800">{player.position}</p>
+                    <p className="text-gray-800">Cost: ${player.price}</p>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

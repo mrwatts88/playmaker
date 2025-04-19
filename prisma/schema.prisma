@@ -16,6 +16,7 @@ model User {
   username  String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  players   Player[]
 
   // Relations
   sessions UserSession[]
@@ -25,11 +26,12 @@ model Session {
   id          String   @id @default(cuid())
   name        String
   sessionCode String   @unique
-  startTime   DateTime @default(now())
-  endTime     DateTime?
-  status      String   @default("waiting") // "waiting" | "drafting" | "active" | "completed"
+  status      String   @default("WAITING")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  startTime   DateTime
+  endTime     DateTime?
+  players     Player[]
 
   // Relations
   userSessions UserSession[]
@@ -42,6 +44,7 @@ model UserSession {
   joinedAt  DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isCreator Boolean  @default(false)
 
   // Relations
   userId    String
@@ -70,22 +73,20 @@ model AvailablePlayer {
 
 model Player {
   id              String         @id @default(cuid())
-  name            String
+  userId          String
+  sessionId       String
+  isCreator       Boolean        @default(false)
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
-  xp              Int            @default(0)
-  team            String
-  position        String
-  active          Boolean        @default(true)
-  statCategoryXp  Json
-  boosts          Json
+  user            User           @relation(fields: [userId], references: [id])
+  session         Session        @relation(fields: [sessionId], references: [id])
   userSessionId   String
   availablePlayerId String
   userSession     UserSession    @relation(fields: [userSessionId], references: [id])
   availablePlayer AvailablePlayer @relation(fields: [availablePlayerId], references: [id])
   activeBoosts    ActiveBoost[]
 
-  @@unique([userSessionId, availablePlayerId])
+  @@unique([userId, sessionId])
 }
 
 model Boost {

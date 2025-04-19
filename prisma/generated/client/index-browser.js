@@ -128,11 +128,11 @@ exports.Prisma.SessionScalarFieldEnum = {
   id: 'id',
   name: 'name',
   sessionCode: 'sessionCode',
-  startTime: 'startTime',
-  endTime: 'endTime',
   status: 'status',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  startTime: 'startTime',
+  endTime: 'endTime'
 };
 
 exports.Prisma.UserSessionScalarFieldEnum = {
@@ -142,6 +142,7 @@ exports.Prisma.UserSessionScalarFieldEnum = {
   joinedAt: 'joinedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  isCreator: 'isCreator',
   userId: 'userId',
   sessionId: 'sessionId'
 };
@@ -159,15 +160,11 @@ exports.Prisma.AvailablePlayerScalarFieldEnum = {
 
 exports.Prisma.PlayerScalarFieldEnum = {
   id: 'id',
-  name: 'name',
+  userId: 'userId',
+  sessionId: 'sessionId',
+  isCreator: 'isCreator',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  xp: 'xp',
-  team: 'team',
-  position: 'position',
-  active: 'active',
-  statCategoryXp: 'statCategoryXp',
-  boosts: 'boosts',
   userSessionId: 'userSessionId',
   availablePlayerId: 'availablePlayerId'
 };

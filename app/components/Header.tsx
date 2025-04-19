@@ -1,22 +1,25 @@
 "use client";
 
-import { useAuth } from "../providers/AuthProvider";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
-  const { logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("username");
+    router.push("/login");
+  };
 
   return (
     <header className="bg-white shadow">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
-          <h1 className="text-2xl font-bold text-gray-900">Playmaker</h1>
-          <button
-            onClick={logout}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
-            Logout
-          </button>
-        </div>
+      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <Link href="/" className="text-xl font-bold text-gray-900">
+          Playmaker
+        </Link>
+        <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+          Logout
+        </button>
       </div>
     </header>
   );

@@ -4,61 +4,72 @@ import { prisma } from "@/lib/prisma";
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   try {
     const { username } = await request.json();
-    const sessionId = params.id;
+    console.log("Join session request:", { username, sessionId: params.id });
 
     if (!username) {
-      return NextResponse.json({ message: "Username is required" }, { status: 400 });
+      return NextResponse.json({ error: "Username is required" }, { status: 400 });
     }
 
-    // Get or create user
-    const user = await prisma.user.upsert({
-      where: { username },
-      update: {},
-      create: { username },
-    });
-
-    // Check if session exists
-    const session = await prisma.session.findUnique({
-      where: { id: sessionId },
-    });
-
-    if (!session) {
-      return NextResponse.json({ message: "Session not found" }, { status: 404 });
-    }
-
-    // Check if user is already in the session
-    const existingUserSession = await prisma.userSession.findUnique({
+    // Check if user is already in another session
+    const existingUserSession = await prisma.userSession.findFirst({
       where: {
-        userId_sessionId: {
-          userId: user.id,
-          sessionId,
+        user: {
+          username: username,
         },
+      },
+      include: {
+        session: true,
       },
     });
 
     if (existingUserSession) {
-      return NextResponse.json({ message: "User already in session" }, { status: 400 });
+      console.log("User already in session:", existingUserSession);
+      return NextResponse.json(
+        { error: `You are already in session "${existingUserSession.session.name}". Please leave that session before joining another one.` },
+        { status: 400 }
+      );
     }
 
-    // Add user to session
+    // Find or create user
+    let user = await prisma.user.findUnique({
+      where: { username },
+    });
+
+    if (!user) {
+      console.log("Creating new user:", username);
+      user = await prisma.user.create({
+        data: { username },
+      });
+    }
+
+    // Check if session exists
+    const session = await prisma.session.findUnique({
+      where: { id: params.id },
+    });
+
+    if (!session) {
+      console.log("Session not found:", params.id);
+      return NextResponse.json({ error: "Session not found" }, { status: 404 });
+    }
+
+    // Create user session
+    console.log("Creating user session:", { userId: user.id, sessionId: session.id });
     const userSession = await prisma.userSession.create({
       data: {
         userId: user.id,
-        sessionId,
+        sessionId: session.id,
+        isCreator: false,
       },
       include: {
-        user: {
-          select: {
-            id: true,
-            username: true,
-          },
-        },
+        session: true,
+        user: true,
       },
     });
 
+    console.log("Created user session:", userSession);
     return NextResponse.json(userSession);
   } catch (error) {
     console.error("Error joining session:", error);
-    return NextResponse.json({ message: "Failed to join session" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to join session" }, { status: 500 });
   }
 }

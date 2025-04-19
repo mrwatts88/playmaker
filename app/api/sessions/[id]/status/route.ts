@@ -12,6 +12,9 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       return Response.json({ error: "Status is required" }, { status: 400 });
     }
 
+    // Normalize status to uppercase
+    const normalizedStatus = status.toUpperCase();
+
     // Validate status transition
     const session = await prisma.session.findUnique({
       where: { id },
@@ -22,20 +25,21 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     }
 
     const validTransitions: Record<string, string[]> = {
-      waiting: ["drafting"],
-      drafting: ["active"],
-      active: ["completed"],
-      completed: [],
+      WAITING: ["DRAFTING"],
+      DRAFTING: ["ACTIVE"],
+      ACTIVE: ["COMPLETED"],
+      COMPLETED: [],
     };
 
-    if (!validTransitions[session.status]?.includes(status)) {
+    const currentStatus = session.status.toUpperCase();
+    if (!validTransitions[currentStatus]?.includes(normalizedStatus)) {
       return Response.json({ error: "Invalid status transition" }, { status: 400 });
     }
 
     // Update session status
     const updatedSession = await prisma.session.update({
       where: { id },
-      data: { status },
+      data: { status: normalizedStatus },
       include: {
         userSessions: {
           include: {

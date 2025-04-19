@@ -1415,10 +1415,12 @@ export namespace Prisma {
    */
 
   export type UserCountOutputType = {
+    players: number
     sessions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    players?: boolean | UserCountOutputTypeCountPlayersArgs
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   }
 
@@ -1436,6 +1438,13 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
+  export type UserCountOutputTypeCountPlayersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlayerWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
   export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserSessionWhereInput
   }
@@ -1446,10 +1455,12 @@ export namespace Prisma {
    */
 
   export type SessionCountOutputType = {
+    players: number
     userSessions: number
   }
 
   export type SessionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    players?: boolean | SessionCountOutputTypeCountPlayersArgs
     userSessions?: boolean | SessionCountOutputTypeCountUserSessionsArgs
   }
 
@@ -1462,6 +1473,13 @@ export namespace Prisma {
      * Select specific fields to fetch from the SessionCountOutputType
      */
     select?: SessionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * SessionCountOutputType without action
+   */
+  export type SessionCountOutputTypeCountPlayersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlayerWhereInput
   }
 
   /**
@@ -1765,6 +1783,7 @@ export namespace Prisma {
     username?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    players?: boolean | User$playersArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -1792,6 +1811,7 @@ export namespace Prisma {
 
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    players?: boolean | User$playersArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -1801,6 +1821,7 @@ export namespace Prisma {
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
+      players: Prisma.$PlayerPayload<ExtArgs>[]
       sessions: Prisma.$UserSessionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -2202,6 +2223,7 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    players<T extends User$playersArgs<ExtArgs> = {}>(args?: Subset<T, User$playersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2624,6 +2646,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.players
+   */
+  export type User$playersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Player
+     */
+    select?: PlayerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Player
+     */
+    omit?: PlayerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerInclude<ExtArgs> | null
+    where?: PlayerWhereInput
+    orderBy?: PlayerOrderByWithRelationInput | PlayerOrderByWithRelationInput[]
+    cursor?: PlayerWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlayerScalarFieldEnum | PlayerScalarFieldEnum[]
+  }
+
+  /**
    * User.sessions
    */
   export type User$sessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2680,33 +2726,33 @@ export namespace Prisma {
     id: string | null
     name: string | null
     sessionCode: string | null
-    startTime: Date | null
-    endTime: Date | null
     status: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    startTime: Date | null
+    endTime: Date | null
   }
 
   export type SessionMaxAggregateOutputType = {
     id: string | null
     name: string | null
     sessionCode: string | null
-    startTime: Date | null
-    endTime: Date | null
     status: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    startTime: Date | null
+    endTime: Date | null
   }
 
   export type SessionCountAggregateOutputType = {
     id: number
     name: number
     sessionCode: number
-    startTime: number
-    endTime: number
     status: number
     createdAt: number
     updatedAt: number
+    startTime: number
+    endTime: number
     _all: number
   }
 
@@ -2715,33 +2761,33 @@ export namespace Prisma {
     id?: true
     name?: true
     sessionCode?: true
-    startTime?: true
-    endTime?: true
     status?: true
     createdAt?: true
     updatedAt?: true
+    startTime?: true
+    endTime?: true
   }
 
   export type SessionMaxAggregateInputType = {
     id?: true
     name?: true
     sessionCode?: true
-    startTime?: true
-    endTime?: true
     status?: true
     createdAt?: true
     updatedAt?: true
+    startTime?: true
+    endTime?: true
   }
 
   export type SessionCountAggregateInputType = {
     id?: true
     name?: true
     sessionCode?: true
-    startTime?: true
-    endTime?: true
     status?: true
     createdAt?: true
     updatedAt?: true
+    startTime?: true
+    endTime?: true
     _all?: true
   }
 
@@ -2821,11 +2867,11 @@ export namespace Prisma {
     id: string
     name: string
     sessionCode: string
-    startTime: Date
-    endTime: Date | null
     status: string
     createdAt: Date
     updatedAt: Date
+    startTime: Date
+    endTime: Date | null
     _count: SessionCountAggregateOutputType | null
     _min: SessionMinAggregateOutputType | null
     _max: SessionMaxAggregateOutputType | null
@@ -2849,11 +2895,12 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     sessionCode?: boolean
-    startTime?: boolean
-    endTime?: boolean
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    players?: boolean | Session$playersArgs<ExtArgs>
     userSessions?: boolean | Session$userSessionsArgs<ExtArgs>
     _count?: boolean | SessionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["session"]>
@@ -2862,37 +2909,38 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     sessionCode?: boolean
-    startTime?: boolean
-    endTime?: boolean
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    startTime?: boolean
+    endTime?: boolean
   }, ExtArgs["result"]["session"]>
 
   export type SessionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
     sessionCode?: boolean
-    startTime?: boolean
-    endTime?: boolean
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    startTime?: boolean
+    endTime?: boolean
   }, ExtArgs["result"]["session"]>
 
   export type SessionSelectScalar = {
     id?: boolean
     name?: boolean
     sessionCode?: boolean
-    startTime?: boolean
-    endTime?: boolean
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    startTime?: boolean
+    endTime?: boolean
   }
 
-  export type SessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "sessionCode" | "startTime" | "endTime" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["session"]>
+  export type SessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "sessionCode" | "status" | "createdAt" | "updatedAt" | "startTime" | "endTime", ExtArgs["result"]["session"]>
   export type SessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    players?: boolean | Session$playersArgs<ExtArgs>
     userSessions?: boolean | Session$userSessionsArgs<ExtArgs>
     _count?: boolean | SessionCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -2902,17 +2950,18 @@ export namespace Prisma {
   export type $SessionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Session"
     objects: {
+      players: Prisma.$PlayerPayload<ExtArgs>[]
       userSessions: Prisma.$UserSessionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
       sessionCode: string
-      startTime: Date
-      endTime: Date | null
       status: string
       createdAt: Date
       updatedAt: Date
+      startTime: Date
+      endTime: Date | null
     }, ExtArgs["result"]["session"]>
     composites: {}
   }
@@ -3307,6 +3356,7 @@ export namespace Prisma {
    */
   export interface Prisma__SessionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    players<T extends Session$playersArgs<ExtArgs> = {}>(args?: Subset<T, Session$playersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     userSessions<T extends Session$userSessionsArgs<ExtArgs> = {}>(args?: Subset<T, Session$userSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3340,11 +3390,11 @@ export namespace Prisma {
     readonly id: FieldRef<"Session", 'String'>
     readonly name: FieldRef<"Session", 'String'>
     readonly sessionCode: FieldRef<"Session", 'String'>
-    readonly startTime: FieldRef<"Session", 'DateTime'>
-    readonly endTime: FieldRef<"Session", 'DateTime'>
     readonly status: FieldRef<"Session", 'String'>
     readonly createdAt: FieldRef<"Session", 'DateTime'>
     readonly updatedAt: FieldRef<"Session", 'DateTime'>
+    readonly startTime: FieldRef<"Session", 'DateTime'>
+    readonly endTime: FieldRef<"Session", 'DateTime'>
   }
     
 
@@ -3733,6 +3783,30 @@ export namespace Prisma {
   }
 
   /**
+   * Session.players
+   */
+  export type Session$playersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Player
+     */
+    select?: PlayerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Player
+     */
+    omit?: PlayerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlayerInclude<ExtArgs> | null
+    where?: PlayerWhereInput
+    orderBy?: PlayerOrderByWithRelationInput | PlayerOrderByWithRelationInput[]
+    cursor?: PlayerWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlayerScalarFieldEnum | PlayerScalarFieldEnum[]
+  }
+
+  /**
    * Session.userSessions
    */
   export type Session$userSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3804,6 +3878,7 @@ export namespace Prisma {
     joinedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
+    isCreator: boolean | null
     userId: string | null
     sessionId: string | null
   }
@@ -3815,6 +3890,7 @@ export namespace Prisma {
     joinedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
+    isCreator: boolean | null
     userId: string | null
     sessionId: string | null
   }
@@ -3826,6 +3902,7 @@ export namespace Prisma {
     joinedAt: number
     createdAt: number
     updatedAt: number
+    isCreator: number
     userId: number
     sessionId: number
     _all: number
@@ -3849,6 +3926,7 @@ export namespace Prisma {
     joinedAt?: true
     createdAt?: true
     updatedAt?: true
+    isCreator?: true
     userId?: true
     sessionId?: true
   }
@@ -3860,6 +3938,7 @@ export namespace Prisma {
     joinedAt?: true
     createdAt?: true
     updatedAt?: true
+    isCreator?: true
     userId?: true
     sessionId?: true
   }
@@ -3871,6 +3950,7 @@ export namespace Prisma {
     joinedAt?: true
     createdAt?: true
     updatedAt?: true
+    isCreator?: true
     userId?: true
     sessionId?: true
     _all?: true
@@ -3969,6 +4049,7 @@ export namespace Prisma {
     joinedAt: Date
     createdAt: Date
     updatedAt: Date
+    isCreator: boolean
     userId: string
     sessionId: string
     _count: UserSessionCountAggregateOutputType | null
@@ -3999,6 +4080,7 @@ export namespace Prisma {
     joinedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    isCreator?: boolean
     userId?: boolean
     sessionId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -4015,6 +4097,7 @@ export namespace Prisma {
     joinedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    isCreator?: boolean
     userId?: boolean
     sessionId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -4028,6 +4111,7 @@ export namespace Prisma {
     joinedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    isCreator?: boolean
     userId?: boolean
     sessionId?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -4041,11 +4125,12 @@ export namespace Prisma {
     joinedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    isCreator?: boolean
     userId?: boolean
     sessionId?: boolean
   }
 
-  export type UserSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "xp" | "money" | "joinedAt" | "createdAt" | "updatedAt" | "userId" | "sessionId", ExtArgs["result"]["userSession"]>
+  export type UserSessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "xp" | "money" | "joinedAt" | "createdAt" | "updatedAt" | "isCreator" | "userId" | "sessionId", ExtArgs["result"]["userSession"]>
   export type UserSessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     session?: boolean | SessionDefaultArgs<ExtArgs>
@@ -4077,6 +4162,7 @@ export namespace Prisma {
       joinedAt: Date
       createdAt: Date
       updatedAt: Date
+      isCreator: boolean
       userId: string
       sessionId: string
     }, ExtArgs["result"]["userSession"]>
@@ -4512,6 +4598,7 @@ export namespace Prisma {
     readonly joinedAt: FieldRef<"UserSession", 'DateTime'>
     readonly createdAt: FieldRef<"UserSession", 'DateTime'>
     readonly updatedAt: FieldRef<"UserSession", 'DateTime'>
+    readonly isCreator: FieldRef<"UserSession", 'Boolean'>
     readonly userId: FieldRef<"UserSession", 'String'>
     readonly sessionId: FieldRef<"UserSession", 'String'>
   }
@@ -6121,108 +6208,74 @@ export namespace Prisma {
 
   export type AggregatePlayer = {
     _count: PlayerCountAggregateOutputType | null
-    _avg: PlayerAvgAggregateOutputType | null
-    _sum: PlayerSumAggregateOutputType | null
     _min: PlayerMinAggregateOutputType | null
     _max: PlayerMaxAggregateOutputType | null
   }
 
-  export type PlayerAvgAggregateOutputType = {
-    xp: number | null
-  }
-
-  export type PlayerSumAggregateOutputType = {
-    xp: number | null
-  }
-
   export type PlayerMinAggregateOutputType = {
     id: string | null
-    name: string | null
+    userId: string | null
+    sessionId: string | null
+    isCreator: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
-    xp: number | null
-    team: string | null
-    position: string | null
-    active: boolean | null
     userSessionId: string | null
     availablePlayerId: string | null
   }
 
   export type PlayerMaxAggregateOutputType = {
     id: string | null
-    name: string | null
+    userId: string | null
+    sessionId: string | null
+    isCreator: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
-    xp: number | null
-    team: string | null
-    position: string | null
-    active: boolean | null
     userSessionId: string | null
     availablePlayerId: string | null
   }
 
   export type PlayerCountAggregateOutputType = {
     id: number
-    name: number
+    userId: number
+    sessionId: number
+    isCreator: number
     createdAt: number
     updatedAt: number
-    xp: number
-    team: number
-    position: number
-    active: number
-    statCategoryXp: number
-    boosts: number
     userSessionId: number
     availablePlayerId: number
     _all: number
   }
 
 
-  export type PlayerAvgAggregateInputType = {
-    xp?: true
-  }
-
-  export type PlayerSumAggregateInputType = {
-    xp?: true
-  }
-
   export type PlayerMinAggregateInputType = {
     id?: true
-    name?: true
+    userId?: true
+    sessionId?: true
+    isCreator?: true
     createdAt?: true
     updatedAt?: true
-    xp?: true
-    team?: true
-    position?: true
-    active?: true
     userSessionId?: true
     availablePlayerId?: true
   }
 
   export type PlayerMaxAggregateInputType = {
     id?: true
-    name?: true
+    userId?: true
+    sessionId?: true
+    isCreator?: true
     createdAt?: true
     updatedAt?: true
-    xp?: true
-    team?: true
-    position?: true
-    active?: true
     userSessionId?: true
     availablePlayerId?: true
   }
 
   export type PlayerCountAggregateInputType = {
     id?: true
-    name?: true
+    userId?: true
+    sessionId?: true
+    isCreator?: true
     createdAt?: true
     updatedAt?: true
-    xp?: true
-    team?: true
-    position?: true
-    active?: true
-    statCategoryXp?: true
-    boosts?: true
     userSessionId?: true
     availablePlayerId?: true
     _all?: true
@@ -6266,18 +6319,6 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Select which fields to average
-    **/
-    _avg?: PlayerAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: PlayerSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
      * Select which fields to find the minimum value
     **/
     _min?: PlayerMinAggregateInputType
@@ -6308,28 +6349,20 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: PlayerCountAggregateInputType | true
-    _avg?: PlayerAvgAggregateInputType
-    _sum?: PlayerSumAggregateInputType
     _min?: PlayerMinAggregateInputType
     _max?: PlayerMaxAggregateInputType
   }
 
   export type PlayerGroupByOutputType = {
     id: string
-    name: string
+    userId: string
+    sessionId: string
+    isCreator: boolean
     createdAt: Date
     updatedAt: Date
-    xp: number
-    team: string
-    position: string
-    active: boolean
-    statCategoryXp: JsonValue
-    boosts: JsonValue
     userSessionId: string
     availablePlayerId: string
     _count: PlayerCountAggregateOutputType | null
-    _avg: PlayerAvgAggregateOutputType | null
-    _sum: PlayerSumAggregateOutputType | null
     _min: PlayerMinAggregateOutputType | null
     _max: PlayerMaxAggregateOutputType | null
   }
@@ -6350,17 +6383,15 @@ export namespace Prisma {
 
   export type PlayerSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    name?: boolean
+    userId?: boolean
+    sessionId?: boolean
+    isCreator?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    xp?: boolean
-    team?: boolean
-    position?: boolean
-    active?: boolean
-    statCategoryXp?: boolean
-    boosts?: boolean
     userSessionId?: boolean
     availablePlayerId?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    session?: boolean | SessionDefaultArgs<ExtArgs>
     userSession?: boolean | UserSessionDefaultArgs<ExtArgs>
     availablePlayer?: boolean | AvailablePlayerDefaultArgs<ExtArgs>
     activeBoosts?: boolean | Player$activeBoostsArgs<ExtArgs>
@@ -6369,65 +6400,63 @@ export namespace Prisma {
 
   export type PlayerSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    name?: boolean
+    userId?: boolean
+    sessionId?: boolean
+    isCreator?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    xp?: boolean
-    team?: boolean
-    position?: boolean
-    active?: boolean
-    statCategoryXp?: boolean
-    boosts?: boolean
     userSessionId?: boolean
     availablePlayerId?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    session?: boolean | SessionDefaultArgs<ExtArgs>
     userSession?: boolean | UserSessionDefaultArgs<ExtArgs>
     availablePlayer?: boolean | AvailablePlayerDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["player"]>
 
   export type PlayerSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    name?: boolean
+    userId?: boolean
+    sessionId?: boolean
+    isCreator?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    xp?: boolean
-    team?: boolean
-    position?: boolean
-    active?: boolean
-    statCategoryXp?: boolean
-    boosts?: boolean
     userSessionId?: boolean
     availablePlayerId?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    session?: boolean | SessionDefaultArgs<ExtArgs>
     userSession?: boolean | UserSessionDefaultArgs<ExtArgs>
     availablePlayer?: boolean | AvailablePlayerDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["player"]>
 
   export type PlayerSelectScalar = {
     id?: boolean
-    name?: boolean
+    userId?: boolean
+    sessionId?: boolean
+    isCreator?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    xp?: boolean
-    team?: boolean
-    position?: boolean
-    active?: boolean
-    statCategoryXp?: boolean
-    boosts?: boolean
     userSessionId?: boolean
     availablePlayerId?: boolean
   }
 
-  export type PlayerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "xp" | "team" | "position" | "active" | "statCategoryXp" | "boosts" | "userSessionId" | "availablePlayerId", ExtArgs["result"]["player"]>
+  export type PlayerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "sessionId" | "isCreator" | "createdAt" | "updatedAt" | "userSessionId" | "availablePlayerId", ExtArgs["result"]["player"]>
   export type PlayerInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    session?: boolean | SessionDefaultArgs<ExtArgs>
     userSession?: boolean | UserSessionDefaultArgs<ExtArgs>
     availablePlayer?: boolean | AvailablePlayerDefaultArgs<ExtArgs>
     activeBoosts?: boolean | Player$activeBoostsArgs<ExtArgs>
     _count?: boolean | PlayerCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PlayerIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    session?: boolean | SessionDefaultArgs<ExtArgs>
     userSession?: boolean | UserSessionDefaultArgs<ExtArgs>
     availablePlayer?: boolean | AvailablePlayerDefaultArgs<ExtArgs>
   }
   export type PlayerIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    session?: boolean | SessionDefaultArgs<ExtArgs>
     userSession?: boolean | UserSessionDefaultArgs<ExtArgs>
     availablePlayer?: boolean | AvailablePlayerDefaultArgs<ExtArgs>
   }
@@ -6435,21 +6464,19 @@ export namespace Prisma {
   export type $PlayerPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Player"
     objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      session: Prisma.$SessionPayload<ExtArgs>
       userSession: Prisma.$UserSessionPayload<ExtArgs>
       availablePlayer: Prisma.$AvailablePlayerPayload<ExtArgs>
       activeBoosts: Prisma.$ActiveBoostPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      name: string
+      userId: string
+      sessionId: string
+      isCreator: boolean
       createdAt: Date
       updatedAt: Date
-      xp: number
-      team: string
-      position: string
-      active: boolean
-      statCategoryXp: Prisma.JsonValue
-      boosts: Prisma.JsonValue
       userSessionId: string
       availablePlayerId: string
     }, ExtArgs["result"]["player"]>
@@ -6846,6 +6873,8 @@ export namespace Prisma {
    */
   export interface Prisma__PlayerClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    session<T extends SessionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SessionDefaultArgs<ExtArgs>>): Prisma__SessionClient<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     userSession<T extends UserSessionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserSessionDefaultArgs<ExtArgs>>): Prisma__UserSessionClient<$Result.GetResult<Prisma.$UserSessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     availablePlayer<T extends AvailablePlayerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AvailablePlayerDefaultArgs<ExtArgs>>): Prisma__AvailablePlayerClient<$Result.GetResult<Prisma.$AvailablePlayerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     activeBoosts<T extends Player$activeBoostsArgs<ExtArgs> = {}>(args?: Subset<T, Player$activeBoostsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActiveBoostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -6879,15 +6908,11 @@ export namespace Prisma {
    */
   interface PlayerFieldRefs {
     readonly id: FieldRef<"Player", 'String'>
-    readonly name: FieldRef<"Player", 'String'>
+    readonly userId: FieldRef<"Player", 'String'>
+    readonly sessionId: FieldRef<"Player", 'String'>
+    readonly isCreator: FieldRef<"Player", 'Boolean'>
     readonly createdAt: FieldRef<"Player", 'DateTime'>
     readonly updatedAt: FieldRef<"Player", 'DateTime'>
-    readonly xp: FieldRef<"Player", 'Int'>
-    readonly team: FieldRef<"Player", 'String'>
-    readonly position: FieldRef<"Player", 'String'>
-    readonly active: FieldRef<"Player", 'Boolean'>
-    readonly statCategoryXp: FieldRef<"Player", 'Json'>
-    readonly boosts: FieldRef<"Player", 'Json'>
     readonly userSessionId: FieldRef<"Player", 'String'>
     readonly availablePlayerId: FieldRef<"Player", 'String'>
   }
@@ -9607,11 +9632,11 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     sessionCode: 'sessionCode',
-    startTime: 'startTime',
-    endTime: 'endTime',
     status: 'status',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    startTime: 'startTime',
+    endTime: 'endTime'
   };
 
   export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
@@ -9624,6 +9649,7 @@ export namespace Prisma {
     joinedAt: 'joinedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
+    isCreator: 'isCreator',
     userId: 'userId',
     sessionId: 'sessionId'
   };
@@ -9647,15 +9673,11 @@ export namespace Prisma {
 
   export const PlayerScalarFieldEnum: {
     id: 'id',
-    name: 'name',
+    userId: 'userId',
+    sessionId: 'sessionId',
+    isCreator: 'isCreator',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    xp: 'xp',
-    team: 'team',
-    position: 'position',
-    active: 'active',
-    statCategoryXp: 'statCategoryXp',
-    boosts: 'boosts',
     userSessionId: 'userSessionId',
     availablePlayerId: 'availablePlayerId'
   };
@@ -9778,6 +9800,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
    * Reference to a field of type 'Json'
    */
   export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -9788,13 +9817,6 @@ export namespace Prisma {
    * Reference to a field of type 'QueryMode'
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-  /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -9823,6 +9845,7 @@ export namespace Prisma {
     username?: StringFilter<"User"> | string
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    players?: PlayerListRelationFilter
     sessions?: UserSessionListRelationFilter
   }
 
@@ -9831,6 +9854,7 @@ export namespace Prisma {
     username?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    players?: PlayerOrderByRelationAggregateInput
     sessions?: UserSessionOrderByRelationAggregateInput
   }
 
@@ -9842,6 +9866,7 @@ export namespace Prisma {
     NOT?: UserWhereInput | UserWhereInput[]
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    players?: PlayerListRelationFilter
     sessions?: UserSessionListRelationFilter
   }, "id" | "username">
 
@@ -9872,11 +9897,12 @@ export namespace Prisma {
     id?: StringFilter<"Session"> | string
     name?: StringFilter<"Session"> | string
     sessionCode?: StringFilter<"Session"> | string
-    startTime?: DateTimeFilter<"Session"> | Date | string
-    endTime?: DateTimeNullableFilter<"Session"> | Date | string | null
     status?: StringFilter<"Session"> | string
     createdAt?: DateTimeFilter<"Session"> | Date | string
     updatedAt?: DateTimeFilter<"Session"> | Date | string
+    startTime?: DateTimeFilter<"Session"> | Date | string
+    endTime?: DateTimeNullableFilter<"Session"> | Date | string | null
+    players?: PlayerListRelationFilter
     userSessions?: UserSessionListRelationFilter
   }
 
@@ -9884,11 +9910,12 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     sessionCode?: SortOrder
-    startTime?: SortOrder
-    endTime?: SortOrderInput | SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrderInput | SortOrder
+    players?: PlayerOrderByRelationAggregateInput
     userSessions?: UserSessionOrderByRelationAggregateInput
   }
 
@@ -9899,11 +9926,12 @@ export namespace Prisma {
     OR?: SessionWhereInput[]
     NOT?: SessionWhereInput | SessionWhereInput[]
     name?: StringFilter<"Session"> | string
-    startTime?: DateTimeFilter<"Session"> | Date | string
-    endTime?: DateTimeNullableFilter<"Session"> | Date | string | null
     status?: StringFilter<"Session"> | string
     createdAt?: DateTimeFilter<"Session"> | Date | string
     updatedAt?: DateTimeFilter<"Session"> | Date | string
+    startTime?: DateTimeFilter<"Session"> | Date | string
+    endTime?: DateTimeNullableFilter<"Session"> | Date | string | null
+    players?: PlayerListRelationFilter
     userSessions?: UserSessionListRelationFilter
   }, "id" | "sessionCode">
 
@@ -9911,11 +9939,11 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     sessionCode?: SortOrder
-    startTime?: SortOrder
-    endTime?: SortOrderInput | SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrderInput | SortOrder
     _count?: SessionCountOrderByAggregateInput
     _max?: SessionMaxOrderByAggregateInput
     _min?: SessionMinOrderByAggregateInput
@@ -9928,11 +9956,11 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Session"> | string
     name?: StringWithAggregatesFilter<"Session"> | string
     sessionCode?: StringWithAggregatesFilter<"Session"> | string
-    startTime?: DateTimeWithAggregatesFilter<"Session"> | Date | string
-    endTime?: DateTimeNullableWithAggregatesFilter<"Session"> | Date | string | null
     status?: StringWithAggregatesFilter<"Session"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Session"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Session"> | Date | string
+    startTime?: DateTimeWithAggregatesFilter<"Session"> | Date | string
+    endTime?: DateTimeNullableWithAggregatesFilter<"Session"> | Date | string | null
   }
 
   export type UserSessionWhereInput = {
@@ -9945,6 +9973,7 @@ export namespace Prisma {
     joinedAt?: DateTimeFilter<"UserSession"> | Date | string
     createdAt?: DateTimeFilter<"UserSession"> | Date | string
     updatedAt?: DateTimeFilter<"UserSession"> | Date | string
+    isCreator?: BoolFilter<"UserSession"> | boolean
     userId?: StringFilter<"UserSession"> | string
     sessionId?: StringFilter<"UserSession"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -9960,6 +9989,7 @@ export namespace Prisma {
     joinedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    isCreator?: SortOrder
     userId?: SortOrder
     sessionId?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -9979,6 +10009,7 @@ export namespace Prisma {
     joinedAt?: DateTimeFilter<"UserSession"> | Date | string
     createdAt?: DateTimeFilter<"UserSession"> | Date | string
     updatedAt?: DateTimeFilter<"UserSession"> | Date | string
+    isCreator?: BoolFilter<"UserSession"> | boolean
     userId?: StringFilter<"UserSession"> | string
     sessionId?: StringFilter<"UserSession"> | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -9994,6 +10025,7 @@ export namespace Prisma {
     joinedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    isCreator?: SortOrder
     userId?: SortOrder
     sessionId?: SortOrder
     _count?: UserSessionCountOrderByAggregateInput
@@ -10013,6 +10045,7 @@ export namespace Prisma {
     joinedAt?: DateTimeWithAggregatesFilter<"UserSession"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"UserSession"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"UserSession"> | Date | string
+    isCreator?: BoolWithAggregatesFilter<"UserSession"> | boolean
     userId?: StringWithAggregatesFilter<"UserSession"> | string
     sessionId?: StringWithAggregatesFilter<"UserSession"> | string
   }
@@ -10094,17 +10127,15 @@ export namespace Prisma {
     OR?: PlayerWhereInput[]
     NOT?: PlayerWhereInput | PlayerWhereInput[]
     id?: StringFilter<"Player"> | string
-    name?: StringFilter<"Player"> | string
+    userId?: StringFilter<"Player"> | string
+    sessionId?: StringFilter<"Player"> | string
+    isCreator?: BoolFilter<"Player"> | boolean
     createdAt?: DateTimeFilter<"Player"> | Date | string
     updatedAt?: DateTimeFilter<"Player"> | Date | string
-    xp?: IntFilter<"Player"> | number
-    team?: StringFilter<"Player"> | string
-    position?: StringFilter<"Player"> | string
-    active?: BoolFilter<"Player"> | boolean
-    statCategoryXp?: JsonFilter<"Player">
-    boosts?: JsonFilter<"Player">
     userSessionId?: StringFilter<"Player"> | string
     availablePlayerId?: StringFilter<"Player"> | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    session?: XOR<SessionScalarRelationFilter, SessionWhereInput>
     userSession?: XOR<UserSessionScalarRelationFilter, UserSessionWhereInput>
     availablePlayer?: XOR<AvailablePlayerScalarRelationFilter, AvailablePlayerWhereInput>
     activeBoosts?: ActiveBoostListRelationFilter
@@ -10112,17 +10143,15 @@ export namespace Prisma {
 
   export type PlayerOrderByWithRelationInput = {
     id?: SortOrder
-    name?: SortOrder
+    userId?: SortOrder
+    sessionId?: SortOrder
+    isCreator?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    xp?: SortOrder
-    team?: SortOrder
-    position?: SortOrder
-    active?: SortOrder
-    statCategoryXp?: SortOrder
-    boosts?: SortOrder
     userSessionId?: SortOrder
     availablePlayerId?: SortOrder
+    user?: UserOrderByWithRelationInput
+    session?: SessionOrderByWithRelationInput
     userSession?: UserSessionOrderByWithRelationInput
     availablePlayer?: AvailablePlayerOrderByWithRelationInput
     activeBoosts?: ActiveBoostOrderByRelationAggregateInput
@@ -10130,44 +10159,36 @@ export namespace Prisma {
 
   export type PlayerWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    userSessionId_availablePlayerId?: PlayerUserSessionIdAvailablePlayerIdCompoundUniqueInput
+    userId_sessionId?: PlayerUserIdSessionIdCompoundUniqueInput
     AND?: PlayerWhereInput | PlayerWhereInput[]
     OR?: PlayerWhereInput[]
     NOT?: PlayerWhereInput | PlayerWhereInput[]
-    name?: StringFilter<"Player"> | string
+    userId?: StringFilter<"Player"> | string
+    sessionId?: StringFilter<"Player"> | string
+    isCreator?: BoolFilter<"Player"> | boolean
     createdAt?: DateTimeFilter<"Player"> | Date | string
     updatedAt?: DateTimeFilter<"Player"> | Date | string
-    xp?: IntFilter<"Player"> | number
-    team?: StringFilter<"Player"> | string
-    position?: StringFilter<"Player"> | string
-    active?: BoolFilter<"Player"> | boolean
-    statCategoryXp?: JsonFilter<"Player">
-    boosts?: JsonFilter<"Player">
     userSessionId?: StringFilter<"Player"> | string
     availablePlayerId?: StringFilter<"Player"> | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    session?: XOR<SessionScalarRelationFilter, SessionWhereInput>
     userSession?: XOR<UserSessionScalarRelationFilter, UserSessionWhereInput>
     availablePlayer?: XOR<AvailablePlayerScalarRelationFilter, AvailablePlayerWhereInput>
     activeBoosts?: ActiveBoostListRelationFilter
-  }, "id" | "userSessionId_availablePlayerId">
+  }, "id" | "userId_sessionId">
 
   export type PlayerOrderByWithAggregationInput = {
     id?: SortOrder
-    name?: SortOrder
+    userId?: SortOrder
+    sessionId?: SortOrder
+    isCreator?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    xp?: SortOrder
-    team?: SortOrder
-    position?: SortOrder
-    active?: SortOrder
-    statCategoryXp?: SortOrder
-    boosts?: SortOrder
     userSessionId?: SortOrder
     availablePlayerId?: SortOrder
     _count?: PlayerCountOrderByAggregateInput
-    _avg?: PlayerAvgOrderByAggregateInput
     _max?: PlayerMaxOrderByAggregateInput
     _min?: PlayerMinOrderByAggregateInput
-    _sum?: PlayerSumOrderByAggregateInput
   }
 
   export type PlayerScalarWhereWithAggregatesInput = {
@@ -10175,15 +10196,11 @@ export namespace Prisma {
     OR?: PlayerScalarWhereWithAggregatesInput[]
     NOT?: PlayerScalarWhereWithAggregatesInput | PlayerScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Player"> | string
-    name?: StringWithAggregatesFilter<"Player"> | string
+    userId?: StringWithAggregatesFilter<"Player"> | string
+    sessionId?: StringWithAggregatesFilter<"Player"> | string
+    isCreator?: BoolWithAggregatesFilter<"Player"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Player"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Player"> | Date | string
-    xp?: IntWithAggregatesFilter<"Player"> | number
-    team?: StringWithAggregatesFilter<"Player"> | string
-    position?: StringWithAggregatesFilter<"Player"> | string
-    active?: BoolWithAggregatesFilter<"Player"> | boolean
-    statCategoryXp?: JsonWithAggregatesFilter<"Player">
-    boosts?: JsonWithAggregatesFilter<"Player">
     userSessionId?: StringWithAggregatesFilter<"Player"> | string
     availablePlayerId?: StringWithAggregatesFilter<"Player"> | string
   }
@@ -10336,6 +10353,7 @@ export namespace Prisma {
     username: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    players?: PlayerCreateNestedManyWithoutUserInput
     sessions?: UserSessionCreateNestedManyWithoutUserInput
   }
 
@@ -10344,6 +10362,7 @@ export namespace Prisma {
     username: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    players?: PlayerUncheckedCreateNestedManyWithoutUserInput
     sessions?: UserSessionUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -10352,6 +10371,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    players?: PlayerUpdateManyWithoutUserNestedInput
     sessions?: UserSessionUpdateManyWithoutUserNestedInput
   }
 
@@ -10360,6 +10380,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    players?: PlayerUncheckedUpdateManyWithoutUserNestedInput
     sessions?: UserSessionUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -10388,11 +10409,12 @@ export namespace Prisma {
     id?: string
     name: string
     sessionCode: string
-    startTime?: Date | string
-    endTime?: Date | string | null
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    startTime: Date | string
+    endTime?: Date | string | null
+    players?: PlayerCreateNestedManyWithoutSessionInput
     userSessions?: UserSessionCreateNestedManyWithoutSessionInput
   }
 
@@ -10400,11 +10422,12 @@ export namespace Prisma {
     id?: string
     name: string
     sessionCode: string
-    startTime?: Date | string
-    endTime?: Date | string | null
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    startTime: Date | string
+    endTime?: Date | string | null
+    players?: PlayerUncheckedCreateNestedManyWithoutSessionInput
     userSessions?: UserSessionUncheckedCreateNestedManyWithoutSessionInput
   }
 
@@ -10412,11 +10435,12 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     sessionCode?: StringFieldUpdateOperationsInput | string
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    players?: PlayerUpdateManyWithoutSessionNestedInput
     userSessions?: UserSessionUpdateManyWithoutSessionNestedInput
   }
 
@@ -10424,11 +10448,12 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     sessionCode?: StringFieldUpdateOperationsInput | string
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    players?: PlayerUncheckedUpdateManyWithoutSessionNestedInput
     userSessions?: UserSessionUncheckedUpdateManyWithoutSessionNestedInput
   }
 
@@ -10436,33 +10461,33 @@ export namespace Prisma {
     id?: string
     name: string
     sessionCode: string
-    startTime?: Date | string
-    endTime?: Date | string | null
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    startTime: Date | string
+    endTime?: Date | string | null
   }
 
   export type SessionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     sessionCode?: StringFieldUpdateOperationsInput | string
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SessionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     sessionCode?: StringFieldUpdateOperationsInput | string
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserSessionCreateInput = {
@@ -10472,6 +10497,7 @@ export namespace Prisma {
     joinedAt?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    isCreator?: boolean
     user: UserCreateNestedOneWithoutSessionsInput
     session: SessionCreateNestedOneWithoutUserSessionsInput
     players?: PlayerCreateNestedManyWithoutUserSessionInput
@@ -10485,6 +10511,7 @@ export namespace Prisma {
     joinedAt?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    isCreator?: boolean
     userId: string
     sessionId: string
     players?: PlayerUncheckedCreateNestedManyWithoutUserSessionInput
@@ -10498,6 +10525,7 @@ export namespace Prisma {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutSessionsNestedInput
     session?: SessionUpdateOneRequiredWithoutUserSessionsNestedInput
     players?: PlayerUpdateManyWithoutUserSessionNestedInput
@@ -10511,6 +10539,7 @@ export namespace Prisma {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
     sessionId?: StringFieldUpdateOperationsInput | string
     players?: PlayerUncheckedUpdateManyWithoutUserSessionNestedInput
@@ -10524,6 +10553,7 @@ export namespace Prisma {
     joinedAt?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    isCreator?: boolean
     userId: string
     sessionId: string
   }
@@ -10535,6 +10565,7 @@ export namespace Prisma {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type UserSessionUncheckedUpdateManyInput = {
@@ -10544,6 +10575,7 @@ export namespace Prisma {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
     sessionId?: StringFieldUpdateOperationsInput | string
   }
@@ -10631,15 +10663,11 @@ export namespace Prisma {
 
   export type PlayerCreateInput = {
     id?: string
-    name: string
+    isCreator?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    xp?: number
-    team: string
-    position: string
-    active?: boolean
-    statCategoryXp: JsonNullValueInput | InputJsonValue
-    boosts: JsonNullValueInput | InputJsonValue
+    user: UserCreateNestedOneWithoutPlayersInput
+    session: SessionCreateNestedOneWithoutPlayersInput
     userSession: UserSessionCreateNestedOneWithoutPlayersInput
     availablePlayer: AvailablePlayerCreateNestedOneWithoutPlayersInput
     activeBoosts?: ActiveBoostCreateNestedManyWithoutPlayerInput
@@ -10647,15 +10675,11 @@ export namespace Prisma {
 
   export type PlayerUncheckedCreateInput = {
     id?: string
-    name: string
+    userId: string
+    sessionId: string
+    isCreator?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    xp?: number
-    team: string
-    position: string
-    active?: boolean
-    statCategoryXp: JsonNullValueInput | InputJsonValue
-    boosts: JsonNullValueInput | InputJsonValue
     userSessionId: string
     availablePlayerId: string
     activeBoosts?: ActiveBoostUncheckedCreateNestedManyWithoutPlayerInput
@@ -10663,15 +10687,11 @@ export namespace Prisma {
 
   export type PlayerUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    xp?: IntFieldUpdateOperationsInput | number
-    team?: StringFieldUpdateOperationsInput | string
-    position?: StringFieldUpdateOperationsInput | string
-    active?: BoolFieldUpdateOperationsInput | boolean
-    statCategoryXp?: JsonNullValueInput | InputJsonValue
-    boosts?: JsonNullValueInput | InputJsonValue
+    user?: UserUpdateOneRequiredWithoutPlayersNestedInput
+    session?: SessionUpdateOneRequiredWithoutPlayersNestedInput
     userSession?: UserSessionUpdateOneRequiredWithoutPlayersNestedInput
     availablePlayer?: AvailablePlayerUpdateOneRequiredWithoutPlayersNestedInput
     activeBoosts?: ActiveBoostUpdateManyWithoutPlayerNestedInput
@@ -10679,15 +10699,11 @@ export namespace Prisma {
 
   export type PlayerUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    sessionId?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    xp?: IntFieldUpdateOperationsInput | number
-    team?: StringFieldUpdateOperationsInput | string
-    position?: StringFieldUpdateOperationsInput | string
-    active?: BoolFieldUpdateOperationsInput | boolean
-    statCategoryXp?: JsonNullValueInput | InputJsonValue
-    boosts?: JsonNullValueInput | InputJsonValue
     userSessionId?: StringFieldUpdateOperationsInput | string
     availablePlayerId?: StringFieldUpdateOperationsInput | string
     activeBoosts?: ActiveBoostUncheckedUpdateManyWithoutPlayerNestedInput
@@ -10695,43 +10711,29 @@ export namespace Prisma {
 
   export type PlayerCreateManyInput = {
     id?: string
-    name: string
+    userId: string
+    sessionId: string
+    isCreator?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    xp?: number
-    team: string
-    position: string
-    active?: boolean
-    statCategoryXp: JsonNullValueInput | InputJsonValue
-    boosts: JsonNullValueInput | InputJsonValue
     userSessionId: string
     availablePlayerId: string
   }
 
   export type PlayerUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    xp?: IntFieldUpdateOperationsInput | number
-    team?: StringFieldUpdateOperationsInput | string
-    position?: StringFieldUpdateOperationsInput | string
-    active?: BoolFieldUpdateOperationsInput | boolean
-    statCategoryXp?: JsonNullValueInput | InputJsonValue
-    boosts?: JsonNullValueInput | InputJsonValue
   }
 
   export type PlayerUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    sessionId?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    xp?: IntFieldUpdateOperationsInput | number
-    team?: StringFieldUpdateOperationsInput | string
-    position?: StringFieldUpdateOperationsInput | string
-    active?: BoolFieldUpdateOperationsInput | boolean
-    statCategoryXp?: JsonNullValueInput | InputJsonValue
-    boosts?: JsonNullValueInput | InputJsonValue
     userSessionId?: StringFieldUpdateOperationsInput | string
     availablePlayerId?: StringFieldUpdateOperationsInput | string
   }
@@ -10910,10 +10912,20 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type PlayerListRelationFilter = {
+    every?: PlayerWhereInput
+    some?: PlayerWhereInput
+    none?: PlayerWhereInput
+  }
+
   export type UserSessionListRelationFilter = {
     every?: UserSessionWhereInput
     some?: UserSessionWhereInput
     none?: UserSessionWhereInput
+  }
+
+  export type PlayerOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type UserSessionOrderByRelationAggregateInput = {
@@ -10993,33 +11005,33 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     sessionCode?: SortOrder
-    startTime?: SortOrder
-    endTime?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
   }
 
   export type SessionMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     sessionCode?: SortOrder
-    startTime?: SortOrder
-    endTime?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
   }
 
   export type SessionMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     sessionCode?: SortOrder
-    startTime?: SortOrder
-    endTime?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
   }
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -11047,6 +11059,11 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
@@ -11057,20 +11074,10 @@ export namespace Prisma {
     isNot?: SessionWhereInput
   }
 
-  export type PlayerListRelationFilter = {
-    every?: PlayerWhereInput
-    some?: PlayerWhereInput
-    none?: PlayerWhereInput
-  }
-
   export type ActiveBoostListRelationFilter = {
     every?: ActiveBoostWhereInput
     some?: ActiveBoostWhereInput
     none?: ActiveBoostWhereInput
-  }
-
-  export type PlayerOrderByRelationAggregateInput = {
-    _count?: SortOrder
   }
 
   export type ActiveBoostOrderByRelationAggregateInput = {
@@ -11089,6 +11096,7 @@ export namespace Prisma {
     joinedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    isCreator?: SortOrder
     userId?: SortOrder
     sessionId?: SortOrder
   }
@@ -11105,6 +11113,7 @@ export namespace Prisma {
     joinedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    isCreator?: SortOrder
     userId?: SortOrder
     sessionId?: SortOrder
   }
@@ -11116,6 +11125,7 @@ export namespace Prisma {
     joinedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    isCreator?: SortOrder
     userId?: SortOrder
     sessionId?: SortOrder
   }
@@ -11139,6 +11149,14 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -11229,11 +11247,6 @@ export namespace Prisma {
     _max?: NestedJsonFilter<$PrismaModel>
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type UserSessionScalarRelationFilter = {
     is?: UserSessionWhereInput
     isNot?: UserSessionWhereInput
@@ -11244,66 +11257,42 @@ export namespace Prisma {
     isNot?: AvailablePlayerWhereInput
   }
 
-  export type PlayerUserSessionIdAvailablePlayerIdCompoundUniqueInput = {
-    userSessionId: string
-    availablePlayerId: string
+  export type PlayerUserIdSessionIdCompoundUniqueInput = {
+    userId: string
+    sessionId: string
   }
 
   export type PlayerCountOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
+    userId?: SortOrder
+    sessionId?: SortOrder
+    isCreator?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    xp?: SortOrder
-    team?: SortOrder
-    position?: SortOrder
-    active?: SortOrder
-    statCategoryXp?: SortOrder
-    boosts?: SortOrder
     userSessionId?: SortOrder
     availablePlayerId?: SortOrder
   }
 
-  export type PlayerAvgOrderByAggregateInput = {
-    xp?: SortOrder
-  }
-
   export type PlayerMaxOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
+    userId?: SortOrder
+    sessionId?: SortOrder
+    isCreator?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    xp?: SortOrder
-    team?: SortOrder
-    position?: SortOrder
-    active?: SortOrder
     userSessionId?: SortOrder
     availablePlayerId?: SortOrder
   }
 
   export type PlayerMinOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
+    userId?: SortOrder
+    sessionId?: SortOrder
+    isCreator?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    xp?: SortOrder
-    team?: SortOrder
-    position?: SortOrder
-    active?: SortOrder
     userSessionId?: SortOrder
     availablePlayerId?: SortOrder
-  }
-
-  export type PlayerSumOrderByAggregateInput = {
-    xp?: SortOrder
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type FloatFilter<$PrismaModel = never> = {
@@ -11418,11 +11407,25 @@ export namespace Prisma {
     userSessionId?: SortOrder
   }
 
+  export type PlayerCreateNestedManyWithoutUserInput = {
+    create?: XOR<PlayerCreateWithoutUserInput, PlayerUncheckedCreateWithoutUserInput> | PlayerCreateWithoutUserInput[] | PlayerUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PlayerCreateOrConnectWithoutUserInput | PlayerCreateOrConnectWithoutUserInput[]
+    createMany?: PlayerCreateManyUserInputEnvelope
+    connect?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+  }
+
   export type UserSessionCreateNestedManyWithoutUserInput = {
     create?: XOR<UserSessionCreateWithoutUserInput, UserSessionUncheckedCreateWithoutUserInput> | UserSessionCreateWithoutUserInput[] | UserSessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserSessionCreateOrConnectWithoutUserInput | UserSessionCreateOrConnectWithoutUserInput[]
     createMany?: UserSessionCreateManyUserInputEnvelope
     connect?: UserSessionWhereUniqueInput | UserSessionWhereUniqueInput[]
+  }
+
+  export type PlayerUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<PlayerCreateWithoutUserInput, PlayerUncheckedCreateWithoutUserInput> | PlayerCreateWithoutUserInput[] | PlayerUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PlayerCreateOrConnectWithoutUserInput | PlayerCreateOrConnectWithoutUserInput[]
+    createMany?: PlayerCreateManyUserInputEnvelope
+    connect?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
   }
 
   export type UserSessionUncheckedCreateNestedManyWithoutUserInput = {
@@ -11440,6 +11443,20 @@ export namespace Prisma {
     set?: Date | string
   }
 
+  export type PlayerUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PlayerCreateWithoutUserInput, PlayerUncheckedCreateWithoutUserInput> | PlayerCreateWithoutUserInput[] | PlayerUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PlayerCreateOrConnectWithoutUserInput | PlayerCreateOrConnectWithoutUserInput[]
+    upsert?: PlayerUpsertWithWhereUniqueWithoutUserInput | PlayerUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PlayerCreateManyUserInputEnvelope
+    set?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+    disconnect?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+    delete?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+    connect?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+    update?: PlayerUpdateWithWhereUniqueWithoutUserInput | PlayerUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PlayerUpdateManyWithWhereWithoutUserInput | PlayerUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PlayerScalarWhereInput | PlayerScalarWhereInput[]
+  }
+
   export type UserSessionUpdateManyWithoutUserNestedInput = {
     create?: XOR<UserSessionCreateWithoutUserInput, UserSessionUncheckedCreateWithoutUserInput> | UserSessionCreateWithoutUserInput[] | UserSessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: UserSessionCreateOrConnectWithoutUserInput | UserSessionCreateOrConnectWithoutUserInput[]
@@ -11452,6 +11469,20 @@ export namespace Prisma {
     update?: UserSessionUpdateWithWhereUniqueWithoutUserInput | UserSessionUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: UserSessionUpdateManyWithWhereWithoutUserInput | UserSessionUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: UserSessionScalarWhereInput | UserSessionScalarWhereInput[]
+  }
+
+  export type PlayerUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PlayerCreateWithoutUserInput, PlayerUncheckedCreateWithoutUserInput> | PlayerCreateWithoutUserInput[] | PlayerUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PlayerCreateOrConnectWithoutUserInput | PlayerCreateOrConnectWithoutUserInput[]
+    upsert?: PlayerUpsertWithWhereUniqueWithoutUserInput | PlayerUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PlayerCreateManyUserInputEnvelope
+    set?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+    disconnect?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+    delete?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+    connect?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+    update?: PlayerUpdateWithWhereUniqueWithoutUserInput | PlayerUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PlayerUpdateManyWithWhereWithoutUserInput | PlayerUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PlayerScalarWhereInput | PlayerScalarWhereInput[]
   }
 
   export type UserSessionUncheckedUpdateManyWithoutUserNestedInput = {
@@ -11468,11 +11499,25 @@ export namespace Prisma {
     deleteMany?: UserSessionScalarWhereInput | UserSessionScalarWhereInput[]
   }
 
+  export type PlayerCreateNestedManyWithoutSessionInput = {
+    create?: XOR<PlayerCreateWithoutSessionInput, PlayerUncheckedCreateWithoutSessionInput> | PlayerCreateWithoutSessionInput[] | PlayerUncheckedCreateWithoutSessionInput[]
+    connectOrCreate?: PlayerCreateOrConnectWithoutSessionInput | PlayerCreateOrConnectWithoutSessionInput[]
+    createMany?: PlayerCreateManySessionInputEnvelope
+    connect?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+  }
+
   export type UserSessionCreateNestedManyWithoutSessionInput = {
     create?: XOR<UserSessionCreateWithoutSessionInput, UserSessionUncheckedCreateWithoutSessionInput> | UserSessionCreateWithoutSessionInput[] | UserSessionUncheckedCreateWithoutSessionInput[]
     connectOrCreate?: UserSessionCreateOrConnectWithoutSessionInput | UserSessionCreateOrConnectWithoutSessionInput[]
     createMany?: UserSessionCreateManySessionInputEnvelope
     connect?: UserSessionWhereUniqueInput | UserSessionWhereUniqueInput[]
+  }
+
+  export type PlayerUncheckedCreateNestedManyWithoutSessionInput = {
+    create?: XOR<PlayerCreateWithoutSessionInput, PlayerUncheckedCreateWithoutSessionInput> | PlayerCreateWithoutSessionInput[] | PlayerUncheckedCreateWithoutSessionInput[]
+    connectOrCreate?: PlayerCreateOrConnectWithoutSessionInput | PlayerCreateOrConnectWithoutSessionInput[]
+    createMany?: PlayerCreateManySessionInputEnvelope
+    connect?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
   }
 
   export type UserSessionUncheckedCreateNestedManyWithoutSessionInput = {
@@ -11484,6 +11529,20 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
+  }
+
+  export type PlayerUpdateManyWithoutSessionNestedInput = {
+    create?: XOR<PlayerCreateWithoutSessionInput, PlayerUncheckedCreateWithoutSessionInput> | PlayerCreateWithoutSessionInput[] | PlayerUncheckedCreateWithoutSessionInput[]
+    connectOrCreate?: PlayerCreateOrConnectWithoutSessionInput | PlayerCreateOrConnectWithoutSessionInput[]
+    upsert?: PlayerUpsertWithWhereUniqueWithoutSessionInput | PlayerUpsertWithWhereUniqueWithoutSessionInput[]
+    createMany?: PlayerCreateManySessionInputEnvelope
+    set?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+    disconnect?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+    delete?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+    connect?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+    update?: PlayerUpdateWithWhereUniqueWithoutSessionInput | PlayerUpdateWithWhereUniqueWithoutSessionInput[]
+    updateMany?: PlayerUpdateManyWithWhereWithoutSessionInput | PlayerUpdateManyWithWhereWithoutSessionInput[]
+    deleteMany?: PlayerScalarWhereInput | PlayerScalarWhereInput[]
   }
 
   export type UserSessionUpdateManyWithoutSessionNestedInput = {
@@ -11498,6 +11557,20 @@ export namespace Prisma {
     update?: UserSessionUpdateWithWhereUniqueWithoutSessionInput | UserSessionUpdateWithWhereUniqueWithoutSessionInput[]
     updateMany?: UserSessionUpdateManyWithWhereWithoutSessionInput | UserSessionUpdateManyWithWhereWithoutSessionInput[]
     deleteMany?: UserSessionScalarWhereInput | UserSessionScalarWhereInput[]
+  }
+
+  export type PlayerUncheckedUpdateManyWithoutSessionNestedInput = {
+    create?: XOR<PlayerCreateWithoutSessionInput, PlayerUncheckedCreateWithoutSessionInput> | PlayerCreateWithoutSessionInput[] | PlayerUncheckedCreateWithoutSessionInput[]
+    connectOrCreate?: PlayerCreateOrConnectWithoutSessionInput | PlayerCreateOrConnectWithoutSessionInput[]
+    upsert?: PlayerUpsertWithWhereUniqueWithoutSessionInput | PlayerUpsertWithWhereUniqueWithoutSessionInput[]
+    createMany?: PlayerCreateManySessionInputEnvelope
+    set?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+    disconnect?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+    delete?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+    connect?: PlayerWhereUniqueInput | PlayerWhereUniqueInput[]
+    update?: PlayerUpdateWithWhereUniqueWithoutSessionInput | PlayerUpdateWithWhereUniqueWithoutSessionInput[]
+    updateMany?: PlayerUpdateManyWithWhereWithoutSessionInput | PlayerUpdateManyWithWhereWithoutSessionInput[]
+    deleteMany?: PlayerScalarWhereInput | PlayerScalarWhereInput[]
   }
 
   export type UserSessionUncheckedUpdateManyWithoutSessionNestedInput = {
@@ -11560,6 +11633,10 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
   }
 
   export type UserUpdateOneRequiredWithoutSessionsNestedInput = {
@@ -11676,6 +11753,18 @@ export namespace Prisma {
     deleteMany?: PlayerScalarWhereInput | PlayerScalarWhereInput[]
   }
 
+  export type UserCreateNestedOneWithoutPlayersInput = {
+    create?: XOR<UserCreateWithoutPlayersInput, UserUncheckedCreateWithoutPlayersInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPlayersInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type SessionCreateNestedOneWithoutPlayersInput = {
+    create?: XOR<SessionCreateWithoutPlayersInput, SessionUncheckedCreateWithoutPlayersInput>
+    connectOrCreate?: SessionCreateOrConnectWithoutPlayersInput
+    connect?: SessionWhereUniqueInput
+  }
+
   export type UserSessionCreateNestedOneWithoutPlayersInput = {
     create?: XOR<UserSessionCreateWithoutPlayersInput, UserSessionUncheckedCreateWithoutPlayersInput>
     connectOrCreate?: UserSessionCreateOrConnectWithoutPlayersInput
@@ -11702,8 +11791,20 @@ export namespace Prisma {
     connect?: ActiveBoostWhereUniqueInput | ActiveBoostWhereUniqueInput[]
   }
 
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
+  export type UserUpdateOneRequiredWithoutPlayersNestedInput = {
+    create?: XOR<UserCreateWithoutPlayersInput, UserUncheckedCreateWithoutPlayersInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPlayersInput
+    upsert?: UserUpsertWithoutPlayersInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPlayersInput, UserUpdateWithoutPlayersInput>, UserUncheckedUpdateWithoutPlayersInput>
+  }
+
+  export type SessionUpdateOneRequiredWithoutPlayersNestedInput = {
+    create?: XOR<SessionCreateWithoutPlayersInput, SessionUncheckedCreateWithoutPlayersInput>
+    connectOrCreate?: SessionCreateOrConnectWithoutPlayersInput
+    upsert?: SessionUpsertWithoutPlayersInput
+    connect?: SessionWhereUniqueInput
+    update?: XOR<XOR<SessionUpdateToOneWithWhereWithoutPlayersInput, SessionUpdateWithoutPlayersInput>, SessionUncheckedUpdateWithoutPlayersInput>
   }
 
   export type UserSessionUpdateOneRequiredWithoutPlayersNestedInput = {
@@ -11945,6 +12046,11 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -11971,6 +12077,14 @@ export namespace Prisma {
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
   }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
   export type NestedJsonFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
@@ -11995,19 +12109,6 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
     in?: number[] | ListFloatFieldRefInput<$PrismaModel>
@@ -12024,6 +12125,38 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type PlayerCreateWithoutUserInput = {
+    id?: string
+    isCreator?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    session: SessionCreateNestedOneWithoutPlayersInput
+    userSession: UserSessionCreateNestedOneWithoutPlayersInput
+    availablePlayer: AvailablePlayerCreateNestedOneWithoutPlayersInput
+    activeBoosts?: ActiveBoostCreateNestedManyWithoutPlayerInput
+  }
+
+  export type PlayerUncheckedCreateWithoutUserInput = {
+    id?: string
+    sessionId: string
+    isCreator?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userSessionId: string
+    availablePlayerId: string
+    activeBoosts?: ActiveBoostUncheckedCreateNestedManyWithoutPlayerInput
+  }
+
+  export type PlayerCreateOrConnectWithoutUserInput = {
+    where: PlayerWhereUniqueInput
+    create: XOR<PlayerCreateWithoutUserInput, PlayerUncheckedCreateWithoutUserInput>
+  }
+
+  export type PlayerCreateManyUserInputEnvelope = {
+    data: PlayerCreateManyUserInput | PlayerCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserSessionCreateWithoutUserInput = {
     id?: string
     xp?: number
@@ -12031,6 +12164,7 @@ export namespace Prisma {
     joinedAt?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    isCreator?: boolean
     session: SessionCreateNestedOneWithoutUserSessionsInput
     players?: PlayerCreateNestedManyWithoutUserSessionInput
     activeBoosts?: ActiveBoostCreateNestedManyWithoutUserSessionInput
@@ -12043,6 +12177,7 @@ export namespace Prisma {
     joinedAt?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    isCreator?: boolean
     sessionId: string
     players?: PlayerUncheckedCreateNestedManyWithoutUserSessionInput
     activeBoosts?: ActiveBoostUncheckedCreateNestedManyWithoutUserSessionInput
@@ -12056,6 +12191,36 @@ export namespace Prisma {
   export type UserSessionCreateManyUserInputEnvelope = {
     data: UserSessionCreateManyUserInput | UserSessionCreateManyUserInput[]
     skipDuplicates?: boolean
+  }
+
+  export type PlayerUpsertWithWhereUniqueWithoutUserInput = {
+    where: PlayerWhereUniqueInput
+    update: XOR<PlayerUpdateWithoutUserInput, PlayerUncheckedUpdateWithoutUserInput>
+    create: XOR<PlayerCreateWithoutUserInput, PlayerUncheckedCreateWithoutUserInput>
+  }
+
+  export type PlayerUpdateWithWhereUniqueWithoutUserInput = {
+    where: PlayerWhereUniqueInput
+    data: XOR<PlayerUpdateWithoutUserInput, PlayerUncheckedUpdateWithoutUserInput>
+  }
+
+  export type PlayerUpdateManyWithWhereWithoutUserInput = {
+    where: PlayerScalarWhereInput
+    data: XOR<PlayerUpdateManyMutationInput, PlayerUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type PlayerScalarWhereInput = {
+    AND?: PlayerScalarWhereInput | PlayerScalarWhereInput[]
+    OR?: PlayerScalarWhereInput[]
+    NOT?: PlayerScalarWhereInput | PlayerScalarWhereInput[]
+    id?: StringFilter<"Player"> | string
+    userId?: StringFilter<"Player"> | string
+    sessionId?: StringFilter<"Player"> | string
+    isCreator?: BoolFilter<"Player"> | boolean
+    createdAt?: DateTimeFilter<"Player"> | Date | string
+    updatedAt?: DateTimeFilter<"Player"> | Date | string
+    userSessionId?: StringFilter<"Player"> | string
+    availablePlayerId?: StringFilter<"Player"> | string
   }
 
   export type UserSessionUpsertWithWhereUniqueWithoutUserInput = {
@@ -12084,8 +12249,41 @@ export namespace Prisma {
     joinedAt?: DateTimeFilter<"UserSession"> | Date | string
     createdAt?: DateTimeFilter<"UserSession"> | Date | string
     updatedAt?: DateTimeFilter<"UserSession"> | Date | string
+    isCreator?: BoolFilter<"UserSession"> | boolean
     userId?: StringFilter<"UserSession"> | string
     sessionId?: StringFilter<"UserSession"> | string
+  }
+
+  export type PlayerCreateWithoutSessionInput = {
+    id?: string
+    isCreator?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutPlayersInput
+    userSession: UserSessionCreateNestedOneWithoutPlayersInput
+    availablePlayer: AvailablePlayerCreateNestedOneWithoutPlayersInput
+    activeBoosts?: ActiveBoostCreateNestedManyWithoutPlayerInput
+  }
+
+  export type PlayerUncheckedCreateWithoutSessionInput = {
+    id?: string
+    userId: string
+    isCreator?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userSessionId: string
+    availablePlayerId: string
+    activeBoosts?: ActiveBoostUncheckedCreateNestedManyWithoutPlayerInput
+  }
+
+  export type PlayerCreateOrConnectWithoutSessionInput = {
+    where: PlayerWhereUniqueInput
+    create: XOR<PlayerCreateWithoutSessionInput, PlayerUncheckedCreateWithoutSessionInput>
+  }
+
+  export type PlayerCreateManySessionInputEnvelope = {
+    data: PlayerCreateManySessionInput | PlayerCreateManySessionInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserSessionCreateWithoutSessionInput = {
@@ -12095,6 +12293,7 @@ export namespace Prisma {
     joinedAt?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    isCreator?: boolean
     user: UserCreateNestedOneWithoutSessionsInput
     players?: PlayerCreateNestedManyWithoutUserSessionInput
     activeBoosts?: ActiveBoostCreateNestedManyWithoutUserSessionInput
@@ -12107,6 +12306,7 @@ export namespace Prisma {
     joinedAt?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    isCreator?: boolean
     userId: string
     players?: PlayerUncheckedCreateNestedManyWithoutUserSessionInput
     activeBoosts?: ActiveBoostUncheckedCreateNestedManyWithoutUserSessionInput
@@ -12120,6 +12320,22 @@ export namespace Prisma {
   export type UserSessionCreateManySessionInputEnvelope = {
     data: UserSessionCreateManySessionInput | UserSessionCreateManySessionInput[]
     skipDuplicates?: boolean
+  }
+
+  export type PlayerUpsertWithWhereUniqueWithoutSessionInput = {
+    where: PlayerWhereUniqueInput
+    update: XOR<PlayerUpdateWithoutSessionInput, PlayerUncheckedUpdateWithoutSessionInput>
+    create: XOR<PlayerCreateWithoutSessionInput, PlayerUncheckedCreateWithoutSessionInput>
+  }
+
+  export type PlayerUpdateWithWhereUniqueWithoutSessionInput = {
+    where: PlayerWhereUniqueInput
+    data: XOR<PlayerUpdateWithoutSessionInput, PlayerUncheckedUpdateWithoutSessionInput>
+  }
+
+  export type PlayerUpdateManyWithWhereWithoutSessionInput = {
+    where: PlayerScalarWhereInput
+    data: XOR<PlayerUpdateManyMutationInput, PlayerUncheckedUpdateManyWithoutSessionInput>
   }
 
   export type UserSessionUpsertWithWhereUniqueWithoutSessionInput = {
@@ -12143,6 +12359,7 @@ export namespace Prisma {
     username: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    players?: PlayerCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -12150,6 +12367,7 @@ export namespace Prisma {
     username: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    players?: PlayerUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -12161,22 +12379,24 @@ export namespace Prisma {
     id?: string
     name: string
     sessionCode: string
-    startTime?: Date | string
-    endTime?: Date | string | null
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    startTime: Date | string
+    endTime?: Date | string | null
+    players?: PlayerCreateNestedManyWithoutSessionInput
   }
 
   export type SessionUncheckedCreateWithoutUserSessionsInput = {
     id?: string
     name: string
     sessionCode: string
-    startTime?: Date | string
-    endTime?: Date | string | null
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    startTime: Date | string
+    endTime?: Date | string | null
+    players?: PlayerUncheckedCreateNestedManyWithoutSessionInput
   }
 
   export type SessionCreateOrConnectWithoutUserSessionsInput = {
@@ -12186,30 +12406,22 @@ export namespace Prisma {
 
   export type PlayerCreateWithoutUserSessionInput = {
     id?: string
-    name: string
+    isCreator?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    xp?: number
-    team: string
-    position: string
-    active?: boolean
-    statCategoryXp: JsonNullValueInput | InputJsonValue
-    boosts: JsonNullValueInput | InputJsonValue
+    user: UserCreateNestedOneWithoutPlayersInput
+    session: SessionCreateNestedOneWithoutPlayersInput
     availablePlayer: AvailablePlayerCreateNestedOneWithoutPlayersInput
     activeBoosts?: ActiveBoostCreateNestedManyWithoutPlayerInput
   }
 
   export type PlayerUncheckedCreateWithoutUserSessionInput = {
     id?: string
-    name: string
+    userId: string
+    sessionId: string
+    isCreator?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    xp?: number
-    team: string
-    position: string
-    active?: boolean
-    statCategoryXp: JsonNullValueInput | InputJsonValue
-    boosts: JsonNullValueInput | InputJsonValue
     availablePlayerId: string
     activeBoosts?: ActiveBoostUncheckedCreateNestedManyWithoutPlayerInput
   }
@@ -12270,6 +12482,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    players?: PlayerUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -12277,6 +12490,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    players?: PlayerUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SessionUpsertWithoutUserSessionsInput = {
@@ -12294,22 +12508,24 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     sessionCode?: StringFieldUpdateOperationsInput | string
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    players?: PlayerUpdateManyWithoutSessionNestedInput
   }
 
   export type SessionUncheckedUpdateWithoutUserSessionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     sessionCode?: StringFieldUpdateOperationsInput | string
-    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
-    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    players?: PlayerUncheckedUpdateManyWithoutSessionNestedInput
   }
 
   export type PlayerUpsertWithWhereUniqueWithoutUserSessionInput = {
@@ -12326,24 +12542,6 @@ export namespace Prisma {
   export type PlayerUpdateManyWithWhereWithoutUserSessionInput = {
     where: PlayerScalarWhereInput
     data: XOR<PlayerUpdateManyMutationInput, PlayerUncheckedUpdateManyWithoutUserSessionInput>
-  }
-
-  export type PlayerScalarWhereInput = {
-    AND?: PlayerScalarWhereInput | PlayerScalarWhereInput[]
-    OR?: PlayerScalarWhereInput[]
-    NOT?: PlayerScalarWhereInput | PlayerScalarWhereInput[]
-    id?: StringFilter<"Player"> | string
-    name?: StringFilter<"Player"> | string
-    createdAt?: DateTimeFilter<"Player"> | Date | string
-    updatedAt?: DateTimeFilter<"Player"> | Date | string
-    xp?: IntFilter<"Player"> | number
-    team?: StringFilter<"Player"> | string
-    position?: StringFilter<"Player"> | string
-    active?: BoolFilter<"Player"> | boolean
-    statCategoryXp?: JsonFilter<"Player">
-    boosts?: JsonFilter<"Player">
-    userSessionId?: StringFilter<"Player"> | string
-    availablePlayerId?: StringFilter<"Player"> | string
   }
 
   export type ActiveBoostUpsertWithWhereUniqueWithoutUserSessionInput = {
@@ -12378,30 +12576,22 @@ export namespace Prisma {
 
   export type PlayerCreateWithoutAvailablePlayerInput = {
     id?: string
-    name: string
+    isCreator?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    xp?: number
-    team: string
-    position: string
-    active?: boolean
-    statCategoryXp: JsonNullValueInput | InputJsonValue
-    boosts: JsonNullValueInput | InputJsonValue
+    user: UserCreateNestedOneWithoutPlayersInput
+    session: SessionCreateNestedOneWithoutPlayersInput
     userSession: UserSessionCreateNestedOneWithoutPlayersInput
     activeBoosts?: ActiveBoostCreateNestedManyWithoutPlayerInput
   }
 
   export type PlayerUncheckedCreateWithoutAvailablePlayerInput = {
     id?: string
-    name: string
+    userId: string
+    sessionId: string
+    isCreator?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    xp?: number
-    team: string
-    position: string
-    active?: boolean
-    statCategoryXp: JsonNullValueInput | InputJsonValue
-    boosts: JsonNullValueInput | InputJsonValue
     userSessionId: string
     activeBoosts?: ActiveBoostUncheckedCreateNestedManyWithoutPlayerInput
   }
@@ -12432,6 +12622,56 @@ export namespace Prisma {
     data: XOR<PlayerUpdateManyMutationInput, PlayerUncheckedUpdateManyWithoutAvailablePlayerInput>
   }
 
+  export type UserCreateWithoutPlayersInput = {
+    id?: string
+    username: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: UserSessionCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutPlayersInput = {
+    id?: string
+    username: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: UserSessionUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutPlayersInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPlayersInput, UserUncheckedCreateWithoutPlayersInput>
+  }
+
+  export type SessionCreateWithoutPlayersInput = {
+    id?: string
+    name: string
+    sessionCode: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    startTime: Date | string
+    endTime?: Date | string | null
+    userSessions?: UserSessionCreateNestedManyWithoutSessionInput
+  }
+
+  export type SessionUncheckedCreateWithoutPlayersInput = {
+    id?: string
+    name: string
+    sessionCode: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    startTime: Date | string
+    endTime?: Date | string | null
+    userSessions?: UserSessionUncheckedCreateNestedManyWithoutSessionInput
+  }
+
+  export type SessionCreateOrConnectWithoutPlayersInput = {
+    where: SessionWhereUniqueInput
+    create: XOR<SessionCreateWithoutPlayersInput, SessionUncheckedCreateWithoutPlayersInput>
+  }
+
   export type UserSessionCreateWithoutPlayersInput = {
     id?: string
     xp?: number
@@ -12439,6 +12679,7 @@ export namespace Prisma {
     joinedAt?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    isCreator?: boolean
     user: UserCreateNestedOneWithoutSessionsInput
     session: SessionCreateNestedOneWithoutUserSessionsInput
     activeBoosts?: ActiveBoostCreateNestedManyWithoutUserSessionInput
@@ -12451,6 +12692,7 @@ export namespace Prisma {
     joinedAt?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    isCreator?: boolean
     userId: string
     sessionId: string
     activeBoosts?: ActiveBoostUncheckedCreateNestedManyWithoutUserSessionInput
@@ -12518,6 +12760,68 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type UserUpsertWithoutPlayersInput = {
+    update: XOR<UserUpdateWithoutPlayersInput, UserUncheckedUpdateWithoutPlayersInput>
+    create: XOR<UserCreateWithoutPlayersInput, UserUncheckedCreateWithoutPlayersInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPlayersInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPlayersInput, UserUncheckedUpdateWithoutPlayersInput>
+  }
+
+  export type UserUpdateWithoutPlayersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: UserSessionUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPlayersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: UserSessionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type SessionUpsertWithoutPlayersInput = {
+    update: XOR<SessionUpdateWithoutPlayersInput, SessionUncheckedUpdateWithoutPlayersInput>
+    create: XOR<SessionCreateWithoutPlayersInput, SessionUncheckedCreateWithoutPlayersInput>
+    where?: SessionWhereInput
+  }
+
+  export type SessionUpdateToOneWithWhereWithoutPlayersInput = {
+    where?: SessionWhereInput
+    data: XOR<SessionUpdateWithoutPlayersInput, SessionUncheckedUpdateWithoutPlayersInput>
+  }
+
+  export type SessionUpdateWithoutPlayersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    sessionCode?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userSessions?: UserSessionUpdateManyWithoutSessionNestedInput
+  }
+
+  export type SessionUncheckedUpdateWithoutPlayersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    sessionCode?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userSessions?: UserSessionUncheckedUpdateManyWithoutSessionNestedInput
+  }
+
   export type UserSessionUpsertWithoutPlayersInput = {
     update: XOR<UserSessionUpdateWithoutPlayersInput, UserSessionUncheckedUpdateWithoutPlayersInput>
     create: XOR<UserSessionCreateWithoutPlayersInput, UserSessionUncheckedCreateWithoutPlayersInput>
@@ -12536,6 +12840,7 @@ export namespace Prisma {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutSessionsNestedInput
     session?: SessionUpdateOneRequiredWithoutUserSessionsNestedInput
     activeBoosts?: ActiveBoostUpdateManyWithoutUserSessionNestedInput
@@ -12548,6 +12853,7 @@ export namespace Prisma {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
     sessionId?: StringFieldUpdateOperationsInput | string
     activeBoosts?: ActiveBoostUncheckedUpdateManyWithoutUserSessionNestedInput
@@ -12675,30 +12981,22 @@ export namespace Prisma {
 
   export type PlayerCreateWithoutActiveBoostsInput = {
     id?: string
-    name: string
+    isCreator?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    xp?: number
-    team: string
-    position: string
-    active?: boolean
-    statCategoryXp: JsonNullValueInput | InputJsonValue
-    boosts: JsonNullValueInput | InputJsonValue
+    user: UserCreateNestedOneWithoutPlayersInput
+    session: SessionCreateNestedOneWithoutPlayersInput
     userSession: UserSessionCreateNestedOneWithoutPlayersInput
     availablePlayer: AvailablePlayerCreateNestedOneWithoutPlayersInput
   }
 
   export type PlayerUncheckedCreateWithoutActiveBoostsInput = {
     id?: string
-    name: string
+    userId: string
+    sessionId: string
+    isCreator?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    xp?: number
-    team: string
-    position: string
-    active?: boolean
-    statCategoryXp: JsonNullValueInput | InputJsonValue
-    boosts: JsonNullValueInput | InputJsonValue
     userSessionId: string
     availablePlayerId: string
   }
@@ -12715,6 +13013,7 @@ export namespace Prisma {
     joinedAt?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    isCreator?: boolean
     user: UserCreateNestedOneWithoutSessionsInput
     session: SessionCreateNestedOneWithoutUserSessionsInput
     players?: PlayerCreateNestedManyWithoutUserSessionInput
@@ -12727,6 +13026,7 @@ export namespace Prisma {
     joinedAt?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    isCreator?: boolean
     userId: string
     sessionId: string
     players?: PlayerUncheckedCreateNestedManyWithoutUserSessionInput
@@ -12781,30 +13081,22 @@ export namespace Prisma {
 
   export type PlayerUpdateWithoutActiveBoostsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    xp?: IntFieldUpdateOperationsInput | number
-    team?: StringFieldUpdateOperationsInput | string
-    position?: StringFieldUpdateOperationsInput | string
-    active?: BoolFieldUpdateOperationsInput | boolean
-    statCategoryXp?: JsonNullValueInput | InputJsonValue
-    boosts?: JsonNullValueInput | InputJsonValue
+    user?: UserUpdateOneRequiredWithoutPlayersNestedInput
+    session?: SessionUpdateOneRequiredWithoutPlayersNestedInput
     userSession?: UserSessionUpdateOneRequiredWithoutPlayersNestedInput
     availablePlayer?: AvailablePlayerUpdateOneRequiredWithoutPlayersNestedInput
   }
 
   export type PlayerUncheckedUpdateWithoutActiveBoostsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    sessionId?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    xp?: IntFieldUpdateOperationsInput | number
-    team?: StringFieldUpdateOperationsInput | string
-    position?: StringFieldUpdateOperationsInput | string
-    active?: BoolFieldUpdateOperationsInput | boolean
-    statCategoryXp?: JsonNullValueInput | InputJsonValue
-    boosts?: JsonNullValueInput | InputJsonValue
     userSessionId?: StringFieldUpdateOperationsInput | string
     availablePlayerId?: StringFieldUpdateOperationsInput | string
   }
@@ -12827,6 +13119,7 @@ export namespace Prisma {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutSessionsNestedInput
     session?: SessionUpdateOneRequiredWithoutUserSessionsNestedInput
     players?: PlayerUpdateManyWithoutUserSessionNestedInput
@@ -12839,9 +13132,20 @@ export namespace Prisma {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
     sessionId?: StringFieldUpdateOperationsInput | string
     players?: PlayerUncheckedUpdateManyWithoutUserSessionNestedInput
+  }
+
+  export type PlayerCreateManyUserInput = {
+    id?: string
+    sessionId: string
+    isCreator?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userSessionId: string
+    availablePlayerId: string
   }
 
   export type UserSessionCreateManyUserInput = {
@@ -12851,7 +13155,40 @@ export namespace Prisma {
     joinedAt?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    isCreator?: boolean
     sessionId: string
+  }
+
+  export type PlayerUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    session?: SessionUpdateOneRequiredWithoutPlayersNestedInput
+    userSession?: UserSessionUpdateOneRequiredWithoutPlayersNestedInput
+    availablePlayer?: AvailablePlayerUpdateOneRequiredWithoutPlayersNestedInput
+    activeBoosts?: ActiveBoostUpdateManyWithoutPlayerNestedInput
+  }
+
+  export type PlayerUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionId?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userSessionId?: StringFieldUpdateOperationsInput | string
+    availablePlayerId?: StringFieldUpdateOperationsInput | string
+    activeBoosts?: ActiveBoostUncheckedUpdateManyWithoutPlayerNestedInput
+  }
+
+  export type PlayerUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sessionId?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userSessionId?: StringFieldUpdateOperationsInput | string
+    availablePlayerId?: StringFieldUpdateOperationsInput | string
   }
 
   export type UserSessionUpdateWithoutUserInput = {
@@ -12861,6 +13198,7 @@ export namespace Prisma {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     session?: SessionUpdateOneRequiredWithoutUserSessionsNestedInput
     players?: PlayerUpdateManyWithoutUserSessionNestedInput
     activeBoosts?: ActiveBoostUpdateManyWithoutUserSessionNestedInput
@@ -12873,6 +13211,7 @@ export namespace Prisma {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     sessionId?: StringFieldUpdateOperationsInput | string
     players?: PlayerUncheckedUpdateManyWithoutUserSessionNestedInput
     activeBoosts?: ActiveBoostUncheckedUpdateManyWithoutUserSessionNestedInput
@@ -12885,7 +13224,18 @@ export namespace Prisma {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     sessionId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PlayerCreateManySessionInput = {
+    id?: string
+    userId: string
+    isCreator?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userSessionId: string
+    availablePlayerId: string
   }
 
   export type UserSessionCreateManySessionInput = {
@@ -12895,7 +13245,40 @@ export namespace Prisma {
     joinedAt?: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    isCreator?: boolean
     userId: string
+  }
+
+  export type PlayerUpdateWithoutSessionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPlayersNestedInput
+    userSession?: UserSessionUpdateOneRequiredWithoutPlayersNestedInput
+    availablePlayer?: AvailablePlayerUpdateOneRequiredWithoutPlayersNestedInput
+    activeBoosts?: ActiveBoostUpdateManyWithoutPlayerNestedInput
+  }
+
+  export type PlayerUncheckedUpdateWithoutSessionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userSessionId?: StringFieldUpdateOperationsInput | string
+    availablePlayerId?: StringFieldUpdateOperationsInput | string
+    activeBoosts?: ActiveBoostUncheckedUpdateManyWithoutPlayerNestedInput
+  }
+
+  export type PlayerUncheckedUpdateManyWithoutSessionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userSessionId?: StringFieldUpdateOperationsInput | string
+    availablePlayerId?: StringFieldUpdateOperationsInput | string
   }
 
   export type UserSessionUpdateWithoutSessionInput = {
@@ -12905,6 +13288,7 @@ export namespace Prisma {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutSessionsNestedInput
     players?: PlayerUpdateManyWithoutUserSessionNestedInput
     activeBoosts?: ActiveBoostUpdateManyWithoutUserSessionNestedInput
@@ -12917,6 +13301,7 @@ export namespace Prisma {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
     players?: PlayerUncheckedUpdateManyWithoutUserSessionNestedInput
     activeBoosts?: ActiveBoostUncheckedUpdateManyWithoutUserSessionNestedInput
@@ -12929,20 +13314,17 @@ export namespace Prisma {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type PlayerCreateManyUserSessionInput = {
     id?: string
-    name: string
+    userId: string
+    sessionId: string
+    isCreator?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    xp?: number
-    team: string
-    position: string
-    active?: boolean
-    statCategoryXp: JsonNullValueInput | InputJsonValue
-    boosts: JsonNullValueInput | InputJsonValue
     availablePlayerId: string
   }
 
@@ -12958,45 +13340,33 @@ export namespace Prisma {
 
   export type PlayerUpdateWithoutUserSessionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    xp?: IntFieldUpdateOperationsInput | number
-    team?: StringFieldUpdateOperationsInput | string
-    position?: StringFieldUpdateOperationsInput | string
-    active?: BoolFieldUpdateOperationsInput | boolean
-    statCategoryXp?: JsonNullValueInput | InputJsonValue
-    boosts?: JsonNullValueInput | InputJsonValue
+    user?: UserUpdateOneRequiredWithoutPlayersNestedInput
+    session?: SessionUpdateOneRequiredWithoutPlayersNestedInput
     availablePlayer?: AvailablePlayerUpdateOneRequiredWithoutPlayersNestedInput
     activeBoosts?: ActiveBoostUpdateManyWithoutPlayerNestedInput
   }
 
   export type PlayerUncheckedUpdateWithoutUserSessionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    sessionId?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    xp?: IntFieldUpdateOperationsInput | number
-    team?: StringFieldUpdateOperationsInput | string
-    position?: StringFieldUpdateOperationsInput | string
-    active?: BoolFieldUpdateOperationsInput | boolean
-    statCategoryXp?: JsonNullValueInput | InputJsonValue
-    boosts?: JsonNullValueInput | InputJsonValue
     availablePlayerId?: StringFieldUpdateOperationsInput | string
     activeBoosts?: ActiveBoostUncheckedUpdateManyWithoutPlayerNestedInput
   }
 
   export type PlayerUncheckedUpdateManyWithoutUserSessionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    sessionId?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    xp?: IntFieldUpdateOperationsInput | number
-    team?: StringFieldUpdateOperationsInput | string
-    position?: StringFieldUpdateOperationsInput | string
-    active?: BoolFieldUpdateOperationsInput | boolean
-    statCategoryXp?: JsonNullValueInput | InputJsonValue
-    boosts?: JsonNullValueInput | InputJsonValue
     availablePlayerId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -13032,59 +13402,43 @@ export namespace Prisma {
 
   export type PlayerCreateManyAvailablePlayerInput = {
     id?: string
-    name: string
+    userId: string
+    sessionId: string
+    isCreator?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    xp?: number
-    team: string
-    position: string
-    active?: boolean
-    statCategoryXp: JsonNullValueInput | InputJsonValue
-    boosts: JsonNullValueInput | InputJsonValue
     userSessionId: string
   }
 
   export type PlayerUpdateWithoutAvailablePlayerInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    xp?: IntFieldUpdateOperationsInput | number
-    team?: StringFieldUpdateOperationsInput | string
-    position?: StringFieldUpdateOperationsInput | string
-    active?: BoolFieldUpdateOperationsInput | boolean
-    statCategoryXp?: JsonNullValueInput | InputJsonValue
-    boosts?: JsonNullValueInput | InputJsonValue
+    user?: UserUpdateOneRequiredWithoutPlayersNestedInput
+    session?: SessionUpdateOneRequiredWithoutPlayersNestedInput
     userSession?: UserSessionUpdateOneRequiredWithoutPlayersNestedInput
     activeBoosts?: ActiveBoostUpdateManyWithoutPlayerNestedInput
   }
 
   export type PlayerUncheckedUpdateWithoutAvailablePlayerInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    sessionId?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    xp?: IntFieldUpdateOperationsInput | number
-    team?: StringFieldUpdateOperationsInput | string
-    position?: StringFieldUpdateOperationsInput | string
-    active?: BoolFieldUpdateOperationsInput | boolean
-    statCategoryXp?: JsonNullValueInput | InputJsonValue
-    boosts?: JsonNullValueInput | InputJsonValue
     userSessionId?: StringFieldUpdateOperationsInput | string
     activeBoosts?: ActiveBoostUncheckedUpdateManyWithoutPlayerNestedInput
   }
 
   export type PlayerUncheckedUpdateManyWithoutAvailablePlayerInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    sessionId?: StringFieldUpdateOperationsInput | string
+    isCreator?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    xp?: IntFieldUpdateOperationsInput | number
-    team?: StringFieldUpdateOperationsInput | string
-    position?: StringFieldUpdateOperationsInput | string
-    active?: BoolFieldUpdateOperationsInput | boolean
-    statCategoryXp?: JsonNullValueInput | InputJsonValue
-    boosts?: JsonNullValueInput | InputJsonValue
     userSessionId?: StringFieldUpdateOperationsInput | string
   }
 

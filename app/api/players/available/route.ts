@@ -1,18 +1,14 @@
-import { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 // GET /api/players/available - Get all available players
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const players = await prisma.availablePlayer.findMany({
-      orderBy: {
-        price: "desc",
-      },
-    });
+    const availablePlayers = await prisma.availablePlayer.findMany();
 
-    return Response.json(players);
+    return NextResponse.json(availablePlayers);
   } catch (error) {
-    console.error("Failed to fetch available players:", error);
-    return Response.json({ error: "Failed to fetch available players" }, { status: 500 });
+    console.error("Error fetching available players:", error);
+    return NextResponse.json({ error: "Failed to fetch available players" }, { status: 500 });
   }
 }
