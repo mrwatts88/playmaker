@@ -1,3 +1,35 @@
+CREATE TYPE league_type AS ENUM ('nba', 'nfl', 'nhl', 'mlb');
+
+CREATE TYPE contest_status AS ENUM ('upcoming', 'active', 'completed');
+
+CREATE TYPE game_status AS ENUM ('upcoming', 'active', 'completed');
+
+CREATE TYPE event_type AS ENUM (
+    'points',
+    'rebounds',
+    'assists',
+    'steals',
+    'blocks'
+);
+
+CREATE TYPE boost_type AS ENUM (
+    'multiplicative',
+    'additive',
+    'conditional',
+    'instant',
+    'action'
+);
+
+CREATE TYPE stat_type AS ENUM (
+    'points',
+    'rebounds',
+    'assists',
+    'steals',
+    'blocks'
+);
+
+CREATE TYPE boost_action AS ENUM ('extraPlayer', 'stealPlayer');
+
 -- All known athletes of major sports leagues
 -- Updated by cron jobs from sports data API
 -- Not transactional for the app's purposes
@@ -19,7 +51,7 @@ CREATE INDEX idx_athletes_team_id ON athletes(team_id);
 CREATE TABLE teams (
     id TEXT PRIMARY KEY,
     name TEXT,
-    league TEXT CHECK (league IN ('nba', 'nfl', 'nhl', 'mlb'))
+    league league_type
 );
 
 -- Created/updated by cron jobs that fetch games from the API regularly
@@ -27,7 +59,7 @@ CREATE TABLE contests (
     id TEXT PRIMARY KEY,
     name TEXT,
     start_time TIMESTAMP,
-    status TEXT CHECK (status IN ('upcoming', 'active', 'completed')),
+    status contest_status,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -37,7 +69,7 @@ CREATE TABLE games (
     id TEXT PRIMARY KEY,
     name TEXT,
     start_time TIMESTAMP,
-    status TEXT CHECK (status IN ('upcoming', 'active', 'completed')),
+    status game_status,
     home_team_id TEXT REFERENCES teams(id),
     away_team_id TEXT REFERENCES teams(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -46,8 +78,8 @@ CREATE TABLE games (
 
 -- Created/updated by cron jobs that fetch games from the API regularly
 CREATE TABLE contest_games (
-    contest_id TEXT REFERENCES contests(id),
     game_id TEXT REFERENCES games(id),
+    contest_id TEXT REFERENCES contests(id),
     PRIMARY KEY (game_id, contest_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -58,15 +90,7 @@ CREATE TABLE game_events (
     id TEXT PRIMARY KEY,
     game_id TEXT REFERENCES games(id),
     athlete_id TEXT REFERENCES athletes(id),
-    event_type TEXT CHECK (
-        event_type IN (
-            'points',
-            'rebounds',
-            'assists',
-            'steals',
-            'blocks'
-        )
-    ),
+    event_type event_type,
     value INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -87,17 +111,19 @@ CREATE TABLE contestants (
     name TEXT,
     total_xp INTEGER DEFAULT 0 NOT NULL CHECK (total_xp >= 0),
     spendable_xp INTEGER DEFAULT 0 NOT NULL CHECK (spendable_xp >= 0),
-    stat_power JSONB NOT NULL DEFAULT '{}' -- e.g. { "points": 1, "rebounds": 1, "assists": 1 }
-    UNIQUE (user_id, contest_id),
+    -- e.g. { "points": 1, "rebounds": 1, "assists": 1 }
+    stat_power JSONB NOT NULL DEFAULT '{}',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    -- a user can only enter a contest once
+    UNIQUE (user_id, contest_id)
 );
 
 -- Created when a contestant drafts an athlete
 CREATE TABLE roster_members (
-    id TEXT PRIMARY KEY,
     contestant_id TEXT REFERENCES contestants(id),
     athlete_id TEXT REFERENCES athletes(id),
+    PRIMARY KEY (contestant_id, athlete_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -109,30 +135,14 @@ CREATE TABLE boosts (
     name TEXT,
     description TEXT,
     cost INTEGER,
-    type TEXT CHECK (
-        type IN (
-            'multiplicative',
-            'additive',
-            'conditional',
-            'instant',
-            'action'
-        )
-    ),
-    stat TEXT CHECK (
-        stat IN (
-            'points',
-            'rebounds',
-            'assists',
-            'steals',
-            'blocks'
-        )
-    ),
+    type boost_type,
+    stat stat_type,
     -- The number of statType that must be met to activate the boost, if type is conditional
     requirement INTEGER,
     -- the multiplier or additive value to apply to the stat, if type is multiplicative or additive. the reward for meeting the requirement, if type is conditional
     value NUMERIC,
     -- the action to take when the boost is purchased, if type is action
-    action TEXT CHECK (action IN ('extraPlayer', 'stealPlayer')),
+    action boost_action,
     duration INTEGER -- in minutes, undefined for permanent boosts
 );
 
@@ -141,7 +151,8 @@ CREATE TABLE contest_boosts (
     id TEXT PRIMARY KEY,
     contest_id TEXT REFERENCES contests(id),
     boost_id TEXT REFERENCES boosts(id),
-    expires_at TIMESTAMP -- determined on creation by predefined boost availability duration,
+    -- determined on creation by predefined boost availability duration
+    expires_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -150,7 +161,8 @@ CREATE TABLE contestant_boosts (
     id TEXT PRIMARY KEY,
     contestant_id TEXT REFERENCES contestants(id),
     boost_id TEXT REFERENCES boosts(id),
-    expires_at TIMESTAMP -- determined on creation by adding boost duration to the time of purchase,
+    -- determined on creation by adding boost duration to the time of purchase
+    expires_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

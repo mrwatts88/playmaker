@@ -1,7 +1,3 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
-
 const mockPlayers = [
   {
     name: "LeBron James",
@@ -39,25 +35,3 @@ const mockPlayers = [
     league: "nba",
   },
 ];
-
-async function main() {
-  // Clear existing players
-  await prisma.availablePlayer.deleteMany();
-
-  // Create mock players
-  const players = await prisma.availablePlayer.createMany({
-    data: mockPlayers,
-    skipDuplicates: true,
-  });
-
-  console.log("Seed players created:", players);
-}
-
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
