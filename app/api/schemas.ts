@@ -14,6 +14,10 @@ export const contestIdSchema = z.object({
   id: z.string().uuid("Contest ID must be a valid UUID"),
 });
 
+export const contestantIdSchema = z.object({
+  id: z.string().uuid("Contestant ID must be a valid UUID"),
+});
+
 export const contestQuerySchema = z.object({
   league: z
     .enum(["nba", "nfl", "nhl", "mlb"], {
@@ -25,4 +29,8 @@ export const contestQuerySchema = z.object({
 export const enterContestSchema = z.object({
   id: z.string().uuid("Contest ID must be a valid UUID"),
   userId: z.string().uuid("User ID must be a valid UUID"),
+});
+
+export const submitRosterSchema = z.object({
+  athleteIds: z.array(z.string().uuid("Athlete ID must be a valid UUID")).min(1, "At least one athlete is required"),
 });
