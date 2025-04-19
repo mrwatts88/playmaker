@@ -70,8 +70,9 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     const [contestant] = await db
       .insert(contestants)
       .values({
-        contestId: result.data.id,
         userId: result.data.userId,
+        name: user.name,
+        contestId: result.data.id,
         totalXp: startingContestantXp,
         spendableXp: startingContestantXp,
         statPower: leagueStatPower[contest.league],

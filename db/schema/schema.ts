@@ -34,6 +34,8 @@ export const contests = pgTable("contests", {
   league: leagueType("league").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  // consider adding teamIds to show teams in a contest
+  // consider adding gameIds to this table to show game events and contestgames
 });
 
 export const games = pgTable("games", {
@@ -81,7 +83,7 @@ export const gameEvents = pgTable("game_events", {
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name"),
+  name: text("name").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -96,6 +98,7 @@ export const contestants = pgTable(
     userId: uuid("user_id")
       .references(() => users.id)
       .notNull(),
+    name: text("name").notNull(), // copied from user.name at time of contestant creation for performance on reads
     totalXp: integer("total_xp").default(0).notNull(),
     spendableXp: integer("spendable_xp").default(0).notNull(),
     statPower: jsonb("stat_power").default({}).notNull(),
