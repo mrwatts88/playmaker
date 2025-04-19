@@ -54,9 +54,9 @@ paths:
         "200":
           description: List of contests
 
-  /contests/{id}/lobby:
+  /contests/{id}:
     get:
-      summary: Get contest lobby details
+      summary: Get contest
       parameters:
         - name: id
           in: path
@@ -65,7 +65,7 @@ paths:
             type: string
       responses:
         "200":
-          description: Contest lobby details
+          description: Contest details
 
   /contests/{contestId}/user/{userId}:
     post:
@@ -135,7 +135,7 @@ paths:
         "200":
           description: Contestant details
 
-  /contests/{id}:
+  /contests/{id}/game:
     get:
       summary: Get full contest state (polling)
       parameters:

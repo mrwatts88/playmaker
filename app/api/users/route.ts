@@ -7,15 +7,11 @@ export async function POST(request: Request) {
     const { name } = await request.json();
 
     if (!name) {
+      console.error("Name is required");
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
-    const [user] = await db
-      .insert(users)
-      .values({
-        name,
-      })
-      .returning();
+    const [user] = await db.insert(users).values({ name }).returning();
 
     return NextResponse.json(user);
   } catch (error) {

@@ -1,5 +1,5 @@
 import { db } from "@/db/db";
-import { users } from "@/db/schema/schema";
+import { contests } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -7,18 +7,18 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
   const { id } = await context.params;
 
   try {
-    const user = await db.query.users.findFirst({
-      where: eq(users.id, id),
+    const contest = await db.query.contests.findFirst({
+      where: eq(contests.id, id),
     });
 
-    if (!user) {
-      console.error("User not found");
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!contest) {
+      console.error("Contest not found");
+      return NextResponse.json({ error: "Contest not found" }, { status: 404 });
     }
 
-    return NextResponse.json(user);
+    return NextResponse.json(contest);
   } catch (error) {
-    console.error("Error fetching user:", error);
+    console.error("Error fetching contest:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
