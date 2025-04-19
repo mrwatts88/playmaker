@@ -2,13 +2,19 @@ import { db } from "@/db/db";
 import { contests } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { contestIdSchema } from "@/app/api/schemas";
 
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
+  const result = contestIdSchema.safeParse({ id });
+
+  if (!result.success) {
+    return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
+  }
 
   try {
     const contest = await db.query.contests.findFirst({
-      where: eq(contests.id, id),
+      where: eq(contests.id, result.data.id),
     });
 
     if (!contest) {
