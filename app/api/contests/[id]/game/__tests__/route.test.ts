@@ -1,22 +1,22 @@
-import { NextRequest } from "next/server";
 import { GET } from "@/app/api/contests/[id]/game/route";
 import { db } from "@/db/db";
 import {
-  contests,
-  contestants,
-  contestGames,
-  games,
-  teams,
   athletes,
-  rosterMembers,
-  contestBoosts,
   boosts,
   contestantBoosts,
+  contestants,
+  contestBoosts,
+  contestGames,
+  contests,
   gameEvents,
+  games,
+  rosterMembers,
+  teams,
   users,
 } from "@/db/schema/schema";
-import { eq } from "drizzle-orm";
 import { randomUUID } from "crypto";
+import { eq } from "drizzle-orm";
+import { NextRequest } from "next/server";
 
 describe("GET /api/contests/{id}/game", () => {
   it("should return full contest state", async () => {
@@ -33,6 +33,7 @@ describe("GET /api/contests/{id}/game", () => {
     const [homeTeam] = await db
       .insert(teams)
       .values({
+        id: randomUUID(),
         name: "Home Team",
         league: "nba",
       })
@@ -41,6 +42,7 @@ describe("GET /api/contests/{id}/game", () => {
     const [awayTeam] = await db
       .insert(teams)
       .values({
+        id: randomUUID(),
         name: "Away Team",
         league: "nba",
       })
@@ -49,6 +51,7 @@ describe("GET /api/contests/{id}/game", () => {
     const [game] = await db
       .insert(games)
       .values({
+        id: randomUUID(),
         name: "Test Game",
         homeTeamId: homeTeam.id,
         awayTeamId: awayTeam.id,
@@ -64,6 +67,7 @@ describe("GET /api/contests/{id}/game", () => {
     const [athlete] = await db
       .insert(athletes)
       .values({
+        id: randomUUID(),
         name: "Test Athlete",
         teamId: homeTeam.id,
         position: "PG",

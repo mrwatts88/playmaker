@@ -1,8 +1,8 @@
-import { NextRequest } from "next/server";
 import { POST } from "@/app/api/contestants/[id]/roster/route";
 import { db } from "@/db/db";
-import { contestants, athletes, rosterMembers, teams, contests, users } from "@/db/schema/schema";
+import { athletes, contestants, contests, rosterMembers, teams, users } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
+import { NextRequest } from "next/server";
 import { randomUUID } from "crypto";
 
 describe("POST /api/contestants/{id}/roster", () => {
@@ -36,17 +36,21 @@ describe("POST /api/contestants/{id}/roster", () => {
       })
       .returning();
 
+    const teamId = randomUUID();
     const [team] = await db
       .insert(teams)
       .values({
+        id: teamId,
         name: "Test Team",
         league: "nba",
       })
       .returning();
 
+    const athlete1Id = randomUUID();
     const [athlete1] = await db
       .insert(athletes)
       .values({
+        id: athlete1Id,
         name: "Test Athlete 1",
         teamId: team.id,
         position: "PG",
@@ -54,9 +58,11 @@ describe("POST /api/contestants/{id}/roster", () => {
       })
       .returning();
 
+    const athlete2Id = randomUUID();
     const [athlete2] = await db
       .insert(athletes)
       .values({
+        id: athlete2Id,
         name: "Test Athlete 2",
         teamId: team.id,
         position: "SG",

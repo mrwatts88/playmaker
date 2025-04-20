@@ -9,8 +9,10 @@
     "start": "next start",
     "lint": "next lint",
     "db:push": "drizzle-kit push",
+    "db:push:test": "tsx scripts/push-test-db.ts",
     "db:studio": "drizzle-kit studio",
-    "test": "NODE_ENV=test jest --coverage"
+    "test": "NODE_ENV=test jest --coverage",
+    "nba:sync": "DOTENV_CONFIG_PATH=.env npx tsx -r dotenv/config nba/index.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
@@ -45,6 +47,7 @@
     "tailwindcss": "^4",
     "ts-jest": "^29.3.2",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
     "typescript": "^5"
   }
 }
