@@ -102,4 +102,22 @@ describe("GET /api/contests/[id]/draftable-athletes", () => {
     const response = await GET(request, { params });
     expect(response.status).toBe(400);
   });
+
+  it("should return 500 for internal server error", async () => {
+    // Store original findFirst
+    const originalFindFirst = db.query.contests.findFirst;
+
+    // Mock findFirst to throw error
+    db.query.contests.findFirst = jest.fn().mockRejectedValue(new Error("Database error"));
+
+    const request = new NextRequest("http://localhost:3000/api/contests/123/draftable-athletes");
+    const response = await GET(request, { params: Promise.resolve({ id: "00000000-0000-4000-a000-000000000000" }) });
+
+    expect(response.status).toBe(500);
+    const data = await response.json();
+    expect(data).toEqual({ error: "Internal Server Error" });
+
+    // Restore original findFirst
+    db.query.contests.findFirst = originalFindFirst;
+  });
 });

@@ -4,6 +4,7 @@ import { db } from "@/db/db";
 import { contests, users, contestants } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
 import { startingContestantXp } from "@/app/constants/statPower";
+import { randomUUID } from "crypto";
 
 describe("POST /api/contests/{id}/user/{userId}", () => {
   it("should create a contestant when entering a contest", async () => {
@@ -59,7 +60,7 @@ describe("POST /api/contests/{id}/user/{userId}", () => {
       method: "POST",
     });
     const response = await POST(request, {
-      params: Promise.resolve({ id: "00000000-0000-4000-a000-000000000000", userId: user.id }),
+      params: Promise.resolve({ id: randomUUID(), userId: user.id }),
     });
     expect(response.status).toBe(404);
 
@@ -167,5 +168,32 @@ describe("POST /api/contests/{id}/user/{userId}", () => {
       params: Promise.resolve({ id: "invalid-id", userId: "00000000-0000-4000-a000-000000000000" }),
     });
     expect(response.status).toBe(400);
+  });
+
+  it("should return 500 for internal server error", async () => {
+    // Store original methods
+    const originalFindFirst = db.query.contests.findFirst;
+
+    // Mock the database query to throw an error
+    db.query.contests.findFirst = jest.fn().mockImplementation(() => {
+      throw new Error("Database error");
+    });
+
+    const request = new NextRequest("http://localhost:3000/api/contests/123/user/456", {
+      method: "POST",
+    });
+    const response = await POST(request, {
+      params: Promise.resolve({
+        id: "00000000-0000-4000-a000-000000000000",
+        userId: "00000000-0000-4000-a000-000000000001",
+      }),
+    });
+
+    expect(response.status).toBe(500);
+    const data = await response.json();
+    expect(data).toEqual({ error: "Internal Server Error" });
+
+    // Restore original methods
+    db.query.contests.findFirst = originalFindFirst;
   });
 });

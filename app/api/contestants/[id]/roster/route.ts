@@ -95,7 +95,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     }
 
     // Check if athlete IDs are valid UUIDs
-    const invalidAthleteIds = result.data.athleteIds.filter((id) => !z.string().uuid().safeParse(id).success);
+    const invalidAthleteIds = result.data.athleteIds.filter((id) => !z.string().min(1).safeParse(id).success);
     if (invalidAthleteIds.length > 0) {
       console.error("Invalid athlete IDs");
       return NextResponse.json({ error: "Invalid athlete IDs" }, { status: 400 });
@@ -110,8 +110,8 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     })) as AthleteWithTeam[];
 
     if (existingAthletes.length !== result.data.athleteIds.length) {
-      console.error("One or more athletes not found");
-      return NextResponse.json({ error: "One or more athletes not found" }, { status: 404 });
+      console.error("One or more athletes not found, or duplicate athlete IDs");
+      return NextResponse.json({ error: "One or more athletes not found, or duplicate athlete IDs" }, { status: 404 });
     }
 
     // Get draftable athletes for the contest

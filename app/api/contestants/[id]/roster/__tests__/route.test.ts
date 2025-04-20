@@ -5,6 +5,19 @@ import { eq } from "drizzle-orm";
 import { NextRequest } from "next/server";
 import { randomUUID } from "crypto";
 
+// Mock console.error to keep test output clean
+beforeEach(() => {
+  jest.spyOn(console, "error").mockImplementation(() => {});
+});
+
+type ContestantWithRoster = typeof contestants.$inferSelect & {
+  roster: (typeof rosterMembers.$inferSelect)[];
+};
+
+type AthleteWithTeam = typeof athletes.$inferSelect & {
+  team: typeof teams.$inferSelect;
+};
+
 describe("POST /api/contestants/{id}/roster", () => {
   it("should submit a roster successfully", async () => {
     // Create test data in correct order
@@ -525,7 +538,7 @@ describe("POST /api/contestants/{id}/roster", () => {
     await db.delete(contests).where(eq(contests.id, contest.id));
   });
 
-  it("should return 400 if athlete IDs are not valid UUIDs", async () => {
+  it("should return 400 if athlete IDs are not valid strings", async () => {
     // Create test data
     const [contest] = await db
       .insert(contests)
@@ -559,7 +572,7 @@ describe("POST /api/contestants/{id}/roster", () => {
     const request = new NextRequest("http://localhost:3000/api/contestants/123/roster", {
       method: "POST",
       body: JSON.stringify({
-        athleteIds: ["invalid-id", "invalid-id", "invalid-id", "invalid-id", "invalid-id"],
+        athleteIds: ["", "id-1", "id-2", "id-3", "id-4"],
       }),
     });
     const response = await POST(request, { params: Promise.resolve({ id: contestant.id }) });
@@ -866,7 +879,139 @@ describe("POST /api/contestants/{id}/roster", () => {
     await db.delete(contests).where(eq(contests.id, contest.id));
   });
 
-  it("should return 500 if there is an internal server error", async () => {
+  it("should return 500 for internal server error", async () => {
+    // Create test data
+    const contestId = randomUUID();
+    const userId = randomUUID();
+    const contestantId = randomUUID();
+    const teamId = randomUUID();
+
+    await db.insert(contests).values({
+      id: contestId,
+      name: "Test Contest",
+      league: "nba",
+      startTime: new Date(),
+      status: "upcoming",
+    });
+
+    await db.insert(users).values({
+      id: userId,
+      name: "Test User",
+    });
+
+    await db.insert(teams).values({
+      id: teamId,
+      name: "Test Team",
+      league: "nba",
+    });
+
+    await db.insert(contestants).values({
+      id: contestantId,
+      name: "Test Contestant",
+      contestId,
+      userId,
+      totalXp: 0,
+      spendableXp: 0,
+      statPower: {},
+    });
+
+    // Mock query to return contestant
+    jest.spyOn(db.query.contestants, "findFirst").mockResolvedValue({
+      id: contestantId,
+      name: "Test Contestant",
+      contestId,
+      userId,
+      totalXp: 0,
+      spendableXp: 0,
+      statPower: {},
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      roster: [],
+    } as ContestantWithRoster);
+
+    // Mock query to return athletes
+    const athleteIds = [randomUUID(), randomUUID(), randomUUID(), randomUUID(), randomUUID()];
+
+    jest.spyOn(db.query.athletes, "findMany").mockResolvedValue(
+      athleteIds.map((id) => ({
+        id,
+        name: "Test Athlete",
+        teamId,
+        position: "PG",
+        cost: 100,
+        team: {
+          id: teamId,
+          name: "Test Team",
+          league: "nba",
+        },
+      })) as AthleteWithTeam[]
+    );
+
+    // Mock getDraftableAthletes to return athletes
+    jest.spyOn(require("@/app/service/contest"), "getDraftableAthletes").mockResolvedValue(
+      athleteIds.map((id) => ({
+        id,
+        name: "Test Athlete",
+        teamId,
+        position: "PG",
+        cost: 100,
+      }))
+    );
+
+    // Mock insert to throw error
+    jest.spyOn(db, "insert").mockImplementation(() => {
+      throw new Error("Database error");
+    });
+
+    const request = new NextRequest(`http://localhost:3000/api/contestants/${contestantId}/roster`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        athleteIds,
+      }),
+    });
+
+    const response = await POST(request, { params: Promise.resolve({ id: contestantId }) });
+
+    expect(response.status).toBe(500);
+    const data = await response.json();
+    expect(data).toEqual({ error: "Internal Server Error" });
+
+    // Restore original methods
+    jest.restoreAllMocks();
+
+    // Clean up test data
+    await db.delete(contestants).where(eq(contestants.id, contestantId));
+    await db.delete(users).where(eq(users.id, userId));
+    await db.delete(teams).where(eq(teams.id, teamId));
+    await db.delete(contests).where(eq(contests.id, contestId));
+  });
+
+  it("should return 400 if one or more athletes are not in contest", async () => {
+    // Create test data in correct order
+    const contestTeamId = randomUUID();
+    const [contestTeam] = await db
+      .insert(teams)
+      .values({
+        id: contestTeamId,
+        name: "Contest Team",
+        league: "nba",
+      })
+      .returning();
+
+    const [contestGame] = await db
+      .insert(games)
+      .values({
+        id: randomUUID(),
+        homeTeamId: contestTeam.id,
+        awayTeamId: contestTeam.id,
+        startTime: new Date(),
+        status: "upcoming",
+      })
+      .returning();
+
     const [contest] = await db
       .insert(contests)
       .values({
@@ -876,6 +1021,11 @@ describe("POST /api/contestants/{id}/roster", () => {
         startTime: new Date(),
       })
       .returning();
+
+    await db.insert(contestGames).values({
+      contestId: contest.id,
+      gameId: contestGame.id,
+    });
 
     const [user] = await db
       .insert(users)
@@ -896,31 +1046,82 @@ describe("POST /api/contestants/{id}/roster", () => {
       })
       .returning();
 
-    // Mock db.query.contestants.findFirst to throw an error
-    const originalFindFirst = db.query.contestants.findFirst;
-    db.query.contestants.findFirst = jest.fn().mockRejectedValue(new Error("Database error"));
+    // Create a team that's not in the contest
+    const otherTeamId = randomUUID();
+    const [otherTeam] = await db
+      .insert(teams)
+      .values({
+        id: otherTeamId,
+        name: "Other Team",
+        league: "nba",
+      })
+      .returning();
+
+    // Create a game for the other team (not in the contest)
+    const [otherGame] = await db
+      .insert(games)
+      .values({
+        id: randomUUID(),
+        homeTeamId: otherTeam.id,
+        awayTeamId: otherTeam.id,
+        startTime: new Date(),
+        status: "upcoming",
+      })
+      .returning();
+
+    // Create athletes from both teams
+    const contestAthleteId = randomUUID();
+    const [contestAthlete] = await db
+      .insert(athletes)
+      .values({
+        id: contestAthleteId,
+        name: "Contest Athlete",
+        teamId: contestTeam.id,
+        position: "PG",
+        cost: 100,
+      })
+      .returning();
+
+    // Create 5 athletes from the other team
+    const otherAthletes = await Promise.all(
+      Array.from({ length: 5 }, async (_, i) => {
+        const [athlete] = await db
+          .insert(athletes)
+          .values({
+            id: randomUUID(),
+            name: `Other Athlete ${i + 1}`,
+            teamId: otherTeam.id,
+            position: "SG",
+            cost: 100,
+          })
+          .returning();
+        return athlete;
+      })
+    );
 
     const request = new NextRequest("http://localhost:3000/api/contestants/123/roster", {
       method: "POST",
       body: JSON.stringify({
-        athleteIds: [
-          "00000000-0000-4000-a000-000000000000",
-          "00000000-0000-4000-a000-000000000001",
-          "00000000-0000-4000-a000-000000000002",
-          "00000000-0000-4000-a000-000000000003",
-          "00000000-0000-4000-a000-000000000004",
-        ],
+        athleteIds: [contestAthlete.id, ...otherAthletes.map((a) => a.id)].slice(0, 5),
       }),
     });
     const response = await POST(request, { params: Promise.resolve({ id: contestant.id }) });
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(400);
+    const data = await response.json();
+    expect(data.error).toBe("One or more athletes not in contest");
 
-    // Restore original function
-    db.query.contestants.findFirst = originalFindFirst;
-
-    // Clean up
+    // Clean up in reverse order
+    await db.delete(athletes).where(eq(athletes.id, contestAthlete.id));
+    for (const athlete of otherAthletes) {
+      await db.delete(athletes).where(eq(athletes.id, athlete.id));
+    }
+    await db.delete(games).where(eq(games.id, otherGame.id));
     await db.delete(contestants).where(eq(contestants.id, contestant.id));
     await db.delete(users).where(eq(users.id, user.id));
+    await db.delete(contestGames).where(eq(contestGames.contestId, contest.id));
+    await db.delete(games).where(eq(games.id, contestGame.id));
     await db.delete(contests).where(eq(contests.id, contest.id));
+    await db.delete(teams).where(eq(teams.id, contestTeam.id));
+    await db.delete(teams).where(eq(teams.id, otherTeam.id));
   });
 });

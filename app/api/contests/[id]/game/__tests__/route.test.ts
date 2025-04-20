@@ -178,14 +178,41 @@ describe("GET /api/contests/{id}/game", () => {
   });
 
   it("should return 404 if contest not found", async () => {
+    // Store original method
+    const originalFindFirst = db.query.contests.findFirst;
+
+    // Mock the database query to return null
+    db.query.contests.findFirst = jest.fn().mockResolvedValue(null);
+
     const request = new NextRequest("http://localhost:3000/api/contests/123/game");
     const response = await GET(request, { params: Promise.resolve({ id: "00000000-0000-4000-a000-000000000000" }) });
     expect(response.status).toBe(404);
+
+    // Restore original method
+    db.query.contests.findFirst = originalFindFirst;
   });
 
   it("should return 400 for invalid ID format", async () => {
     const request = new NextRequest("http://localhost:3000/api/contests/123/game");
     const response = await GET(request, { params: Promise.resolve({ id: "invalid-id" }) });
     expect(response.status).toBe(400);
+  });
+
+  it("should return 500 for internal server error", async () => {
+    // Store original findFirst
+    const originalFindFirst = db.query.contests.findFirst;
+
+    // Mock findFirst to throw error
+    db.query.contests.findFirst = jest.fn().mockRejectedValue(new Error("Database error"));
+
+    const request = new NextRequest("http://localhost:3000/api/contests/123/game");
+    const response = await GET(request, { params: Promise.resolve({ id: "00000000-0000-4000-a000-000000000000" }) });
+
+    expect(response.status).toBe(500);
+    const data = await response.json();
+    expect(data).toEqual({ error: "Internal Server Error" });
+
+    // Restore original findFirst
+    db.query.contests.findFirst = originalFindFirst;
   });
 });
