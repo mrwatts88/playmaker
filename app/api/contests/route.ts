@@ -1,7 +1,7 @@
 import { contestQuerySchema } from "@/app/api/schemas";
 import { db } from "@/db/db";
 import { contests } from "@/db/schema/schema";
-import { and, eq } from "drizzle-orm";
+import { or, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 /**
@@ -34,8 +34,8 @@ export async function GET(request: Request) {
 
     const query = db.select().from(contests);
 
-    // Only return non-completed contests
-    query.where(and(eq(contests.status, "upcoming"), eq(contests.status, "active")));
+    // Return upcoming or active contests
+    query.where(or(eq(contests.status, "upcoming"), eq(contests.status, "active")));
 
     // Apply league filter if provided
     if (result.data.league) {

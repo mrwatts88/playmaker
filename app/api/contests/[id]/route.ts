@@ -28,6 +28,7 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
   const result = contestIdSchema.safeParse({ id });
 
   if (!result.success) {
+    console.error("Invalid request parameters");
     return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
   }
 

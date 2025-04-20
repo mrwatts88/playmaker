@@ -1,4 +1,5 @@
 import { pgTable, text, integer, timestamp, primaryKey, jsonb, numeric, pgEnum, unique, uuid } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 // Enums
 export const leagueType = pgEnum("league_type", ["nba", "nfl", "nhl", "mlb"]);
@@ -25,6 +26,14 @@ export const athletes = pgTable("athletes", {
   position: text("position"),
   cost: integer("cost").notNull(),
 });
+
+// Relations
+export const athletesRelations = relations(athletes, ({ one }: { one: any }) => ({
+  team: one(teams, {
+    fields: [athletes.teamId],
+    references: [teams.id],
+  }),
+}));
 
 export const contests = pgTable("contests", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -71,6 +80,18 @@ export const contestGames = pgTable(
   })
 );
 
+// Relations for contestGames
+export const contestGamesRelations = relations(contestGames, ({ one }: { one: any }) => ({
+  game: one(games, {
+    fields: [contestGames.gameId],
+    references: [games.id],
+  }),
+  contest: one(contests, {
+    fields: [contestGames.contestId],
+    references: [contests.id],
+  }),
+}));
+
 export const gameEvents = pgTable("game_events", {
   id: uuid("id").primaryKey().defaultRandom(),
   gameId: uuid("game_id")
@@ -99,7 +120,7 @@ export const contestants = pgTable(
     userId: uuid("user_id")
       .references(() => users.id)
       .notNull(),
-    name: text("name").notNull(), // copied from user.name at time of contestant creation for performance on reads
+    name: text("name").notNull(),
     totalXp: integer("total_xp").default(0).notNull(),
     spendableXp: integer("spendable_xp").default(0).notNull(),
     statPower: jsonb("stat_power").default({}).notNull(),
@@ -128,6 +149,18 @@ export const rosterMembers = pgTable(
   })
 );
 
+// Relations for rosterMembers
+export const rosterMembersRelations = relations(rosterMembers, ({ one }: { one: any }) => ({
+  athlete: one(athletes, {
+    fields: [rosterMembers.athleteId],
+    references: [athletes.id],
+  }),
+  contestant: one(contestants, {
+    fields: [rosterMembers.contestantId],
+    references: [contestants.id],
+  }),
+}));
+
 export const boosts = pgTable("boosts", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name"),
@@ -154,6 +187,18 @@ export const contestBoosts = pgTable("contest_boosts", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Relations for contestBoosts
+export const contestBoostsRelations = relations(contestBoosts, ({ one }: { one: any }) => ({
+  boost: one(boosts, {
+    fields: [contestBoosts.boostId],
+    references: [boosts.id],
+  }),
+  contest: one(contests, {
+    fields: [contestBoosts.contestId],
+    references: [contests.id],
+  }),
+}));
+
 export const contestantBoosts = pgTable("contestant_boosts", {
   id: uuid("id").primaryKey().defaultRandom(),
   contestantId: uuid("contestant_id")
@@ -166,3 +211,15 @@ export const contestantBoosts = pgTable("contestant_boosts", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+// Relations for contestantBoosts
+export const contestantBoostsRelations = relations(contestantBoosts, ({ one }: { one: any }) => ({
+  boost: one(boosts, {
+    fields: [contestantBoosts.boostId],
+    references: [boosts.id],
+  }),
+  contestant: one(contestants, {
+    fields: [contestantBoosts.contestantId],
+    references: [contestants.id],
+  }),
+}));

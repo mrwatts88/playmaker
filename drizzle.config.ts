@@ -12,4 +12,5 @@ export default defineConfig({
     database: process.env.POSTGRES_DATABASE!,
     ssl: "require",
   },
+  schemaFilter: ["public"],
 });
