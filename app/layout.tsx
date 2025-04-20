@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Playmaker",
-  description: "Create and join game sessions with friends",
+  title: "Draft XP",
+  description: "Daily fantasy sports with a twist",
   icons: {
     icon: "/globe.svg",
   },
