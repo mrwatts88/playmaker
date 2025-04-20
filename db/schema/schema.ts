@@ -196,6 +196,7 @@ export const contestsRelations = relations(contests, ({ many }: { many: any }) =
   contestGames: many(contestGames),
   contestants: many(contestants),
   contestBoosts: many(contestBoosts),
+  roster: many(rosterMembers),
 }));
 
 export const contestantBoostsRelations = relations(contestantBoosts, ({ one }: { one: any }) => ({
@@ -227,14 +228,18 @@ export const contestGamesRelations = relations(contestGames, ({ one }: { one: an
   }),
 }));
 
+export const contestantsRelations = relations(contestants, ({ many }: { many: any }) => ({
+  roster: many(rosterMembers),
+}));
+
 export const rosterMembersRelations = relations(rosterMembers, ({ one }: { one: any }) => ({
-  athlete: one(athletes, {
-    fields: [rosterMembers.athleteId],
-    references: [athletes.id],
-  }),
   contestant: one(contestants, {
     fields: [rosterMembers.contestantId],
     references: [contestants.id],
+  }),
+  athlete: one(athletes, {
+    fields: [rosterMembers.athleteId],
+    references: [athletes.id],
   }),
 }));
 

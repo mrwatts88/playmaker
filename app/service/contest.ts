@@ -1,6 +1,6 @@
 import { db } from "@/db/db";
-import { contestGames, contests, games } from "@/db/schema/schema";
-import { inArray } from "drizzle-orm";
+import { athletes, contestGames, contests, games } from "@/db/schema/schema";
+import { eq, inArray } from "drizzle-orm";
 
 type GameWithTeams = typeof games.$inferSelect & {
   homeTeam: { league: string };
@@ -56,4 +56,30 @@ export const createContestWithGames = async (contestName: string, gameIds: strin
   }
 
   return contest;
+};
+
+export const getDraftableAthletes = async (contestId: string) => {
+  // Get all games for this contest
+  const contestGameList = await db.query.contestGames.findMany({
+    where: eq(contestGames.contestId, contestId),
+  });
+
+  // Get all games with their teams
+  const gamesWithTeams = await db.query.games.findMany({
+    where: inArray(
+      games.id,
+      contestGameList.map((cg) => cg.gameId)
+    ),
+  });
+
+  // Get all team IDs from the games
+  const teamIds = gamesWithTeams.flatMap((game) => [game.homeTeamId, game.awayTeamId]);
+
+  // Get all athletes from these teams
+  return await db.query.athletes.findMany({
+    where: inArray(athletes.teamId, teamIds),
+    with: {
+      team: true,
+    },
+  });
 };

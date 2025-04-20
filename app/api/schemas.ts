@@ -32,5 +32,5 @@ export const enterContestSchema = z.object({
 });
 
 export const submitRosterSchema = z.object({
-  athleteIds: z.array(z.string().uuid("Athlete ID must be a valid UUID")).min(1, "At least one athlete is required"),
+  athleteIds: z.array(z.string().min(1, "Athlete ID must not be empty")).length(5, "Exactly 5 athletes are required"),
 });

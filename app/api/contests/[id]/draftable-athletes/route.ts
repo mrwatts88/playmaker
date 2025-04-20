@@ -1,7 +1,8 @@
 import { contestIdSchema } from "@/app/api/schemas";
+import { getDraftableAthletes } from "@/app/service/contest";
 import { db } from "@/db/db";
-import { athletes, contestGames, contests, games } from "@/db/schema/schema";
-import { eq, inArray } from "drizzle-orm";
+import { contests } from "@/db/schema/schema";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 /**
@@ -48,30 +49,7 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
       return NextResponse.json({ error: "Contest not found" }, { status: 404 });
     }
 
-    // Get all games for this contest
-    const contestGameList = await db.query.contestGames.findMany({
-      where: eq(contestGames.contestId, id),
-    });
-
-    // Get all games with their teams
-    const gamesWithTeams = await db.query.games.findMany({
-      where: inArray(
-        games.id,
-        contestGameList.map((cg) => cg.gameId)
-      ),
-    });
-
-    // Get all team IDs from the games
-    const teamIds = gamesWithTeams.flatMap((game) => [game.homeTeamId, game.awayTeamId]);
-
-    // Get all athletes from these teams
-    const draftableAthletes = await db.query.athletes.findMany({
-      where: inArray(athletes.teamId, teamIds),
-      with: {
-        team: true,
-      },
-    });
-
+    const draftableAthletes = await getDraftableAthletes(id);
     return NextResponse.json(draftableAthletes);
   } catch (error) {
     console.error("Error fetching draftable athletes:", error);
