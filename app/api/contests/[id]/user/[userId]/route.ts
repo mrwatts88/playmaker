@@ -34,7 +34,7 @@ import { NextResponse } from "next/server";
  *       404:
  *         description: Contest or user not found
  *       500:
- *         description: Internal server error
+ *         description: Internal Server Error
  */
 export async function POST(request: Request, context: { params: Promise<{ id: string; userId: string }> }) {
   const { id, userId } = await context.params;

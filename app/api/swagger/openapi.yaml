@@ -22,7 +22,7 @@ paths:
         "400":
           description: Bad request
         "500":
-          description: Internal server error
+          description: Internal Server Error
 
   /users/{id}:
     get:
@@ -39,7 +39,7 @@ paths:
         "404":
           description: User not found
         "500":
-          description: Internal server error
+          description: Internal Server Error
 
   /contests:
     get:
@@ -230,4 +230,4 @@ paths:
         "404":
           description: One or more games not found
         "500":
-          description: Internal server error
+          description: Internal Server Error

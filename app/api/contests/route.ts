@@ -32,7 +32,7 @@ const createContestSchema = z.object({
  *       200:
  *         description: List of contests
  *       500:
- *         description: Internal server error
+ *         description: Internal Server Error
  */
 export async function GET(request: Request) {
   try {
@@ -117,7 +117,7 @@ export async function GET(request: Request) {
  *       404:
  *         description: One or more games not found
  *       500:
- *         description: Internal server error
+ *         description: Internal Server Error
  */
 export async function POST(request: Request) {
   try {
@@ -143,6 +143,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: error.message }, { status: 400 });
       }
     }
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

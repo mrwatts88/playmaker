@@ -20,16 +20,7 @@ import { NextRequest } from "next/server";
 
 describe("GET /api/contests/{id}/game", () => {
   it("should return full contest state", async () => {
-    // Create test data
-    const [contest] = await db
-      .insert(contests)
-      .values({
-        name: "Test Contest",
-        league: "nba",
-        status: "upcoming",
-      })
-      .returning();
-
+    // Create test data in correct order
     const [homeTeam] = await db
       .insert(teams)
       .values({
@@ -57,6 +48,15 @@ describe("GET /api/contests/{id}/game", () => {
         awayTeamId: awayTeam.id,
         status: "upcoming",
         startTime: new Date(),
+      })
+      .returning();
+
+    const [contest] = await db
+      .insert(contests)
+      .values({
+        name: "Test Contest",
+        league: "nba",
+        status: "upcoming",
       })
       .returning();
 
@@ -161,19 +161,20 @@ describe("GET /api/contests/{id}/game", () => {
       value: 2,
     });
 
-    // Clean up
+    // Clean up in reverse order
     await db.delete(gameEvents).where(eq(gameEvents.gameId, game.id));
     await db.delete(contestantBoosts).where(eq(contestantBoosts.contestantId, contestant.id));
     await db.delete(contestBoosts).where(eq(contestBoosts.contestId, contest.id));
+    await db.delete(boosts).where(eq(boosts.id, boost.id));
     await db.delete(rosterMembers).where(eq(rosterMembers.contestantId, contestant.id));
     await db.delete(contestants).where(eq(contestants.id, contestant.id));
     await db.delete(users).where(eq(users.id, user.id));
     await db.delete(athletes).where(eq(athletes.id, athlete.id));
     await db.delete(contestGames).where(eq(contestGames.contestId, contest.id));
     await db.delete(games).where(eq(games.id, game.id));
+    await db.delete(contests).where(eq(contests.id, contest.id));
     await db.delete(teams).where(eq(teams.id, homeTeam.id));
     await db.delete(teams).where(eq(teams.id, awayTeam.id));
-    await db.delete(contests).where(eq(contests.id, contest.id));
   });
 
   it("should return 404 if contest not found", async () => {

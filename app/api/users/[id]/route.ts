@@ -22,7 +22,7 @@ import { userIdSchema } from "@/app/api/schemas";
  *       404:
  *         description: User not found
  *       500:
- *         description: Internal server error
+ *         description: Internal Server Error
  */
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;

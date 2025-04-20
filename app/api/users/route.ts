@@ -28,7 +28,7 @@ import { createUserSchema } from "../schemas";
  *       400:
  *         description: Bad request
  *       500:
- *         description: Internal server error
+ *         description: Internal Server Error
  */
 export async function POST(request: Request) {
   try {
@@ -49,6 +49,6 @@ export async function POST(request: Request) {
     return NextResponse.json(user, { status: 201 });
   } catch (error) {
     console.error("Error creating user:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

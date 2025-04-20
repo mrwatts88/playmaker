@@ -27,7 +27,7 @@ import { NextResponse } from "next/server";
  *       404:
  *         description: Contest not found
  *       500:
- *         description: Internal server error
+ *         description: Internal Server Error
  */
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   try {

@@ -1,12 +1,24 @@
-import { contestantIdSchema, submitRosterSchema } from "@/app/api/schemas";
-import { getDraftableAthletes } from "@/app/service/contest";
-import { db } from "@/db/db";
-import { athletes, contestants, rosterMembers } from "@/db/schema/schema";
-import { eq, inArray } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { z } from "zod";
+import { db } from "@/db/db";
+import { athletes, contestants, rosterMembers, teams } from "@/db/schema/schema";
+import { eq, inArray } from "drizzle-orm";
+import { getDraftableAthletes } from "@/app/service/contest";
+
+const contestantIdSchema = z.object({
+  id: z.string().uuid(),
+});
+
+const rosterSchema = z.object({
+  athleteIds: z.array(z.string()).length(5),
+});
 
 type ContestantWithRoster = typeof contestants.$inferSelect & {
   roster: (typeof rosterMembers.$inferSelect)[];
+};
+
+type AthleteWithTeam = typeof athletes.$inferSelect & {
+  team: typeof teams.$inferSelect;
 };
 
 /**
@@ -44,21 +56,19 @@ type ContestantWithRoster = typeof contestants.$inferSelect & {
  *       404:
  *         description: Contestant not found
  *       500:
- *         description: Internal server error
+ *         description: Internal Server Error
  */
 export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
-    // Validate contestant ID
-    const { id } = await context.params;
-    const contestantIdResult = contestantIdSchema.safeParse({ id });
+    const params = await context.params;
+    const contestantIdResult = contestantIdSchema.safeParse({ id: params.id });
     if (!contestantIdResult.success) {
       console.error("Invalid contestant ID:", contestantIdResult.error);
       return NextResponse.json({ error: contestantIdResult.error.issues[0].message }, { status: 400 });
     }
 
-    // Validate request body
     const body = await request.json();
-    const result = submitRosterSchema.safeParse(body);
+    const result = rosterSchema.safeParse(body);
 
     if (!result.success) {
       console.error("Invalid request body:", result.error);
@@ -67,7 +77,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
 
     // Check if contestant exists
     const contestant = (await db.query.contestants.findFirst({
-      where: eq(contestants.id, id),
+      where: eq(contestants.id, contestantIdResult.data.id),
       with: {
         roster: true,
       },
@@ -80,33 +90,43 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
 
     // Check if contestant already has a roster
     if (contestant.roster.length > 0) {
-      console.error("Roster already submitted");
-      return NextResponse.json({ error: "Roster already submitted" }, { status: 400 });
+      console.error("Contestant already has a roster");
+      return NextResponse.json({ error: "Contestant already has a roster" }, { status: 400 });
     }
 
-    // Check if all athletes exist
-    const existingAthletes = await db.query.athletes.findMany({
+    // Check if athlete IDs are valid UUIDs
+    const invalidAthleteIds = result.data.athleteIds.filter((id) => !z.string().uuid().safeParse(id).success);
+    if (invalidAthleteIds.length > 0) {
+      console.error("Invalid athlete IDs");
+      return NextResponse.json({ error: "Invalid athlete IDs" }, { status: 400 });
+    }
+
+    // Check if athletes exist
+    const existingAthletes = (await db.query.athletes.findMany({
       where: inArray(athletes.id, result.data.athleteIds),
-    });
+      with: {
+        team: true,
+      },
+    })) as AthleteWithTeam[];
 
     if (existingAthletes.length !== result.data.athleteIds.length) {
       console.error("One or more athletes not found");
       return NextResponse.json({ error: "One or more athletes not found" }, { status: 404 });
     }
 
-    // Get draftable athletes for this contest
+    // Get draftable athletes for the contest
     const draftableAthletes = await getDraftableAthletes(contestant.contestId);
     const draftableAthleteIds = new Set(draftableAthletes.map((athlete) => athlete.id));
 
-    // Check if all submitted athletes are draftable
-    const invalidAthletes = result.data.athleteIds.filter((id) => !draftableAthleteIds.has(id));
+    // Check if all athletes are draftable in this contest
+    const invalidAthletes = existingAthletes.filter((athlete) => !draftableAthleteIds.has(athlete.id));
     if (invalidAthletes.length > 0) {
-      console.error("One or more athletes are not draftable in this contest");
-      return NextResponse.json({ error: "One or more athletes are not draftable in this contest" }, { status: 400 });
+      console.error("One or more athletes not in contest");
+      return NextResponse.json({ error: "One or more athletes not in contest" }, { status: 400 });
     }
 
     // Create roster members
-    const rosterEntries = result.data.athleteIds.map((athleteId) => ({
+    const rosterEntries: (typeof rosterMembers.$inferInsert)[] = result.data.athleteIds.map((athleteId) => ({
       contestantId: contestant.id,
       athleteId,
     }));

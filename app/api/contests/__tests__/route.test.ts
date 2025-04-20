@@ -1,10 +1,24 @@
 import { NextRequest } from "next/server";
-import { GET } from "@/app/api/contests/route";
+import { GET, POST } from "@/app/api/contests/route";
 import { db } from "@/db/db";
-import { contests } from "@/db/schema/schema";
+import { contests, games, teams, contestGames } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
+import { randomUUID } from "crypto";
 
 describe("GET /api/contests", () => {
+  // Store original db.select
+  const originalSelect = db.select;
+
+  // Restore original function after all tests
+  afterAll(() => {
+    db.select = originalSelect;
+  });
+
+  // Restore original function after each test
+  afterEach(() => {
+    db.select = originalSelect;
+  });
+
   it("should return all contests", async () => {
     // Create a test contest
     const [contest] = await db
@@ -85,5 +99,245 @@ describe("GET /api/contests", () => {
     const request = new NextRequest("http://localhost:3000/api/contests?league=invalid");
     const response = await GET(request);
     expect(response.status).toBe(400);
+  });
+
+  it("should return 500 for database errors", async () => {
+    // Mock db.select to throw an error
+    db.select = jest.fn().mockImplementation(() => {
+      throw new Error("Database error");
+    });
+
+    const request = new NextRequest("http://localhost:3000/api/contests");
+    const response = await GET(request);
+
+    expect(response.status).toBe(500);
+    const data = await response.json();
+    expect(data).toEqual({ error: "Internal Server Error" });
+  });
+});
+
+describe("POST /api/contests", () => {
+  // Store original db.transaction
+  const originalTransaction = db.transaction;
+
+  // Restore original function after all tests
+  afterAll(() => {
+    db.transaction = originalTransaction;
+  });
+
+  // Restore original function after each test
+  afterEach(() => {
+    db.transaction = originalTransaction;
+  });
+
+  it("should create a new contest with games", async () => {
+    // Create test teams
+    const [team1] = await db
+      .insert(teams)
+      .values({
+        id: randomUUID(),
+        name: "Team 1",
+        league: "nba",
+      })
+      .returning();
+
+    const [team2] = await db
+      .insert(teams)
+      .values({
+        id: randomUUID(),
+        name: "Team 2",
+        league: "nba",
+      })
+      .returning();
+
+    // Create test game
+    const [game1] = await db
+      .insert(games)
+      .values({
+        id: randomUUID(),
+        name: "Test Game 1",
+        homeTeamId: team1.id,
+        awayTeamId: team2.id,
+        startTime: new Date(),
+        status: "upcoming",
+      })
+      .returning();
+
+    // Mock db.transaction to pass through
+    db.transaction = jest.fn().mockImplementation((fn) => fn(db));
+
+    const requestBody = {
+      name: "Test Contest",
+      league: "nba",
+      gameIds: [game1.id],
+    };
+
+    const request = new NextRequest("http://localhost:3000/api/contests", {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+    });
+
+    const response = await POST(request);
+    expect(response.status).toBe(201);
+
+    const data = await response.json();
+    expect(data).toEqual(
+      expect.objectContaining({
+        name: "Test Contest",
+        league: "nba",
+      })
+    );
+
+    // Clean up
+    await db.delete(contestGames).where(eq(contestGames.contestId, data.id));
+    await db.delete(contests).where(eq(contests.id, data.id));
+    await db.delete(games).where(eq(games.id, game1.id));
+    await db.delete(teams).where(eq(teams.id, team1.id));
+    await db.delete(teams).where(eq(teams.id, team2.id));
+  });
+
+  it("should return 400 for invalid request body", async () => {
+    const request = new NextRequest("http://localhost:3000/api/contests", {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+
+    const response = await POST(request);
+    expect(response.status).toBe(400);
+  });
+
+  it("should return 404 for non-existent games", async () => {
+    // Mock db.transaction to pass through
+    db.transaction = jest.fn().mockImplementation((fn) => fn(db));
+
+    const requestBody = {
+      name: "Test Contest",
+      league: "nba",
+      gameIds: [randomUUID()],
+    };
+
+    const request = new NextRequest("http://localhost:3000/api/contests", {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+    });
+
+    const response = await POST(request);
+    expect(response.status).toBe(404);
+  });
+
+  it("should return 400 for games from different leagues", async () => {
+    // Create test teams
+    const [team1] = await db
+      .insert(teams)
+      .values({
+        id: randomUUID(),
+        name: "Team 1",
+        league: "nba",
+      })
+      .returning();
+
+    const [team2] = await db
+      .insert(teams)
+      .values({
+        id: randomUUID(),
+        name: "Team 2",
+        league: "nba",
+      })
+      .returning();
+
+    // Create test game
+    const [game1] = await db
+      .insert(games)
+      .values({
+        id: randomUUID(),
+        name: "Test Game 1",
+        homeTeamId: team1.id,
+        awayTeamId: team2.id,
+        startTime: new Date(),
+        status: "upcoming",
+      })
+      .returning();
+
+    // Mock db.transaction to pass through
+    db.transaction = jest.fn().mockImplementation((fn) => fn(db));
+
+    const requestBody = {
+      name: "Test Contest",
+      league: "nfl", // Different league than the game
+      gameIds: [game1.id],
+    };
+
+    const request = new NextRequest("http://localhost:3000/api/contests", {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+    });
+
+    const response = await POST(request);
+    expect(response.status).toBe(400);
+
+    // Clean up
+    await db.delete(games).where(eq(games.id, game1.id));
+    await db.delete(teams).where(eq(teams.id, team1.id));
+    await db.delete(teams).where(eq(teams.id, team2.id));
+  });
+
+  it("should return 500 for database errors", async () => {
+    // Create test teams
+    const [team1] = await db
+      .insert(teams)
+      .values({
+        id: randomUUID(),
+        name: "Team 1",
+        league: "nba",
+      })
+      .returning();
+
+    const [team2] = await db
+      .insert(teams)
+      .values({
+        id: randomUUID(),
+        name: "Team 2",
+        league: "nba",
+      })
+      .returning();
+
+    // Create test game
+    const [game1] = await db
+      .insert(games)
+      .values({
+        id: randomUUID(),
+        name: "Test Game 1",
+        homeTeamId: team1.id,
+        awayTeamId: team2.id,
+        startTime: new Date(),
+        status: "upcoming",
+      })
+      .returning();
+
+    // Mock db.transaction to throw an error
+    db.transaction = jest.fn().mockImplementation(() => {
+      return Promise.reject(new Error("Database error"));
+    });
+
+    const requestBody = {
+      name: "Test Contest",
+      league: "nba",
+      gameIds: [game1.id],
+    };
+
+    const request = new NextRequest("http://localhost:3000/api/contests", {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+    });
+
+    const response = await POST(request);
+    expect(response.status).toBe(500);
+    const data = await response.json();
+    expect(data).toEqual({ error: "Internal Server Error" });
+
+    // Clean up
+    await db.delete(games).where(eq(games.id, game1.id));
+    await db.delete(teams).where(eq(teams.id, team1.id));
+    await db.delete(teams).where(eq(teams.id, team2.id));
   });
 });
