@@ -6,6 +6,14 @@ const config = {
     "^@/(.*)$": "<rootDir>/$1",
   },
   setupFiles: ["<rootDir>/jest.setup.js"],
+  coverageThreshold: {
+    global: {
+      statements: 100,
+      branches: 97,
+      functions: 100,
+      lines: 100,
+    },
+  },
   coveragePathIgnorePatterns: ["/node_modules/", "db/schema/schema.ts", "db/db.ts"],
   transform: {
     "^.+\\.tsx?$": [
