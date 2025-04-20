@@ -8,6 +8,7 @@ import { userIdSchema } from "@/app/api/schemas";
  * @swagger
  * /api/users/{id}:
  *   get:
+ *     tags: [Users]
  *     summary: Get user details
  *     parameters:
  *       - name: id

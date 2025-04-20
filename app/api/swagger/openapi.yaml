@@ -181,3 +181,53 @@ paths:
   #     responses:
   #       "200":
   #         description: Stat power updated
+
+  /contests:
+    post:
+      summary: Create a new contest with specified games
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - gameIds
+                - league
+              properties:
+                name:
+                  type: string
+                  description: Name of the contest
+                gameIds:
+                  type: array
+                  items:
+                    type: string
+                  description: List of game IDs to include in the contest
+                league:
+                  type: string
+                  enum: [nba, nfl, nhl, mlb]
+                  description: League type for the contest
+      responses:
+        "201":
+          description: Contest created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  gameIds:
+                    type: array
+                    items:
+                      type: string
+        "400":
+          description: Bad request (invalid game IDs, league mismatch, etc.)
+        "404":
+          description: One or more games not found
+        "500":
+          description: Internal server error

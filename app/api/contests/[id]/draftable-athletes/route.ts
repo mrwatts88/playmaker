@@ -6,8 +6,13 @@ import { NextResponse } from "next/server";
 
 /**
  * @swagger
- * /contests/{id}/draftable-athletes:
+ * tags:
+ *   - name: Contests
+ *     description: Contest management endpoints
+ *
+ * /api/contests/{id}/draftable-athletes:
  *   get:
+ *     tags: [Contests]
  *     summary: Get draftable athletes for a contest
  *     parameters:
  *       - name: id

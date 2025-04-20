@@ -38,6 +38,7 @@ describe("GET /api/contests/[id]/draftable-athletes", () => {
         homeTeamId: team.id,
         awayTeamId: team.id, // Using same team for simplicity
         status: "upcoming",
+        startTime: new Date(), // Add current time as start time
       })
       .returning();
 

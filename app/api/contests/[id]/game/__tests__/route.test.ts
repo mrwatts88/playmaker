@@ -56,6 +56,7 @@ describe("GET /api/contests/{id}/game", () => {
         homeTeamId: homeTeam.id,
         awayTeamId: awayTeam.id,
         status: "upcoming",
+        startTime: new Date(),
       })
       .returning();
 

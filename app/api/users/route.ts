@@ -5,8 +5,13 @@ import { createUserSchema } from "../schemas";
 
 /**
  * @swagger
+ * tags:
+ *   - name: Users
+ *     description: User management endpoints
+ *
  * /api/users:
  *   post:
+ *     tags: [Users]
  *     summary: Create a new user
  *     requestBody:
  *       required: true

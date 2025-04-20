@@ -47,7 +47,7 @@ export const boosts = pgTable("boosts", {
 export const games = pgTable("games", {
   id: text("id").primaryKey(), // id is from the sports api
   name: text("name"),
-  startTime: timestamp("start_time"),
+  startTime: timestamp("start_time").notNull(),
   status: gameStatus("status"),
   homeTeamId: text("home_team_id")
     .references(() => teams.id)
@@ -63,9 +63,9 @@ export const games = pgTable("games", {
 export const gameEvents = pgTable("game_events", {
   id: uuid("id").primaryKey().defaultRandom(),
   gameId: text("game_id")
-    .references(() => games.id)
+    .references(() => games.id, { onDelete: "cascade" })
     .notNull(),
-  athleteId: text("athlete_id").references(() => athletes.id),
+  athleteId: text("athlete_id").references(() => athletes.id, { onDelete: "cascade" }),
   eventType: eventType("event_type"),
   value: integer("value"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -90,10 +90,10 @@ export const contestGames = pgTable(
   "contest_games",
   {
     gameId: text("game_id")
-      .references(() => games.id)
+      .references(() => games.id, { onDelete: "cascade" })
       .notNull(),
     contestId: uuid("contest_id")
-      .references(() => contests.id)
+      .references(() => contests.id, { onDelete: "cascade" })
       .notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
@@ -117,10 +117,10 @@ export const contestants = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     contestId: uuid("contest_id")
-      .references(() => contests.id)
+      .references(() => contests.id, { onDelete: "cascade" })
       .notNull(),
     userId: uuid("user_id")
-      .references(() => users.id)
+      .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
     name: text("name").notNull(),
     totalXp: integer("total_xp").default(0).notNull(),
@@ -139,10 +139,10 @@ export const rosterMembers = pgTable(
   "roster_members",
   {
     contestantId: uuid("contestant_id")
-      .references(() => contestants.id)
+      .references(() => contestants.id, { onDelete: "cascade" })
       .notNull(),
     athleteId: text("athlete_id")
-      .references(() => athletes.id)
+      .references(() => athletes.id, { onDelete: "cascade" })
       .notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
@@ -156,10 +156,10 @@ export const rosterMembers = pgTable(
 export const contestantBoosts = pgTable("contestant_boosts", {
   id: uuid("id").primaryKey().defaultRandom(),
   contestantId: uuid("contestant_id")
-    .references(() => contestants.id)
+    .references(() => contestants.id, { onDelete: "cascade" })
     .notNull(),
   boostId: uuid("boost_id")
-    .references(() => boosts.id)
+    .references(() => boosts.id, { onDelete: "cascade" })
     .notNull(),
   expiresAt: timestamp("expires_at"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -170,10 +170,10 @@ export const contestantBoosts = pgTable("contestant_boosts", {
 export const contestBoosts = pgTable("contest_boosts", {
   id: uuid("id").primaryKey().defaultRandom(),
   contestId: uuid("contest_id")
-    .references(() => contests.id)
+    .references(() => contests.id, { onDelete: "cascade" })
     .notNull(),
   boostId: uuid("boost_id")
-    .references(() => boosts.id)
+    .references(() => boosts.id, { onDelete: "cascade" })
     .notNull(),
   expiresAt: timestamp("expires_at"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -181,6 +181,23 @@ export const contestBoosts = pgTable("contest_boosts", {
 });
 
 // Relations //
+export const gamesRelations = relations(games, ({ one }: { one: any }) => ({
+  homeTeam: one(teams, {
+    fields: [games.homeTeamId],
+    references: [teams.id],
+  }),
+  awayTeam: one(teams, {
+    fields: [games.awayTeamId],
+    references: [teams.id],
+  }),
+}));
+
+export const contestsRelations = relations(contests, ({ many }: { many: any }) => ({
+  contestGames: many(contestGames),
+  contestants: many(contestants),
+  contestBoosts: many(contestBoosts),
+}));
+
 export const contestantBoostsRelations = relations(contestantBoosts, ({ one }: { one: any }) => ({
   boost: one(boosts, {
     fields: [contestantBoosts.boostId],
