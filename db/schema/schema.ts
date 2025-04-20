@@ -4,30 +4,46 @@ import { relations } from "drizzle-orm";
 export const leagueType = pgEnum("league_type", ["nba", "nfl", "nhl", "mlb"]);
 export const contestStatus = pgEnum("contest_status", ["upcoming", "active", "completed"]);
 export const gameStatus = pgEnum("game_status", ["upcoming", "active", "completed"]);
-export const eventType = pgEnum("event_type", ["points", "rebounds", "assists", "steals", "blocks"]);
+export const eventType = pgEnum("event_type", ["points", "rebounds", "assists", "steals", "blocks", "gamestart", "gameend"]);
 export const boostType = pgEnum("boost_type", ["multiplicative", "additive", "conditional", "instant", "action"]);
 export const statType = pgEnum("stat_type", ["points", "rebounds", "assists", "steals", "blocks"]);
 export const boostAction = pgEnum("boost_action", ["extraPlayer", "stealPlayer"]);
+export const dataSource = pgEnum("data_source", ["espncom", "nbacom", "sportradar", "manual"]);
 
 // reference table (from sports api)
-export const teams = pgTable("teams", {
-  // id is from the sports api, todo: if these aren't unique among sports apis, this will break.
-  // Below as well.
-  id: text("id").primaryKey(),
-  name: text("name"),
-  league: leagueType("league"),
-});
+export const teams = pgTable(
+  "teams",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    apiId: text("api_id").notNull(),
+    dataSource: dataSource("data_source").notNull(),
+    name: text("name").notNull(),
+    league: leagueType("league").notNull(),
+  },
+  (t) => ({
+    uniqueDataSourceApiId: unique().on(t.league, t.dataSource, t.apiId),
+  })
+);
 
 // reference table (from sports api)
-export const athletes = pgTable("athletes", {
-  id: text("id").primaryKey(), // id is from the sports api
-  name: text("name"),
-  teamId: text("team_id")
-    .references(() => teams.id)
-    .notNull(),
-  position: text("position"),
-  cost: integer("cost").notNull(),
-});
+export const athletes = pgTable(
+  "athletes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    apiId: text("api_id").notNull(),
+    dataSource: dataSource("data_source").notNull(),
+    league: leagueType("league").notNull(),
+    name: text("name").notNull(),
+    teamId: uuid("team_id")
+      .references(() => teams.id)
+      .notNull(),
+    position: text("position"),
+    cost: integer("cost").notNull(),
+  },
+  (t) => ({
+    uniqueDataSourceApiId: unique().on(t.league, t.dataSource, t.apiId),
+  })
+);
 
 // reference table (self-created)
 export const boosts = pgTable("boosts", {
@@ -44,32 +60,50 @@ export const boosts = pgTable("boosts", {
 });
 
 // cron job sports api table
-export const games = pgTable("games", {
-  id: text("id").primaryKey(), // id is from the sports api
-  name: text("name"),
-  startTime: timestamp("start_time").notNull(),
-  status: gameStatus("status"),
-  homeTeamId: text("home_team_id")
-    .references(() => teams.id)
-    .notNull(),
-  awayTeamId: text("away_team_id")
-    .references(() => teams.id)
-    .notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
+export const games = pgTable(
+  "games",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    apiId: text("api_id").notNull(),
+    dataSource: dataSource("data_source").notNull(),
+    league: leagueType("league").notNull(),
+    name: text("name").notNull(),
+    startTime: timestamp("start_time").notNull(),
+    status: gameStatus("status"),
+    homeTeamId: uuid("home_team_id")
+      .references(() => teams.id)
+      .notNull(),
+    awayTeamId: uuid("away_team_id")
+      .references(() => teams.id)
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+  },
+  (t) => ({
+    uniqueDataSourceApiId: unique().on(t.league, t.dataSource, t.apiId),
+  })
+);
 
 // cron job sports api table
-export const gameEvents = pgTable("game_events", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  gameId: text("game_id")
-    .references(() => games.id, { onDelete: "cascade" })
-    .notNull(),
-  athleteId: text("athlete_id").references(() => athletes.id, { onDelete: "cascade" }),
-  eventType: eventType("event_type"),
-  value: integer("value"),
-  createdAt: timestamp("created_at").defaultNow(),
-});
+export const gameEvents = pgTable(
+  "game_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    apiId: text("api_id").notNull(),
+    dataSource: dataSource("data_source").notNull(),
+    league: leagueType("league").notNull(),
+    gameId: uuid("game_id")
+      .references(() => games.id, { onDelete: "cascade" })
+      .notNull(),
+    athleteId: uuid("athlete_id").references(() => athletes.id, { onDelete: "cascade" }),
+    eventType: eventType("event_type").notNull(),
+    value: integer("value"),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (t) => ({
+    uniqueDataSourceApiId: unique().on(t.league, t.dataSource, t.apiId),
+  })
+);
 
 // derived from cron job sports api table
 export const contests = pgTable("contests", {
@@ -89,7 +123,7 @@ export const contests = pgTable("contests", {
 export const contestGames = pgTable(
   "contest_games",
   {
-    gameId: text("game_id")
+    gameId: uuid("game_id")
       .references(() => games.id, { onDelete: "cascade" })
       .notNull(),
     contestId: uuid("contest_id")
@@ -141,7 +175,7 @@ export const rosterMembers = pgTable(
     contestantId: uuid("contestant_id")
       .references(() => contestants.id, { onDelete: "cascade" })
       .notNull(),
-    athleteId: text("athlete_id")
+    athleteId: uuid("athlete_id")
       .references(() => athletes.id, { onDelete: "cascade" })
       .notNull(),
     createdAt: timestamp("created_at").defaultNow(),
@@ -181,7 +215,7 @@ export const contestBoosts = pgTable("contest_boosts", {
 });
 
 // Relations //
-export const gamesRelations = relations(games, ({ one }: { one: any }) => ({
+export const gamesRelations = relations(games, ({ one }) => ({
   homeTeam: one(teams, {
     fields: [games.homeTeamId],
     references: [teams.id],
@@ -192,14 +226,18 @@ export const gamesRelations = relations(games, ({ one }: { one: any }) => ({
   }),
 }));
 
-export const contestsRelations = relations(contests, ({ many }: { many: any }) => ({
+export const contestsRelations = relations(contests, ({ many }) => ({
   contestGames: many(contestGames),
-  contestants: many(contestants),
+  contestants: many(contestants, {
+    relationName: "contest_contestants",
+  }),
   contestBoosts: many(contestBoosts),
-  roster: many(rosterMembers),
+  roster: many(rosterMembers, {
+    relationName: "contest_roster",
+  }),
 }));
 
-export const contestantBoostsRelations = relations(contestantBoosts, ({ one }: { one: any }) => ({
+export const contestantBoostsRelations = relations(contestantBoosts, ({ one }) => ({
   boost: one(boosts, {
     fields: [contestantBoosts.boostId],
     references: [boosts.id],
@@ -210,14 +248,14 @@ export const contestantBoostsRelations = relations(contestantBoosts, ({ one }: {
   }),
 }));
 
-export const athletesRelations = relations(athletes, ({ one }: { one: any }) => ({
+export const athletesRelations = relations(athletes, ({ one }) => ({
   team: one(teams, {
     fields: [athletes.teamId],
     references: [teams.id],
   }),
 }));
 
-export const contestGamesRelations = relations(contestGames, ({ one }: { one: any }) => ({
+export const contestGamesRelations = relations(contestGames, ({ one }) => ({
   game: one(games, {
     fields: [contestGames.gameId],
     references: [games.id],
@@ -228,11 +266,16 @@ export const contestGamesRelations = relations(contestGames, ({ one }: { one: an
   }),
 }));
 
-export const contestantsRelations = relations(contestants, ({ many }: { many: any }) => ({
+export const contestantsRelations = relations(contestants, ({ many, one }) => ({
   roster: many(rosterMembers),
+  contest: one(contests, {
+    fields: [contestants.contestId],
+    references: [contests.id],
+    relationName: "contest_contestants",
+  }),
 }));
 
-export const rosterMembersRelations = relations(rosterMembers, ({ one }: { one: any }) => ({
+export const rosterMembersRelations = relations(rosterMembers, ({ one }) => ({
   contestant: one(contestants, {
     fields: [rosterMembers.contestantId],
     references: [contestants.id],
@@ -241,9 +284,14 @@ export const rosterMembersRelations = relations(rosterMembers, ({ one }: { one: 
     fields: [rosterMembers.athleteId],
     references: [athletes.id],
   }),
+  contest: one(contests, {
+    fields: [rosterMembers.contestantId],
+    references: [contests.id],
+    relationName: "contest_roster",
+  }),
 }));
 
-export const contestBoostsRelations = relations(contestBoosts, ({ one }: { one: any }) => ({
+export const contestBoostsRelations = relations(contestBoosts, ({ one }) => ({
   boost: one(boosts, {
     fields: [contestBoosts.boostId],
     references: [boosts.id],

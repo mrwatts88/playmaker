@@ -15,7 +15,7 @@ import {
   users,
 } from "@/db/schema/schema";
 import { randomUUID } from "crypto";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { NextRequest } from "next/server";
 
 describe("GET /api/contests/{id}/game", () => {
@@ -24,30 +24,34 @@ describe("GET /api/contests/{id}/game", () => {
     const [homeTeam] = await db
       .insert(teams)
       .values({
-        id: randomUUID(),
         name: "Home Team",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
     const [awayTeam] = await db
       .insert(teams)
       .values({
-        id: randomUUID(),
         name: "Away Team",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
     const [game] = await db
       .insert(games)
       .values({
-        id: randomUUID(),
         name: "Test Game",
         homeTeamId: homeTeam.id,
         awayTeamId: awayTeam.id,
         status: "upcoming",
         startTime: new Date(),
+        dataSource: "manual",
+        apiId: randomUUID(),
+        league: "nba",
       })
       .returning();
 
@@ -68,11 +72,13 @@ describe("GET /api/contests/{id}/game", () => {
     const [athlete] = await db
       .insert(athletes)
       .values({
-        id: randomUUID(),
         name: "Test Athlete",
         teamId: homeTeam.id,
         position: "PG",
         cost: 100,
+        dataSource: "manual",
+        apiId: randomUUID(),
+        league: "nba",
       })
       .returning();
 
@@ -127,6 +133,9 @@ describe("GET /api/contests/{id}/game", () => {
       athleteId: athlete.id,
       eventType: "points",
       value: 2,
+      dataSource: "manual",
+      apiId: randomUUID(),
+      league: "nba",
     });
 
     const request = new NextRequest("http://localhost:3000/api/contests/123/game");
@@ -162,7 +171,7 @@ describe("GET /api/contests/{id}/game", () => {
     });
 
     // Clean up in reverse order
-    await db.delete(gameEvents).where(eq(gameEvents.gameId, game.id));
+    await db.delete(gameEvents).where(and(eq(gameEvents.gameId, game.id), eq(gameEvents.athleteId, athlete.id)));
     await db.delete(contestantBoosts).where(eq(contestantBoosts.contestantId, contestant.id));
     await db.delete(contestBoosts).where(eq(contestBoosts.contestId, contest.id));
     await db.delete(boosts).where(eq(boosts.id, boost.id));

@@ -75,6 +75,7 @@ const parseGameTime = (statusText: string, gameDate: string): Date | null => {
   const match = statusText.match(/(\d+):(\d+)\s+(am|pm)\s+ET/);
   if (!match) return null;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, hours, minutes, period] = match;
   let hour = parseInt(hours);
   if (period === "pm" && hour !== 12) hour += 12;
@@ -115,9 +116,10 @@ export const syncLineups = async (date: string) => {
         await db
           .insert(teams)
           .values({
-            id: team.teamId.toString(),
+            apiId: team.teamId.toString(),
             name: team.teamAbbreviation,
             league: "nba",
+            dataSource: "nbacom",
           })
           .onConflictDoNothing();
 
@@ -126,11 +128,13 @@ export const syncLineups = async (date: string) => {
           await db
             .insert(athletes)
             .values({
-              id: player.personId.toString(),
+              apiId: player.personId.toString(),
               name: player.playerName,
               teamId: player.teamId.toString(),
               position: player.position || "",
               cost: 100, // Default cost, can be updated later
+              dataSource: "nbacom",
+              league: "nba",
             })
             .onConflictDoNothing();
         }
@@ -140,12 +144,14 @@ export const syncLineups = async (date: string) => {
       await db
         .insert(games)
         .values({
-          id: game.gameId,
+          apiId: game.gameId,
           name: `${game.awayTeam.teamAbbreviation} @ ${game.homeTeam.teamAbbreviation}`,
           startTime,
           status: getGameStatus(game.gameStatus),
           homeTeamId: game.homeTeam.teamId.toString(),
           awayTeamId: game.awayTeam.teamId.toString(),
+          dataSource: "nbacom",
+          league: "nba",
         })
         .onConflictDoNothing();
     }

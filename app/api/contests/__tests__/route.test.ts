@@ -135,18 +135,60 @@ describe("POST /api/contests", () => {
     const [team1] = await db
       .insert(teams)
       .values({
-        id: randomUUID(),
-        name: "Team 1",
+        name: "Test Team 1",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
     const [team2] = await db
       .insert(teams)
       .values({
-        id: randomUUID(),
-        name: "Team 2",
+        name: "Test Team 2",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
+      })
+      .returning();
+
+    const [team3] = await db
+      .insert(teams)
+      .values({
+        name: "Test Team 3",
+        league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
+      })
+      .returning();
+
+    const [team4] = await db
+      .insert(teams)
+      .values({
+        name: "Test Team 4",
+        league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
+      })
+      .returning();
+
+    const [team5] = await db
+      .insert(teams)
+      .values({
+        name: "Test Team 5",
+        league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
+      })
+      .returning();
+
+    const [team6] = await db
+      .insert(teams)
+      .values({
+        name: "Test Team 6",
+        league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
@@ -154,12 +196,42 @@ describe("POST /api/contests", () => {
     const [game1] = await db
       .insert(games)
       .values({
-        id: randomUUID(),
         name: "Test Game 1",
         homeTeamId: team1.id,
         awayTeamId: team2.id,
         startTime: new Date(),
         status: "upcoming",
+        league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
+      })
+      .returning();
+
+    const [game2] = await db
+      .insert(games)
+      .values({
+        name: "Test Game 2",
+        homeTeamId: team1.id,
+        awayTeamId: team2.id,
+        startTime: new Date(),
+        status: "upcoming",
+        league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
+      })
+      .returning();
+
+    const [game3] = await db
+      .insert(games)
+      .values({
+        name: "Test Game 3",
+        homeTeamId: team3.id,
+        awayTeamId: team4.id,
+        startTime: new Date(),
+        status: "upcoming",
+        league: "nfl",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
@@ -169,7 +241,7 @@ describe("POST /api/contests", () => {
     const requestBody = {
       name: "Test Contest",
       league: "nba",
-      gameIds: [game1.id],
+      gameIds: [game1.id, game2.id, game3.id],
     };
 
     const request = new NextRequest("http://localhost:3000/api/contests", {
@@ -192,8 +264,14 @@ describe("POST /api/contests", () => {
     await db.delete(contestGames).where(eq(contestGames.contestId, data.id));
     await db.delete(contests).where(eq(contests.id, data.id));
     await db.delete(games).where(eq(games.id, game1.id));
+    await db.delete(games).where(eq(games.id, game2.id));
+    await db.delete(games).where(eq(games.id, game3.id));
     await db.delete(teams).where(eq(teams.id, team1.id));
     await db.delete(teams).where(eq(teams.id, team2.id));
+    await db.delete(teams).where(eq(teams.id, team3.id));
+    await db.delete(teams).where(eq(teams.id, team4.id));
+    await db.delete(teams).where(eq(teams.id, team5.id));
+    await db.delete(teams).where(eq(teams.id, team6.id));
   });
 
   it("should return 400 for invalid request body", async () => {
@@ -230,55 +308,100 @@ describe("POST /api/contests", () => {
     const [team1] = await db
       .insert(teams)
       .values({
-        id: randomUUID(),
-        name: "Team 1",
+        name: "Test Team 1",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
     const [team2] = await db
       .insert(teams)
       .values({
-        id: randomUUID(),
-        name: "Team 2",
+        name: "Test Team 2",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
-    // Create test game
+    const [team3] = await db
+      .insert(teams)
+      .values({
+        name: "Test Team 3",
+        league: "nfl",
+        dataSource: "manual",
+        apiId: randomUUID(),
+      })
+      .returning();
+
+    const [team4] = await db
+      .insert(teams)
+      .values({
+        name: "Test Team 4",
+        league: "nfl",
+        dataSource: "manual",
+        apiId: randomUUID(),
+      })
+      .returning();
+
     const [game1] = await db
       .insert(games)
       .values({
-        id: randomUUID(),
         name: "Test Game 1",
         homeTeamId: team1.id,
         awayTeamId: team2.id,
         startTime: new Date(),
         status: "upcoming",
+        league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
+
+    const [game2] = await db
+      .insert(games)
+      .values({
+        name: "Test Game 2",
+        homeTeamId: team3.id,
+        awayTeamId: team4.id,
+        startTime: new Date(),
+        status: "upcoming",
+        league: "nfl",
+        dataSource: "manual",
+        apiId: randomUUID(),
+      })
+      .returning();
+
+    const data = {
+      name: "Test Contest",
+      league: "nba",
+      gameIds: [game1.id, game2.id],
+    };
 
     // Mock db.transaction to pass through
     db.transaction = jest.fn().mockImplementation((fn) => fn(db));
 
-    const requestBody = {
-      name: "Test Contest",
-      league: "nfl", // Different league than the game
-      gameIds: [game1.id],
-    };
-
-    const request = new NextRequest("http://localhost:3000/api/contests", {
+    const request = new NextRequest(new URL("http://localhost:3000/api/contests"), {
       method: "POST",
-      body: JSON.stringify(requestBody),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     });
 
     const response = await POST(request);
     expect(response.status).toBe(400);
+    const responseData = await response.json();
+    expect(responseData).toEqual({ error: "One or more games belong to a different league" });
 
     // Clean up
     await db.delete(games).where(eq(games.id, game1.id));
+    await db.delete(games).where(eq(games.id, game2.id));
     await db.delete(teams).where(eq(teams.id, team1.id));
     await db.delete(teams).where(eq(teams.id, team2.id));
+    await db.delete(teams).where(eq(teams.id, team3.id));
+    await db.delete(teams).where(eq(teams.id, team4.id));
   });
 
   it("should return 500 for database errors", async () => {
@@ -286,54 +409,60 @@ describe("POST /api/contests", () => {
     const [team1] = await db
       .insert(teams)
       .values({
-        id: randomUUID(),
-        name: "Team 1",
+        name: "Test Team 1",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
     const [team2] = await db
       .insert(teams)
       .values({
-        id: randomUUID(),
-        name: "Team 2",
+        name: "Test Team 2",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
-    // Create test game
     const [game1] = await db
       .insert(games)
       .values({
-        id: randomUUID(),
         name: "Test Game 1",
         homeTeamId: team1.id,
         awayTeamId: team2.id,
         startTime: new Date(),
         status: "upcoming",
+        league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
-    // Mock db.transaction to throw an error
-    db.transaction = jest.fn().mockImplementation(() => {
-      return Promise.reject(new Error("Database error"));
-    });
-
-    const requestBody = {
+    const data = {
       name: "Test Contest",
       league: "nba",
       gameIds: [game1.id],
     };
 
-    const request = new NextRequest("http://localhost:3000/api/contests", {
+    // Mock db.transaction to throw an error
+    db.transaction = jest.fn().mockImplementation(() => {
+      throw new Error("Database error");
+    });
+
+    const request = new NextRequest(new URL("http://localhost:3000/api/contests"), {
       method: "POST",
-      body: JSON.stringify(requestBody),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     });
 
     const response = await POST(request);
     expect(response.status).toBe(500);
-    const data = await response.json();
-    expect(data).toEqual({ error: "Internal Server Error" });
+    const responseData = await response.json();
+    expect(responseData).toEqual({ error: "Internal Server Error" });
 
     // Clean up
     await db.delete(games).where(eq(games.id, game1.id));

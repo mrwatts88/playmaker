@@ -18,27 +18,28 @@ describe("GET /api/contests/[id]/draftable-athletes", () => {
       .returning();
 
     // Create a test team
-    const teamId = randomUUID();
     const [team] = await db
       .insert(teams)
       .values({
-        id: teamId,
         name: "Test Team",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
     // Create a test game
-    const gameId = randomUUID();
     const [game] = await db
       .insert(games)
       .values({
-        id: gameId,
         name: "Test Game",
         homeTeamId: team.id,
         awayTeamId: team.id, // Using same team for simplicity
         status: "upcoming",
         startTime: new Date(), // Add current time as start time
+        dataSource: "manual",
+        apiId: randomUUID(),
+        league: "nba",
       })
       .returning();
 
@@ -52,15 +53,16 @@ describe("GET /api/contests/[id]/draftable-athletes", () => {
       .returning();
 
     // Create a test athlete
-    const athleteId = randomUUID();
     const [athlete] = await db
       .insert(athletes)
       .values({
-        id: athleteId,
         name: "Test Athlete",
         teamId: team.id,
         position: "PG",
         cost: 100,
+        dataSource: "manual",
+        apiId: randomUUID(),
+        league: "nba",
       })
       .returning();
 

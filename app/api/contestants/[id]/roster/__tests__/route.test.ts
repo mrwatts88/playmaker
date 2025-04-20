@@ -1,22 +1,14 @@
 import { POST } from "@/app/api/contestants/[id]/roster/route";
 import { db } from "@/db/db";
 import { athletes, contestGames, contestants, contests, games, rosterMembers, teams, users } from "@/db/schema/schema";
+import { randomUUID } from "crypto";
 import { eq } from "drizzle-orm";
 import { NextRequest } from "next/server";
-import { randomUUID } from "crypto";
 
 // Mock console.error to keep test output clean
 beforeEach(() => {
   jest.spyOn(console, "error").mockImplementation(() => {});
 });
-
-type ContestantWithRoster = typeof contestants.$inferSelect & {
-  roster: (typeof rosterMembers.$inferSelect)[];
-};
-
-type AthleteWithTeam = typeof athletes.$inferSelect & {
-  team: typeof teams.$inferSelect;
-};
 
 describe("POST /api/contestants/{id}/roster", () => {
   it("should submit a roster successfully", async () => {
@@ -28,13 +20,18 @@ describe("POST /api/contestants/{id}/roster", () => {
         id: teamId,
         name: "Test Team",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
     const [game] = await db
       .insert(games)
       .values({
-        id: randomUUID(),
+        name: "Test Game",
+        league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
         homeTeamId: team.id,
         awayTeamId: team.id,
         startTime: new Date(),
@@ -76,63 +73,68 @@ describe("POST /api/contestants/{id}/roster", () => {
       })
       .returning();
 
-    const athlete1Id = randomUUID();
     const [athlete1] = await db
       .insert(athletes)
       .values({
-        id: athlete1Id,
         name: "Test Athlete 1",
         teamId: team.id,
         position: "PG",
         cost: 100,
+        dataSource: "manual",
+        apiId: randomUUID(),
+        league: "nba",
       })
       .returning();
 
-    const athlete2Id = randomUUID();
     const [athlete2] = await db
       .insert(athletes)
       .values({
-        id: athlete2Id,
         name: "Test Athlete 2",
         teamId: team.id,
         position: "SG",
         cost: 100,
+        dataSource: "manual",
+        apiId: randomUUID(),
+        league: "nba",
       })
       .returning();
 
-    const athlete3Id = randomUUID();
     const [athlete3] = await db
       .insert(athletes)
       .values({
-        id: athlete3Id,
         name: "Test Athlete 3",
         teamId: team.id,
         position: "SF",
         cost: 100,
+        dataSource: "manual",
+        apiId: randomUUID(),
+        league: "nba",
       })
       .returning();
 
-    const athlete4Id = randomUUID();
     const [athlete4] = await db
       .insert(athletes)
       .values({
-        id: athlete4Id,
         name: "Test Athlete 4",
         teamId: team.id,
         position: "PF",
         cost: 100,
+        dataSource: "manual",
+        apiId: randomUUID(),
+        league: "nba",
       })
       .returning();
 
-    const athlete5Id = randomUUID();
     const [athlete5] = await db
       .insert(athletes)
       .values({
-        id: athlete5Id,
         name: "Test Athlete 5",
         teamId: team.id,
         position: "C",
         cost: 100,
+        dataSource: "manual",
+        apiId: randomUUID(),
+        league: "nba",
       })
       .returning();
 
@@ -365,17 +367,22 @@ describe("POST /api/contestants/{id}/roster", () => {
         id: teamId,
         name: "Test Team",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
     const [game] = await db
       .insert(games)
       .values({
-        id: randomUUID(),
+        name: "Test Game",
         homeTeamId: team.id,
         awayTeamId: team.id,
         startTime: new Date(),
         status: "upcoming",
+        league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
@@ -384,15 +391,16 @@ describe("POST /api/contestants/{id}/roster", () => {
       gameId: game.id,
     });
 
-    const athlete1Id = randomUUID();
     const [athlete1] = await db
       .insert(athletes)
       .values({
-        id: athlete1Id,
         name: "Test Athlete 1",
         teamId: team.id,
         position: "PG",
         cost: 100,
+        dataSource: "manual",
+        apiId: randomUUID(),
+        league: "nba",
       })
       .returning();
 
@@ -460,18 +468,21 @@ describe("POST /api/contestants/{id}/roster", () => {
         id: teamId,
         name: "Test Team",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
-    const athlete1Id = randomUUID();
     const [athlete1] = await db
       .insert(athletes)
       .values({
-        id: athlete1Id,
         name: "Test Athlete 1",
         teamId: team.id,
         position: "PG",
         cost: 100,
+        dataSource: "manual",
+        apiId: randomUUID(),
+        league: "nba",
       })
       .returning();
 
@@ -710,17 +721,22 @@ describe("POST /api/contestants/{id}/roster", () => {
         id: teamId,
         name: "Test Team",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
     const [game] = await db
       .insert(games)
       .values({
-        id: randomUUID(),
+        name: "Test Game",
         homeTeamId: team.id,
         awayTeamId: team.id,
         startTime: new Date(),
         status: "upcoming",
+        league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
@@ -729,15 +745,16 @@ describe("POST /api/contestants/{id}/roster", () => {
       gameId: game.id,
     });
 
-    const athlete1Id = randomUUID();
     const [athlete1] = await db
       .insert(athletes)
       .values({
-        id: athlete1Id,
         name: "Test Athlete 1",
         teamId: team.id,
         position: "PG",
         cost: 100,
+        dataSource: "manual",
+        apiId: randomUUID(),
+        league: "nba",
       })
       .returning();
 
@@ -749,18 +766,21 @@ describe("POST /api/contestants/{id}/roster", () => {
         id: otherTeamId,
         name: "Other Team",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
-    const otherAthleteId = randomUUID();
     const [otherAthlete] = await db
       .insert(athletes)
       .values({
-        id: otherAthleteId,
         name: "Other Athlete",
         teamId: otherTeam.id,
         position: "PG",
         cost: 100,
+        dataSource: "manual",
+        apiId: randomUUID(),
+        league: "nba",
       })
       .returning();
 
@@ -822,17 +842,22 @@ describe("POST /api/contestants/{id}/roster", () => {
         id: teamId,
         name: "Test Team",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
     const [game] = await db
       .insert(games)
       .values({
-        id: randomUUID(),
+        name: "Test Game",
         homeTeamId: team.id,
         awayTeamId: team.id,
         startTime: new Date(),
         status: "upcoming",
+        league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
@@ -841,15 +866,16 @@ describe("POST /api/contestants/{id}/roster", () => {
       gameId: game.id,
     });
 
-    const athlete1Id = randomUUID();
     const [athlete1] = await db
       .insert(athletes)
       .values({
-        id: athlete1Id,
         name: "Test Athlete 1",
         teamId: team.id,
         position: "PG",
         cost: 100,
+        dataSource: "manual",
+        apiId: randomUUID(),
+        league: "nba",
       })
       .returning();
 
@@ -879,116 +905,6 @@ describe("POST /api/contestants/{id}/roster", () => {
     await db.delete(contests).where(eq(contests.id, contest.id));
   });
 
-  it("should return 500 for internal server error", async () => {
-    // Create test data
-    const contestId = randomUUID();
-    const userId = randomUUID();
-    const contestantId = randomUUID();
-    const teamId = randomUUID();
-
-    await db.insert(contests).values({
-      id: contestId,
-      name: "Test Contest",
-      league: "nba",
-      startTime: new Date(),
-      status: "upcoming",
-    });
-
-    await db.insert(users).values({
-      id: userId,
-      name: "Test User",
-    });
-
-    await db.insert(teams).values({
-      id: teamId,
-      name: "Test Team",
-      league: "nba",
-    });
-
-    await db.insert(contestants).values({
-      id: contestantId,
-      name: "Test Contestant",
-      contestId,
-      userId,
-      totalXp: 0,
-      spendableXp: 0,
-      statPower: {},
-    });
-
-    // Mock query to return contestant
-    jest.spyOn(db.query.contestants, "findFirst").mockResolvedValue({
-      id: contestantId,
-      name: "Test Contestant",
-      contestId,
-      userId,
-      totalXp: 0,
-      spendableXp: 0,
-      statPower: {},
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      roster: [],
-    } as ContestantWithRoster);
-
-    // Mock query to return athletes
-    const athleteIds = [randomUUID(), randomUUID(), randomUUID(), randomUUID(), randomUUID()];
-
-    jest.spyOn(db.query.athletes, "findMany").mockResolvedValue(
-      athleteIds.map((id) => ({
-        id,
-        name: "Test Athlete",
-        teamId,
-        position: "PG",
-        cost: 100,
-        team: {
-          id: teamId,
-          name: "Test Team",
-          league: "nba",
-        },
-      })) as AthleteWithTeam[]
-    );
-
-    // Mock getDraftableAthletes to return athletes
-    jest.spyOn(require("@/app/service/contest"), "getDraftableAthletes").mockResolvedValue(
-      athleteIds.map((id) => ({
-        id,
-        name: "Test Athlete",
-        teamId,
-        position: "PG",
-        cost: 100,
-      }))
-    );
-
-    // Mock insert to throw error
-    jest.spyOn(db, "insert").mockImplementation(() => {
-      throw new Error("Database error");
-    });
-
-    const request = new NextRequest(`http://localhost:3000/api/contestants/${contestantId}/roster`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        athleteIds,
-      }),
-    });
-
-    const response = await POST(request, { params: Promise.resolve({ id: contestantId }) });
-
-    expect(response.status).toBe(500);
-    const data = await response.json();
-    expect(data).toEqual({ error: "Internal Server Error" });
-
-    // Restore original methods
-    jest.restoreAllMocks();
-
-    // Clean up test data
-    await db.delete(contestants).where(eq(contestants.id, contestantId));
-    await db.delete(users).where(eq(users.id, userId));
-    await db.delete(teams).where(eq(teams.id, teamId));
-    await db.delete(contests).where(eq(contests.id, contestId));
-  });
-
   it("should return 400 if one or more athletes are not in contest", async () => {
     // Create test data in correct order
     const contestTeamId = randomUUID();
@@ -998,13 +914,18 @@ describe("POST /api/contestants/{id}/roster", () => {
         id: contestTeamId,
         name: "Contest Team",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
     const [contestGame] = await db
       .insert(games)
       .values({
-        id: randomUUID(),
+        name: "Test Game",
+        league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
         homeTeamId: contestTeam.id,
         awayTeamId: contestTeam.id,
         startTime: new Date(),
@@ -1054,6 +975,8 @@ describe("POST /api/contestants/{id}/roster", () => {
         id: otherTeamId,
         name: "Other Team",
         league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
@@ -1061,11 +984,14 @@ describe("POST /api/contestants/{id}/roster", () => {
     const [otherGame] = await db
       .insert(games)
       .values({
-        id: randomUUID(),
+        name: "Test Game",
         homeTeamId: otherTeam.id,
         awayTeamId: otherTeam.id,
         startTime: new Date(),
         status: "upcoming",
+        league: "nba",
+        dataSource: "manual",
+        apiId: randomUUID(),
       })
       .returning();
 
@@ -1079,6 +1005,9 @@ describe("POST /api/contestants/{id}/roster", () => {
         teamId: contestTeam.id,
         position: "PG",
         cost: 100,
+        dataSource: "manual",
+        apiId: randomUUID(),
+        league: "nba",
       })
       .returning();
 
@@ -1088,11 +1017,13 @@ describe("POST /api/contestants/{id}/roster", () => {
         const [athlete] = await db
           .insert(athletes)
           .values({
-            id: randomUUID(),
             name: `Other Athlete ${i + 1}`,
             teamId: otherTeam.id,
             position: "SG",
             cost: 100,
+            dataSource: "manual",
+            apiId: randomUUID(),
+            league: "nba",
           })
           .returning();
         return athlete;

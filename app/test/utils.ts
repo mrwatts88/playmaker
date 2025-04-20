@@ -1,7 +1,7 @@
 import { db } from "@/db/db";
 import { athletes, contestGames, contestants, contests, games, rosterMembers, teams, users } from "@/db/schema/schema";
-import { eq, inArray } from "drizzle-orm";
 import { randomUUID } from "crypto";
+import { inArray } from "drizzle-orm";
 
 export const cleanupTestData = async (testIds: {
   teamIds?: string[];
@@ -43,9 +43,10 @@ export const createTestTeam = async (options: { name?: string; league?: "nba" | 
   const [team] = await db
     .insert(teams)
     .values({
-      id: randomUUID(),
       name: options.name || "Test Team",
       league: options.league || "nba",
+      apiId: randomUUID(),
+      dataSource: "manual",
     })
     .returning();
   return team;
@@ -84,12 +85,14 @@ export const createTestGame = async (options: { homeTeamId: string; awayTeamId: 
   const [game] = await db
     .insert(games)
     .values({
-      id: randomUUID(),
       name: "Test Game",
       homeTeamId: options.homeTeamId,
       awayTeamId: options.awayTeamId,
       startTime: new Date(),
       status: options.status || "upcoming",
+      apiId: randomUUID(),
+      dataSource: "manual",
+      league: "nba", // Default to NBA for tests
     })
     .returning();
   return game;
@@ -99,11 +102,13 @@ export const createTestAthlete = async (options: { name?: string; teamId: string
   const [athlete] = await db
     .insert(athletes)
     .values({
-      id: randomUUID(),
       name: options.name || "Test Athlete",
       teamId: options.teamId,
       position: options.position || "PG",
       cost: options.cost || 100,
+      apiId: randomUUID(),
+      dataSource: "manual",
+      league: "nba", // Default to NBA for tests
     })
     .returning();
   return athlete;

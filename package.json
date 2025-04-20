@@ -12,8 +12,8 @@
     "db:push:test": "tsx scripts/push-test-db.ts",
     "db:studio": "drizzle-kit studio",
     "test": "NODE_ENV=test jest --coverage",
-    "nba:sync": "DOTENV_CONFIG_PATH=.env npx tsx -r dotenv/config nba/index.ts",
-    "nba:sync-lineups": "DOTENV_CONFIG_PATH=.env npx tsx -r dotenv/config nba/sync-lineups.ts"
+    "nba:sync-lineups": "DOTENV_CONFIG_PATH=.env npx tsx -r dotenv/config nba/sync-lineups.ts",
+    "nba:sync-game-events": "DOTENV_CONFIG_PATH=.env npx tsx -r dotenv/config nba/sync-game-events.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
