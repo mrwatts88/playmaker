@@ -38,11 +38,6 @@ export const GameCircle = () => {
           transformOrigin: "top left",
         }}
       >
-        {/* DraftXP-logo.png */}
-        <div className="absolute inset-0 flex items-center justify-center z-10" style={{ transform: "translateY(-30%)" }}>
-          <img src="/images/DraftXP-logo.png" alt="DraftXP Logo" className="w-auto h-[200px] object-contain" />
-        </div>
-
         {/* Background */}
         <img src="/images/football-bg.png" alt="Football Background" className="absolute inset-0 w-full h-full object-contain z-0" />
 
