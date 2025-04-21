@@ -111,9 +111,10 @@ export const syncLineups = async (date: string) => {
         continue;
       }
 
-      // Create teams if they don't exist
+      // Create teams if they don't exist and get their UUIDs
+      const teamUuids: Record<number, string> = {};
       for (const team of [game.homeTeam, game.awayTeam]) {
-        await db
+        const [dbTeam] = await db
           .insert(teams)
           .values({
             apiId: team.teamId.toString(),
@@ -121,7 +122,20 @@ export const syncLineups = async (date: string) => {
             league: "nba",
             dataSource: "nbacom",
           })
-          .onConflictDoNothing();
+          .onConflictDoNothing()
+          .returning();
+
+        if (dbTeam) {
+          teamUuids[team.teamId] = dbTeam.id;
+        } else {
+          // If team already exists, get its UUID
+          const existingTeam = await db.query.teams.findFirst({
+            where: (teams, { eq, and }) => and(eq(teams.apiId, team.teamId.toString()), eq(teams.league, "nba"), eq(teams.dataSource, "nbacom")),
+          });
+          if (existingTeam) {
+            teamUuids[team.teamId] = existingTeam.id;
+          }
+        }
 
         // Create players if they don't exist
         for (const player of team.players) {
@@ -130,7 +144,7 @@ export const syncLineups = async (date: string) => {
             .values({
               apiId: player.personId.toString(),
               name: player.playerName,
-              teamId: player.teamId.toString(),
+              teamId: teamUuids[team.teamId],
               position: player.position || "",
               cost: 100, // Default cost, can be updated later
               dataSource: "nbacom",
@@ -148,8 +162,8 @@ export const syncLineups = async (date: string) => {
           name: `${game.awayTeam.teamAbbreviation} @ ${game.homeTeam.teamAbbreviation}`,
           startTime,
           status: getGameStatus(game.gameStatus),
-          homeTeamId: game.homeTeam.teamId.toString(),
-          awayTeamId: game.awayTeam.teamId.toString(),
+          homeTeamId: teamUuids[game.homeTeam.teamId],
+          awayTeamId: teamUuids[game.awayTeam.teamId],
           dataSource: "nbacom",
           league: "nba",
         })

@@ -33,22 +33,54 @@ async function main() {
   }
 
   try {
+    // First, get the game's UUID from the API ID
+    const game = await db.query.games.findFirst({
+      where: (games, { eq, and }) => and(eq(games.apiId, gameId), eq(games.dataSource, "nbacom"), eq(games.league, "nba")),
+    });
+
+    if (!game) {
+      console.error(`Game with API ID ${gameId} not found in database. Please sync the game first using the sync-lineups script.`);
+      process.exit(1);
+    }
+
     // Get the latest action number for this game
     const events = await db.query.gameEvents.findMany({
-      where: eq(gameEvents.gameId, gameId),
+      where: eq(gameEvents.gameId, game.id),
     });
 
     // Find the highest action number by parsing them as numbers
-    const latestActionNumber = events.length > 0 ? Math.max(...events.map((e) => parseInt(e.id.split("_")[0]))) : 0;
+    const latestActionNumber = events.length > 0 ? Math.max(...events.map((e) => parseInt(e.apiId.split("_")[0]))) : 0;
 
     console.log(`Latest action number in DB: ${latestActionNumber}`);
     console.log(`Syncing events after action number ${latestActionNumber}`);
 
-    const response = await fetch(`https://cdn.nba.com/static/json/liveData/playbyplay/playbyplay_${gameId}.json`);
+    let response;
+    try {
+      response = await fetch(`https://cdn.nba.com/static/json/liveData/playbyplay/playbyplay_${gameId}.json`);
+    } catch (error) {
+      console.error("Network error while fetching game data from NBA API:", error);
+      process.exit(1);
+    }
+
+    if (response.status === 404) {
+      console.error(`Game ${gameId} not found in NBA API. The game may not exist or may not have started yet.`);
+      process.exit(1);
+    }
+
+    if (response.status === 403) {
+      console.error(`Game ${gameId} has not started yet. The NBA API returns a 403 when the game is still upcoming.`);
+      process.exit(1);
+    }
+
+    if (!response.ok) {
+      console.error(`Failed to fetch game data from NBA API. Status: ${response.status}`);
+      process.exit(1);
+    }
+
     const data = await response.json();
 
     if (!data.game || !data.game.actions) {
-      console.error("Invalid response format");
+      console.error("Invalid response format from NBA API");
       process.exit(1);
     }
 
@@ -76,7 +108,7 @@ async function main() {
           .insert(gameEvents)
           .values({
             apiId: action.actionNumber.toString(),
-            gameId,
+            gameId: game.id,
             athleteId: null,
             eventType: "gameend",
             value: 1,
@@ -93,7 +125,7 @@ async function main() {
           .insert(gameEvents)
           .values({
             apiId: action.actionNumber.toString(),
-            gameId,
+            gameId: game.id,
             athleteId: null,
             eventType: "gamestart",
             value: 1,
@@ -121,20 +153,15 @@ async function main() {
         }
 
         if (pointsValue > 0) {
-          const athleteExists = action.personId
-            ? await db.query.athletes.findFirst({
-                where: eq(athletes.id, action.personId.toString()),
-              })
-            : true;
-
-          if (athleteExists) {
-            console.log(`Inserting points event for action ${action.actionNumber}`);
+          if (!action.personId) {
+            // Handle points event without an athlete
+            console.log(`Inserting points event without athlete for action ${action.actionNumber}`);
             await db
               .insert(gameEvents)
               .values({
                 apiId: action.actionNumber.toString(),
-                gameId,
-                athleteId: action.personId ? action.personId.toString() : null,
+                gameId: game.id,
+                athleteId: null,
                 eventType: "points",
                 value: pointsValue,
                 dataSource: "nbacom",
@@ -142,24 +169,46 @@ async function main() {
               })
               .onConflictDoNothing();
           } else {
-            console.log(`Skipping points event for action ${action.actionNumber} - athlete ${action.personId} not found`);
+            const athlete = await db.query.athletes.findFirst({
+              where: (athletes, { eq, and }) =>
+                and(eq(athletes.apiId, action.personId.toString()), eq(athletes.dataSource, "nbacom"), eq(athletes.league, "nba")),
+            });
+
+            if (athlete) {
+              console.log(`Inserting points event for action ${action.actionNumber}`);
+              await db
+                .insert(gameEvents)
+                .values({
+                  apiId: action.actionNumber.toString(),
+                  gameId: game.id,
+                  athleteId: athlete.id,
+                  eventType: "points",
+                  value: pointsValue,
+                  dataSource: "nbacom",
+                  league: "nba",
+                })
+                .onConflictDoNothing();
+            } else {
+              console.log(`Skipping points event for action ${action.actionNumber} - athlete ${action.personId} not found`);
+            }
           }
         }
 
         // Create assist event if there's an assist and we have the athlete
         if (action.assistPersonId) {
-          const assistAthleteExists = await db.query.athletes.findFirst({
-            where: eq(athletes.id, action.assistPersonId.toString()),
+          const assistAthlete = await db.query.athletes.findFirst({
+            where: (athletes, { eq, and }) =>
+              and(eq(athletes.apiId, action.assistPersonId.toString()), eq(athletes.dataSource, "nbacom"), eq(athletes.league, "nba")),
           });
 
-          if (assistAthleteExists) {
+          if (assistAthlete) {
             console.log(`Inserting assist event for action ${action.actionNumber}`);
             await db
               .insert(gameEvents)
               .values({
                 apiId: `${action.actionNumber}_assist`,
-                gameId,
-                athleteId: action.assistPersonId.toString(),
+                gameId: game.id,
+                athleteId: assistAthlete.id,
                 eventType: "assists",
                 value: 1,
                 dataSource: "nbacom",
@@ -190,20 +239,15 @@ async function main() {
       }
 
       if (eventType) {
-        const athleteExists = action.personId
-          ? await db.query.athletes.findFirst({
-              where: eq(athletes.id, action.personId.toString()),
-            })
-          : true;
-
-        if (athleteExists) {
-          console.log(`Inserting ${eventType} event for action ${action.actionNumber}`);
+        if (!action.personId) {
+          // Handle event without an athlete
+          console.log(`Inserting ${eventType} event without athlete for action ${action.actionNumber}`);
           await db
             .insert(gameEvents)
             .values({
               apiId: action.actionNumber.toString(),
-              gameId,
-              athleteId: action.personId ? action.personId.toString() : null,
+              gameId: game.id,
+              athleteId: null,
               eventType,
               value,
               dataSource: "nbacom",
@@ -211,7 +255,28 @@ async function main() {
             })
             .onConflictDoNothing();
         } else {
-          console.log(`Skipping ${eventType} event for action ${action.actionNumber} - athlete ${action.personId} not found in database`);
+          const athlete = await db.query.athletes.findFirst({
+            where: (athletes, { eq, and }) =>
+              and(eq(athletes.apiId, action.personId.toString()), eq(athletes.dataSource, "nbacom"), eq(athletes.league, "nba")),
+          });
+
+          if (athlete) {
+            console.log(`Inserting ${eventType} event for action ${action.actionNumber}`);
+            await db
+              .insert(gameEvents)
+              .values({
+                apiId: action.actionNumber.toString(),
+                gameId: game.id,
+                athleteId: athlete.id,
+                eventType,
+                value,
+                dataSource: "nbacom",
+                league: "nba",
+              })
+              .onConflictDoNothing();
+          } else {
+            console.log(`Skipping ${eventType} event for action ${action.actionNumber} - athlete ${action.personId} not found in database`);
+          }
         }
       }
     }
