@@ -3,17 +3,22 @@
 import { useEffect, useState } from "react";
 import { PlayerCard } from "../PlayerCard";
 
-const BASE_WIDTH = 1200;
-const BASE_HEIGHT = 750;
+const BASE_WIDTH = 750; // Swapped from horizontal version
+const BASE_HEIGHT = 1200; // Swapped from horizontal version
 
-export const GameCircle = () => {
+export const GameCircleVertical = () => {
   const [scale, setScale] = useState(1);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
       const availableWidth = window.innerWidth * 0.9;
-      const newScale = Math.min(availableWidth / BASE_WIDTH, 1);
+      const availableHeight = window.innerHeight * 0.9;
+      const scaleX = availableWidth / BASE_WIDTH;
+      const scaleY = availableHeight / BASE_HEIGHT;
+      const newScale = Math.min(scaleX, scaleY);
       setScale(newScale);
+      setIsLoaded(true);
     };
 
     handleResize();
@@ -21,9 +26,13 @@ export const GameCircle = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  if (!isLoaded) {
+    return null;
+  }
+
   return (
     <div
-      className="relative"
+      className="relative px-4"
       style={{
         width: `${BASE_WIDTH * scale}px`,
         height: `${BASE_HEIGHT * scale}px`,
@@ -38,26 +47,41 @@ export const GameCircle = () => {
           transformOrigin: "top left",
         }}
       >
-        {/* Background */}
-        <img src="/images/football-bg.png" alt="Football Background" className="absolute inset-0 w-full h-full object-contain z-0" />
+        {/* DraftXP-logo.png */}
+        <div className="absolute inset-0 flex items-center justify-center z-10" style={{ transform: "translateY(-20%)" }}>
+          <img src="/images/DraftXP-logo.png" alt="DraftXP Logo" className="w-auto h-[200px] object-contain" />
+        </div>
 
-        {/* Player cards */}
-        <div className="absolute top-[20px] left-[200px]">
+        {/* Background - Rotated for vertical layout */}
+        <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+          <div
+            className="absolute top-1/2 left-1/2 w-[160%] h-[160%]"
+            style={{
+              transform: "translate(-50%, -50%) rotate(90deg)",
+              transformOrigin: "center center",
+            }}
+          >
+            <img src="/images/football-bg.png" alt="Football Background" className="w-full h-full object-contain" />
+          </div>
+        </div>
+
+        {/* Player cards - Adjusted for vertical layout */}
+        <div className="absolute top-[20px] left-1/2 -translate-x-1/2">
           <PlayerCard winner />
         </div>
-        <div className="absolute top-[20px] right-[200px]">
+        <div className="absolute top-[250px] left-[20px]">
           <PlayerCard />
         </div>
-        <div className="absolute top-1/2 left-[-50px] -translate-y-1/2">
+        <div className="absolute top-[250px] right-[20px]">
           <PlayerCard />
         </div>
-        <div className="absolute top-1/2 right-[-50px] -translate-y-1/2">
+        <div className="absolute bottom-[250px] left-[20px]">
           <PlayerCard />
         </div>
-        <div className="absolute bottom-[20px] left-[200px]">
+        <div className="absolute bottom-[250px] right-[20px]">
           <PlayerCard />
         </div>
-        <div className="absolute bottom-[20px] right-[200px]">
+        <div className="absolute bottom-[20px] left-1/2 -translate-x-1/2">
           <PlayerCard />
         </div>
       </div>

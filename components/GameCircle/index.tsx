@@ -8,22 +8,33 @@ const BASE_HEIGHT = 750;
 
 export const GameCircle = () => {
   const [scale, setScale] = useState(1);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
       const availableWidth = window.innerWidth * 0.9;
-      const newScale = Math.min(availableWidth / BASE_WIDTH, 1);
+      const availableHeight = window.innerHeight * 0.9;
+      const scaleX = availableWidth / BASE_WIDTH;
+      const scaleY = availableHeight / BASE_HEIGHT;
+      const newScale = Math.min(scaleX, scaleY);
       setScale(newScale);
+      setIsLoaded(true);
     };
 
+    // Initial calculation
     handleResize();
+
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  if (!isLoaded) {
+    return null;
+  }
+
   return (
     <div
-      className="relative"
+      className="relative px-4"
       style={{
         width: `${BASE_WIDTH * scale}px`,
         height: `${BASE_HEIGHT * scale}px`,
