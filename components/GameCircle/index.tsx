@@ -1,33 +1,65 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { PlayerCard } from "../PlayerCard";
 
+const BASE_WIDTH = 1200;
+const BASE_HEIGHT = 750;
+
 export const GameCircle = () => {
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const availableWidth = window.innerWidth * 0.9;
+      const newScale = Math.min(availableWidth / BASE_WIDTH, 1);
+      setScale(newScale);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
-    <div className="relative w-[800px] h-[800px]">
-      {/* Center oval */}
-      <div className="absolute top-[55%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[550px] rounded-full bg-[#C44D12]/50 border-16 border-neutral-800" />
+    <div
+      className="relative"
+      style={{
+        width: `${BASE_WIDTH * scale}px`,
+        height: `${BASE_HEIGHT * scale}px`,
+      }}
+    >
+      <div
+        className="absolute top-0 left-0"
+        style={{
+          width: BASE_WIDTH,
+          height: BASE_HEIGHT,
+          transform: `scale(${scale})`,
+          transformOrigin: "top left",
+        }}
+      >
+        {/* Background */}
+        <img src="/images/football-bg.png" alt="Football Background" className="absolute inset-0 w-full h-full object-contain z-0" />
 
-      {/* Top players */}
-      <div className="absolute top-[5%] left-[15%] -translate-y-10 scale-[0.85] origin-bottom">
-        <PlayerCard winner />
-      </div>
-      <div className="absolute top-[5%] right-[15%] -translate-y-10 scale-[0.85] origin-bottom">
-        <PlayerCard />
-      </div>
-
-      {/* Side players */}
-      <div className="absolute top-[55%] right-0 translate-x-36 -translate-y-1/2 scale-[0.85] origin-left">
-        <PlayerCard />
-      </div>
-      <div className="absolute top-[55%] left-0 -translate-x-36 -translate-y-1/2 scale-[0.85] origin-right">
-        <PlayerCard />
-      </div>
-
-      {/* Bottom players */}
-      <div className="absolute bottom-0 left-[15%] translate-y-10 scale-[0.85] origin-top">
-        <PlayerCard />
-      </div>
-      <div className="absolute bottom-0 right-[15%] translate-y-10 scale-[0.85] origin-top">
-        <PlayerCard />
+        {/* Player cards */}
+        <div className="absolute top-[20px] left-[200px]">
+          <PlayerCard winner />
+        </div>
+        <div className="absolute top-[20px] right-[200px]">
+          <PlayerCard />
+        </div>
+        <div className="absolute top-1/2 left-[-50px] -translate-y-1/2">
+          <PlayerCard />
+        </div>
+        <div className="absolute top-1/2 right-[-50px] -translate-y-1/2">
+          <PlayerCard />
+        </div>
+        <div className="absolute bottom-[20px] left-[200px]">
+          <PlayerCard />
+        </div>
+        <div className="absolute bottom-[20px] right-[200px]">
+          <PlayerCard />
+        </div>
       </div>
     </div>
   );
