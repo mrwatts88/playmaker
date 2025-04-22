@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 interface Contestant {
   id: number;
@@ -23,6 +23,8 @@ interface ContestContextType {
   currentContestantIndex: number;
   feedItems: FeedItem[];
   addFeedItem: (text: string) => void;
+  startDemoMode: () => void;
+  stopDemoMode: () => void;
 }
 
 const defaultContext: ContestContextType = {
@@ -91,14 +93,40 @@ const defaultContext: ContestContextType = {
     { id: 5, text: "J. Jefferson 20yd reception", timestamp: Date.now() - 1000 },
   ],
   addFeedItem: () => {},
+  startDemoMode: () => {},
+  stopDemoMode: () => {},
 };
 
 const ContestContext = createContext<ContestContextType>(defaultContext);
+
+const DEMO_FEED_ITEMS = [
+  "P. Mahomes throws 45yd TD pass",
+  "J. Allen rushes for 12yds",
+  "T. Hill catches 30yd pass",
+  "C. McCaffrey scores rushing TD",
+  "J. Jefferson 20yd reception",
+  "D. Prescott completes 25yd pass",
+  "T. Kelce makes 15yd catch",
+  "A. Ekeler breaks for 18yd run",
+  "D. Adams catches 22yd TD",
+  "J. Hurts scrambles for 10yds",
+];
 
 export const ContestProvider = ({ children }: { children: React.ReactNode }) => {
   const [contestants, setContestants] = useState<Contestant[]>(defaultContext.contestants);
   const [currentContestantIndex, setCurrentContestantIndex] = useState(0);
   const [feedItems, setFeedItems] = useState<FeedItem[]>(defaultContext.feedItems);
+  const [demoInterval, setDemoInterval] = useState<NodeJS.Timeout | null>(null);
+
+  // Start demo mode automatically
+  React.useEffect(() => {
+    startDemoMode();
+    return () => {
+      if (demoInterval) {
+        clearInterval(demoInterval);
+      }
+    };
+  }, []); // Empty dependency array means this runs once on mount
 
   const addFeedItem = (text: string) => {
     const newItem = {
@@ -106,7 +134,39 @@ export const ContestProvider = ({ children }: { children: React.ReactNode }) => 
       text,
       timestamp: Date.now(),
     };
-    setFeedItems((prev) => [newItem, ...prev].slice(0, 10)); // Keep last 10 items
+    setFeedItems((prev) => [...prev, newItem].slice(-5)); // Keep last 5 items, newest at the end
+  };
+
+  const updateRandomStats = () => {
+    setContestants((prev) =>
+      prev.map((contestant) => ({
+        ...contestant,
+        sxp: contestant.sxp + Math.floor(Math.random() * 5),
+        xp: contestant.xp + Math.floor(Math.random() * 3),
+        points: contestant.points + Math.floor(Math.random() * 3),
+        rebounds: contestant.rebounds + Math.floor(Math.random() * 2),
+        assists: contestant.assists + Math.floor(Math.random() * 2),
+      }))
+    );
+  };
+
+  const startDemoMode = () => {
+    if (demoInterval) return; // Already running
+
+    const interval = setInterval(() => {
+      updateRandomStats();
+      const randomFeedItem = DEMO_FEED_ITEMS[Math.floor(Math.random() * DEMO_FEED_ITEMS.length)];
+      addFeedItem(randomFeedItem);
+    }, 3000); // Update every 3 seconds
+
+    setDemoInterval(interval);
+  };
+
+  const stopDemoMode = () => {
+    if (demoInterval) {
+      clearInterval(demoInterval);
+      setDemoInterval(null);
+    }
   };
 
   return (
@@ -116,6 +176,8 @@ export const ContestProvider = ({ children }: { children: React.ReactNode }) => 
         currentContestantIndex,
         feedItems,
         addFeedItem,
+        startDemoMode,
+        stopDemoMode,
       }}
     >
       {children}

@@ -13,7 +13,7 @@ export const GameFeed = () => {
           {feedItems.map((item, index) => (
             <div
               key={item.id}
-              className={`text-[#FFD84D] py-1 px-2 text-center ${index === feedItems.length - 1 ? "text-lg" : index === 0 ? "text-xs" : "text-sm"}`}
+              className={`text-[#FFD84D] py-1 px-2 text-center ${index === feedItems.length - 1 ? "text-lg" : "text-sm"}`}
               style={{
                 opacity: Math.max(0.2, 1 - (feedItems.length - 1 - index) * 0.15), // Fade from 1 to 0.2 from bottom to top
               }}
