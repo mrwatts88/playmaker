@@ -50,11 +50,6 @@ export const GameCircleVertical = () => {
           transformOrigin: "top left",
         }}
       >
-        {/* DraftXP-logo.png */}
-        <div className="absolute inset-0 flex items-center justify-center z-10" style={{ transform: "translateY(-20%)" }}>
-          <img src="/images/DraftXP-logo.png" alt="DraftXP Logo" className="w-auto h-[200px] object-contain" />
-        </div>
-
         {/* Background - Rotated for vertical layout */}
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <div

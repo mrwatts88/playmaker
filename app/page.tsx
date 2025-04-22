@@ -1,23 +1,18 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Home() {
-  const router = useRouter();
-
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)]">
-        <div className="text-center">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">Draft XP</h1>
-          <p className="text-xl text-gray-700 mb-8">Daily fantasy sports with a twist</p>
-          <button
-            onClick={() => router.push("/login")}
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Get Started
-          </button>
-        </div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#2d2d2d] to-[#1a1a1a] text-white px-4">
+      <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center w-full max-w-[90vw]">Marketing Landing Page</h1>
+      <div className="flex gap-4">
+        <Link href="/login" className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-600">
+          Login
+        </Link>
+        <Link href="/signup" className="px-4 py-2 bg-green-500 rounded hover:bg-green-600">
+          Sign Up
+        </Link>
       </div>
     </div>
   );
