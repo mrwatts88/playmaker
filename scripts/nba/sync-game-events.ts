@@ -20,8 +20,8 @@
  * Example: npm run nba:sync-game-events 0022300001
  */
 import { eq } from "drizzle-orm";
-import { db } from "../db/db";
-import { athletes, gameEvents } from "../db/schema/schema";
+import { db } from "../../db/db";
+import { athletes, gameEvents } from "../../db/schema/schema";
 
 const ALLOWED_ACTION_TYPES = new Set(["3pt", "2pt", "rebound", "steal", "block", "freethrow", "game", "period"]);
 
@@ -68,7 +68,7 @@ async function main() {
     }
 
     if (response.status === 403) {
-      console.error(`Game ${gameId} has not started yet. The NBA API returns a 403 when the game is still upcoming.`);
+      console.error(`Game ${gameId} has not started yet.`);
       process.exit(1);
     }
 

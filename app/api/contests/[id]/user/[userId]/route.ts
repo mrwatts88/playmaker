@@ -1,5 +1,5 @@
 import { enterContestSchema } from "@/app/api/schemas";
-import { leagueStatPower, startingContestantXp } from "@/app/constants/statPower";
+import { leagueStatPower, startingContestantXp } from "@/constants/statPower";
 import { db } from "@/db/db";
 import { contestants, contests, users } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";

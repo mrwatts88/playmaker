@@ -3,7 +3,7 @@ import { POST } from "@/app/api/contests/[id]/user/[userId]/route";
 import { db } from "@/db/db";
 import { contests, users, contestants } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
-import { startingContestantXp } from "@/app/constants/statPower";
+import { startingContestantXp } from "@/constants/statPower";
 import { randomUUID } from "crypto";
 
 describe("POST /api/contests/{id}/user/{userId}", () => {

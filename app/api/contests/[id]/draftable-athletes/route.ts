@@ -1,5 +1,5 @@
 import { contestIdSchema } from "@/app/api/schemas";
-import { getDraftableAthletes } from "@/app/service/contest";
+import { getDraftableAthletes } from "@/service/contest";
 import { db } from "@/db/db";
 import { contests } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";

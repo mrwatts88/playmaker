@@ -1,5 +1,5 @@
 import { contestQuerySchema } from "@/app/api/schemas";
-import { createContestWithGames } from "@/app/service/contest";
+import { createContestWithGames } from "@/service/contest";
 import { db } from "@/db/db";
 import { contests } from "@/db/schema/schema";
 import { eq, or } from "drizzle-orm";

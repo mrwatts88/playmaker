@@ -3,7 +3,7 @@ import { z } from "zod";
 import { db } from "@/db/db";
 import { athletes, contestants, rosterMembers, teams } from "@/db/schema/schema";
 import { eq, inArray } from "drizzle-orm";
-import { getDraftableAthletes } from "@/app/service/contest";
+import { getDraftableAthletes } from "@/service/contest";
 
 const contestantIdSchema = z.object({
   id: z.string().uuid(),
