@@ -40,9 +40,9 @@ const StatBar = ({ value, label, labelValue }: { value: number; label: string; l
     <div className="flex flex-row items-center justify-center mb-1">
       <div className="text-[#FFD84D] text-xs mr-2 w-[25px]">{label}</div>
       <div className="flex-1 h-2 bg-gray-800 rounded-[2px] mx-0">
-        <div className="h-full bg-orange-500 rounded-[2px]" style={{ width: `${Math.min(value * 1, 100)}%` }}></div>
+        <div className="h-full bg-orange-500 rounded-[2px]" style={{ width: `${Math.min(value * 10, 100)}%` }}></div>
       </div>
-      <div className="text-[#FFD84D] text-xs ml-2 w-[25px] text-right">{labelValue}</div>
+      <div className="text-[#FFD84D] text-xs ml-1 w-[25px] text-right">{labelValue}x</div>
     </div>
   );
 };
