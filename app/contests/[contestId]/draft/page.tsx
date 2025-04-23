@@ -34,8 +34,8 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
   return (
     <div className="min-h-screen flex flex-col">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-10">
-        <div className="flex justify-between items-center p-4 bg-white">
+      <div className="sticky top-0 z-10 shadow-sm bg-white">
+        <div className="flex justify-between items-center p-4 ">
           <div className="flex items-center">
             <span className="font-bold text-xl">DRAFT</span>
             <span className="font-bold text-xl text-[#FB7B1F]">XP</span>
@@ -47,17 +47,15 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
         </div>
 
         {/* Tabs - Only visible on mobile */}
-        <div className="flex pt-1 md:hidden" style={{ backgroundColor: "var(--background-color)" }}>
+        <div className="flex md:hidden border-t-1 border-t-gray-200 border-b-[#FB7B1F]">
           <button
-            className={`flex-1 py-2 text-center font-medium ${activeTab === "pool" ? "text-[#FB7B1F] border-b-2 border-[#FB7B1F]" : "text-gray-500"}`}
+            className={`flex-1 pt-3 pb-2 text-center font-medium ${activeTab === "pool" ? "text-[#FB7B1F] border-b-2" : "text-gray-500"}`}
             onClick={() => setActiveTab("pool")}
           >
             PLAYER POOL
           </button>
           <button
-            className={`flex-1 py-2 text-center font-medium ${
-              activeTab === "roster" ? "text-[#FB7B1F] border-b-2 border-[#FB7B1F]" : "text-gray-500"
-            }`}
+            className={`flex-1 pt-3 pb-2  text-center font-medium  ${activeTab === "roster" ? "text-[#FB7B1F] border-b-2" : "text-gray-500"}`}
             onClick={() => setActiveTab("roster")}
           >
             ROSTER
@@ -107,7 +105,7 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
       </div>
 
       {/* Sticky Footer */}
-      <div className="sticky bottom-0 px-4 py-3" style={{ backgroundColor: "var(--background-color)" }}>
+      <div className="sticky bottom-0 px-4 py-3 shadow-[0_-1px_2px_0_rgba(0,0,0,0.05)]" style={{ backgroundColor: "var(--background-color)" }}>
         <Link
           href={`/contests/${contestId}/court`}
           className="block w-full text-center rounded-lg bg-[#FB7B1F] text-white px-6 py-3 text-lg font-semibold"

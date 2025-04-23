@@ -15,7 +15,7 @@ interface DraftPlayerCardProps {
 
 const DraftPlayerCard: FC<DraftPlayerCardProps> = ({ name, team, position, price, imageUrl, onAdd, onRemove, variant = "pool" }) => {
   return (
-    <div className="w-full flex items-center justify-between p-2 bg-white rounded-lg">
+    <div className="w-full flex items-center justify-between p-2 bg-white rounded-lg shadow-sm">
       <div className="flex items-center gap-3">
         <div className="relative w-12 h-12 rounded-lg overflow-hidden">
           <Image src={imageUrl} alt={name} fill className="object-cover" />
