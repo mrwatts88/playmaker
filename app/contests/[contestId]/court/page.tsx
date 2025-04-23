@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { GameCircle } from "@/components/GameCircle";
-import { GameCircleVertical } from "@/components/GameCircleVertical";
+import { GameCircle } from "@/components/court/GameCircle";
+import { GameCircleVertical } from "@/components/court/GameCircleVertical";
 
 export default function GamePage() {
   const [isVertical, setIsVertical] = useState(false);
