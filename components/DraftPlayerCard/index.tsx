@@ -1,0 +1,48 @@
+import { FC } from "react";
+import Image from "next/image";
+import Button from "../Button";
+
+interface DraftPlayerCardProps {
+  name: string;
+  team: string;
+  position: string;
+  price?: number;
+  imageUrl: string;
+  onAdd?: () => void;
+  onRemove?: () => void;
+  variant?: "pool" | "roster";
+}
+
+const DraftPlayerCard: FC<DraftPlayerCardProps> = ({ name, team, position, price, imageUrl, onAdd, onRemove, variant = "pool" }) => {
+  return (
+    <div className="w-full flex items-center justify-between p-2 bg-white rounded-lg">
+      <div className="flex items-center gap-3">
+        <div className="relative w-12 h-12 rounded-lg overflow-hidden">
+          <Image src={imageUrl} alt={name} fill className="object-cover" />
+        </div>
+        <div>
+          <h3 className="text-black font-semibold">{name}</h3>
+          <p className="text-sm text-gray-600">
+            {position} - {team}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        {price && <span className="text-black font-semibold">${price}</span>}
+        {variant === "pool" && (
+          <Button variant="add" onClick={onAdd}>
+            {""}
+          </Button>
+        )}
+        {variant === "roster" && (
+          <Button variant="remove" onClick={onRemove}>
+            {""}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default DraftPlayerCard;

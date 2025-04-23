@@ -1,18 +1,120 @@
 "use client";
 
+import DraftPlayerCard from "@/components/DraftPlayerCard";
 import Link from "next/link";
-import { use } from "react";
+import { use, useState } from "react";
+
+const mockPlayers = [
+  { name: "Luka Doncic", team: "DAL", position: "G", price: 45, imageUrl: "https://i.pravatar.cc/300?u=luka_doncic" },
+  { name: "Joel Embiid", team: "PHI", position: "C", price: 42, imageUrl: "https://i.pravatar.cc/300?u=joel_embiid" },
+  { name: "Giannis Antetokounmpo", team: "MIL", position: "F", price: 41, imageUrl: "https://i.pravatar.cc/300?u=giannis" },
+  { name: "Shai Gilgeous-Alexander", team: "OKC", position: "G", price: 38, imageUrl: "https://i.pravatar.cc/300?u=sga" },
+  { name: "Donovan Mitchell", team: "CLE", position: "G", price: 35, imageUrl: "https://i.pravatar.cc/300?u=spida" },
+  { name: "Anthony Edwards", team: "MIN", position: "G", price: 33, imageUrl: "https://i.pravatar.cc/300?u=ant_edwards" },
+  { name: "Tyrese Haliburton", team: "IND", position: "G", price: 32, imageUrl: "https://i.pravatar.cc/300?u=haliburton" },
+  { name: "Jaylen Brown", team: "BOS", position: "F", price: 30, imageUrl: "https://i.pravatar.cc/300?u=jaylen_brown" },
+  { name: "Bam Adebayo", team: "MIA", position: "C", price: 28, imageUrl: "https://i.pravatar.cc/300?u=bam_adebayo" },
+  { name: "Jalen Brunson", team: "NYK", position: "G", price: 27, imageUrl: "https://i.pravatar.cc/300?u=brunson" },
+  { name: "Domantas Sabonis", team: "SAC", position: "F", price: 26, imageUrl: "https://i.pravatar.cc/300?u=sabonis" },
+  { name: "Mikal Bridges", team: "BKN", position: "F", price: 24, imageUrl: "https://i.pravatar.cc/300?u=mikal_bridges" },
+];
+
+const mockRoster = [
+  { name: "Jayson Tatum", team: "BOS", position: "F", price: 40, imageUrl: "https://i.pravatar.cc/300?u=jayson_tatum" },
+  { name: "Devin Booker", team: "PHX", position: "G", price: 37, imageUrl: "https://i.pravatar.cc/300?u=book" },
+  { name: "Karl-Anthony Towns", team: "MIN", position: "C", price: 31, imageUrl: "https://i.pravatar.cc/300?u=kat" },
+];
+
+type Tab = "pool" | "roster";
 
 export default function Draft({ params }: { params: Promise<{ contestId: string }> }) {
   const { contestId } = use(params);
+  const [activeTab, setActiveTab] = useState<Tab>("pool");
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#2d2d2d] to-[#1a1a1a] text-white px-4">
-      <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center w-full max-w-[90vw]">Draft Screen</h1>
-      <p className="mb-4">Contest ID: {contestId}</p>
-      <Link href={`/contests/${contestId}/court`} className="px-4 py-2 bg-blue-500 rounded hover:bg-blue-600">
-        Go to Court
-      </Link>
+    <div className="min-h-screen flex flex-col">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-10">
+        <div className="flex justify-between items-center p-4 bg-white">
+          <div className="flex items-center">
+            <span className="font-bold text-xl">DRAFT</span>
+            <span className="font-bold text-xl text-[#FB7B1F]">XP</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-gray-600">Draft balance:</span>
+            <span className="text-gray-600">$1000</span>
+          </div>
+        </div>
+
+        {/* Tabs - Only visible on mobile */}
+        <div className="flex pt-1 md:hidden" style={{ backgroundColor: "var(--background-color)" }}>
+          <button
+            className={`flex-1 py-2 text-center font-medium ${activeTab === "pool" ? "text-[#FB7B1F] border-b-2 border-[#FB7B1F]" : "text-gray-500"}`}
+            onClick={() => setActiveTab("pool")}
+          >
+            PLAYER POOL
+          </button>
+          <button
+            className={`flex-1 py-2 text-center font-medium ${
+              activeTab === "roster" ? "text-[#FB7B1F] border-b-2 border-[#FB7B1F]" : "text-gray-500"
+            }`}
+            onClick={() => setActiveTab("roster")}
+          >
+            ROSTER
+          </button>
+        </div>
+      </div>
+
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto px-4">
+        {/* Mobile View */}
+        <div className="py-4 md:hidden">
+          {activeTab === "pool" && (
+            <div className="w-full flex flex-col gap-2">
+              {mockPlayers.map((player, index) => (
+                <DraftPlayerCard key={`${player.name}-${index}`} {...player} variant="pool" />
+              ))}
+            </div>
+          )}
+          {activeTab === "roster" && (
+            <div className="w-full flex flex-col gap-2">
+              {mockRoster.map((player, index) => (
+                <DraftPlayerCard key={`${player.name}-${index}`} {...player} variant="roster" />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Desktop/Landscape View */}
+        <div className="hidden md:flex gap-4">
+          <div className="flex-1">
+            <p className="text-md text-gray-500 my-2">PLAYER POOL</p>
+            <div className="flex flex-col gap-2">
+              {mockPlayers.map((player, index) => (
+                <DraftPlayerCard key={`${player.name}-${index}`} {...player} variant="pool" />
+              ))}
+            </div>
+          </div>
+          <div className="flex-1">
+            <p className="text-md text-gray-500 my-2">ROSTER</p>
+            <div className="flex flex-col gap-2">
+              {mockRoster.map((player, index) => (
+                <DraftPlayerCard key={`${player.name}-${index}`} {...player} variant="roster" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Sticky Footer */}
+      <div className="sticky bottom-0 px-4 py-3" style={{ backgroundColor: "var(--background-color)" }}>
+        <Link
+          href={`/contests/${contestId}/court`}
+          className="block w-full text-center rounded-lg bg-[#FB7B1F] text-white px-6 py-3 text-lg font-semibold"
+        >
+          SUBMIT
+        </Link>
+      </div>
     </div>
   );
 }
