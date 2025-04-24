@@ -15,7 +15,7 @@ export const GameCircleVertical = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      const availableWidth = window.innerWidth * 0.9;
+      const availableWidth = window.innerWidth * 1;
       const availableHeight = window.innerHeight * 0.9;
       const scaleX = availableWidth / BASE_WIDTH;
       const scaleY = availableHeight / BASE_HEIGHT;
@@ -35,7 +35,7 @@ export const GameCircleVertical = () => {
 
   return (
     <div
-      className="relative px-4"
+      className="relative"
       style={{
         width: `${BASE_WIDTH * scale}px`,
         height: `${BASE_HEIGHT * scale}px`,

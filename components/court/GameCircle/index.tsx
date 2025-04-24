@@ -51,7 +51,7 @@ export const GameCircle = () => {
         }}
       >
         {/* Background */}
-        <img src="/images/football-bg.png" alt="Football Background" className="absolute inset-0 w-full h-full object-contain z-0" />
+        <img src="/images/football-bg.png" alt="Football Background" className="absolute inset-0 w-full h-full object-cover z-0" />
 
         {/* Game Feed */}
         <GameFeed />
