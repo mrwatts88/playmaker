@@ -33,9 +33,9 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <div className="sticky top-0 z-10 px-4 py-4 bg-white shadow-sm">
-        <div className="flex items-center gap-4">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-10 shadow-sm bg-white">
+        <div className="flex items-center gap-4 px-4 py-4">
           <Link href={`/contests/${contestId}`} className="p-2 -m-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -48,23 +48,15 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
             </svg>
           </Link>
-          <div className="flex items-center">
-            <span className="font-bold text-xl">DRAFT</span>
-            <span className="font-bold text-xl text-[#FB7B1F]">XP</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Sticky Header */}
-      <div className="sticky top-0 z-10 shadow-sm bg-white">
-        <div className="flex justify-between items-center p-4 ">
-          <div className="flex items-center">
-            <span className="font-bold text-xl">DRAFT</span>
-            <span className="font-bold text-xl text-[#FB7B1F]">XP</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-gray-600">Draft balance:</span>
-            <span className="text-gray-600">$1000</span>
+          <div className="flex justify-between w-full">
+            <div className="flex items-center">
+              <span className="font-bold text-xl">DRAFT</span>
+              <span className="font-bold text-xl text-[#FB7B1F]">XP</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-gray-600">Draft balance:</span>
+              <span className="text-gray-600">$1000</span>
+            </div>
           </div>
         </div>
 
