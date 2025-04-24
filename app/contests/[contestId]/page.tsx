@@ -211,7 +211,7 @@ export default function ContestLobby({ params }: { params: Promise<{ contestId: 
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="mx-auto w-full md:w-[70%] max-w-[1000px] flex-1 overflow-y-auto">
         <div className="p-4">
           {/* Contest Info */}
           <div className="bg-white rounded-lg p-4 mb-4 shadow-sm">
@@ -310,10 +310,10 @@ export default function ContestLobby({ params }: { params: Promise<{ contestId: 
       </div>
 
       {/* Footer */}
-      <div className="sticky bottom-0 py-3 px-4" style={{ backgroundColor: "var(--background-color)" }}>
+      <div className="sticky bottom-0 py-3 px-4 shadow-[0_-1px_2px_0_rgba(0,0,0,0.05)]" style={{ backgroundColor: "var(--background-color)" }}>
         <Link
           href={`/contests/${contestId}/draft`}
-          className="block w-full text-center rounded-lg bg-[#FB7B1F] text-white px-6 py-3 text-lg font-semibold"
+          className="block w-full max-w-md mx-auto text-center rounded-lg bg-[#FB7B1F] text-white px-6 py-3 text-lg font-semibold"
         >
           ENTER CONTEST
         </Link>

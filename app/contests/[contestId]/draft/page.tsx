@@ -78,7 +78,7 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto px-4">
+      <div className="mx-auto w-full md:w-[90%] max-w-[1000px] flex-1 overflow-y-auto px-4">
         {/* Mobile View */}
         <div className="py-4 md:hidden">
           {activeTab === "pool" && (
@@ -98,7 +98,7 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
         </div>
 
         {/* Desktop/Landscape View */}
-        <div className="hidden md:flex gap-4">
+        <div className="hidden md:flex gap-4 pb-4">
           <div className="flex-1">
             <p className="text-md text-gray-500 my-2">PLAYER POOL</p>
             <div className="flex flex-col gap-2">
@@ -122,7 +122,7 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
       <div className="sticky bottom-0 px-4 py-3 shadow-[0_-1px_2px_0_rgba(0,0,0,0.05)]" style={{ backgroundColor: "var(--background-color)" }}>
         <Link
           href={`/contests/${contestId}/court`}
-          className="block w-full text-center rounded-lg bg-[#FB7B1F] text-white px-6 py-3 text-lg font-semibold"
+          className=" block w-full max-w-md mx-auto text-center rounded-lg bg-[#FB7B1F] text-white px-6 py-3 text-lg font-semibold"
         >
           SUBMIT
         </Link>

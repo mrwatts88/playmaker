@@ -92,7 +92,7 @@ export default function Contests() {
       </div>
 
       {/* Contest List */}
-      <div className="flex-1 p-4" style={{ backgroundColor: "var(--background-color)" }}>
+      <div className="flex-1 p-4 mx-auto w-full md:w-[70%] max-w-[1000px]" style={{ backgroundColor: "var(--background-color)" }}>
         <div className="flex flex-col gap-3">
           {contests.map((contest) => {
             const LeagueIcon = getLeagueIcon(contest.league);
