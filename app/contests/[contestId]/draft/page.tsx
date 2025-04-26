@@ -1,35 +1,69 @@
 "use client";
 
 import DraftPlayerCard from "@/components/DraftPlayerCard";
+import { useDraftableAthletes } from "@/app/hooks/useDraftableAthletes";
 import Link from "next/link";
 import { use, useState } from "react";
-
-const mockPlayers = [
-  { name: "Luka Doncic", team: "DAL", position: "G", price: 45, imageUrl: "https://i.pravatar.cc/300?u=luka_doncic" },
-  { name: "Joel Embiid", team: "PHI", position: "C", price: 42, imageUrl: "https://i.pravatar.cc/300?u=joel_embiid" },
-  { name: "Giannis Antetokounmpo", team: "MIL", position: "F", price: 41, imageUrl: "https://i.pravatar.cc/300?u=giannis" },
-  { name: "Shai Gilgeous-Alexander", team: "OKC", position: "G", price: 38, imageUrl: "https://i.pravatar.cc/300?u=sga" },
-  { name: "Donovan Mitchell", team: "CLE", position: "G", price: 35, imageUrl: "https://i.pravatar.cc/300?u=spida" },
-  { name: "Anthony Edwards", team: "MIN", position: "G", price: 33, imageUrl: "https://i.pravatar.cc/300?u=ant_edwards" },
-  { name: "Tyrese Haliburton", team: "IND", position: "G", price: 32, imageUrl: "https://i.pravatar.cc/300?u=haliburton" },
-  { name: "Jaylen Brown", team: "BOS", position: "F", price: 30, imageUrl: "https://i.pravatar.cc/300?u=jaylen_brown" },
-  { name: "Bam Adebayo", team: "MIA", position: "C", price: 28, imageUrl: "https://i.pravatar.cc/300?u=bam_adebayo" },
-  { name: "Jalen Brunson", team: "NYK", position: "G", price: 27, imageUrl: "https://i.pravatar.cc/300?u=brunson" },
-  { name: "Domantas Sabonis", team: "SAC", position: "F", price: 26, imageUrl: "https://i.pravatar.cc/300?u=sabonis" },
-  { name: "Mikal Bridges", team: "BKN", position: "F", price: 24, imageUrl: "https://i.pravatar.cc/300?u=mikal_bridges" },
-];
-
-const mockRoster = [
-  { name: "Jayson Tatum", team: "BOS", position: "F", price: 40, imageUrl: "https://i.pravatar.cc/300?u=jayson_tatum" },
-  { name: "Devin Booker", team: "PHX", position: "G", price: 37, imageUrl: "https://i.pravatar.cc/300?u=book" },
-  { name: "Karl-Anthony Towns", team: "MIN", position: "C", price: 31, imageUrl: "https://i.pravatar.cc/300?u=kat" },
-];
 
 type Tab = "pool" | "roster";
 
 export default function Draft({ params }: { params: Promise<{ contestId: string }> }) {
   const { contestId } = use(params);
   const [activeTab, setActiveTab] = useState<Tab>("pool");
+  const { athletes, isLoading, isError } = useDraftableAthletes(contestId);
+  const [roster, setRoster] = useState<string[]>([]); // Array of athlete IDs in roster
+  const [draftBalance, setDraftBalance] = useState<number>(500); // Initial draft balance of $500
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FB7B1F]"></div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-red-500">Error loading athletes</div>
+      </div>
+    );
+  }
+
+  const rosterAthletes = athletes.filter((athlete) => roster.includes(athlete.id));
+  const poolAthletes = athletes.filter((athlete) => !roster.includes(athlete.id));
+
+  const handleAddToRoster = (athleteId: string) => {
+    const athlete = athletes.find((a) => a.id === athleteId);
+    if (!athlete) return;
+
+    // Check if roster is already at max capacity
+    if (roster.length >= 5) {
+      return;
+    }
+
+    // Check if adding the athlete would exceed the draft balance
+    if (draftBalance - athlete.cost < 0) {
+      alert("Insufficient draft balance to add this athlete!");
+      return;
+    }
+
+    setRoster((prev) => [...prev, athleteId]);
+    setDraftBalance((prev) => prev - athlete.cost);
+  };
+
+  const handleRemoveFromRoster = (athleteId: string) => {
+    const athlete = athletes.find((a) => a.id === athleteId);
+    if (!athlete) return;
+
+    setRoster((prev) => prev.filter((id) => id !== athleteId));
+    setDraftBalance((prev) => prev + athlete.cost);
+  };
+
+  // Calculate remaining roster spots
+  const remainingSpots = 5 - roster.length;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -53,9 +87,14 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
               <span className="font-bold text-xl">DRAFT</span>
               <span className="font-bold text-xl text-[#FB7B1F]">XP</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-gray-600">Draft balance:</span>
-              <span className="text-gray-600">$1000</span>
+            <div className="flex flex-col items-end gap-1">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-600">Draft balance:</span>
+                <span className={`font-semibold ${draftBalance < 100 ? "text-red-500" : "text-gray-600"}`}>${draftBalance}</span>
+              </div>
+              <div className="text-sm text-gray-500">
+                {remainingSpots} {remainingSpots === 1 ? "spot" : "spots"} remaining
+              </div>
             </div>
           </div>
         </div>
@@ -83,15 +122,33 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
         <div className="py-4 md:hidden">
           {activeTab === "pool" && (
             <div className="w-full flex flex-col gap-2">
-              {mockPlayers.map((player, index) => (
-                <DraftPlayerCard key={`${player.name}-${index}`} {...player} variant="pool" />
+              {poolAthletes.map((athlete) => (
+                <DraftPlayerCard
+                  key={athlete.id}
+                  name={athlete.name}
+                  team={athlete.team?.name || ""}
+                  position={athlete.position || ""}
+                  price={athlete.cost}
+                  imageUrl={`https://i.pravatar.cc/300?u=${athlete.name.toLowerCase().replace(/\s/g, "_")}`}
+                  variant="pool"
+                  onAction={() => handleAddToRoster(athlete.id)}
+                />
               ))}
             </div>
           )}
           {activeTab === "roster" && (
             <div className="w-full flex flex-col gap-2">
-              {mockRoster.map((player, index) => (
-                <DraftPlayerCard key={`${player.name}-${index}`} {...player} variant="roster" />
+              {rosterAthletes.map((athlete) => (
+                <DraftPlayerCard
+                  key={athlete.id}
+                  name={athlete.name}
+                  team={athlete.team?.name || ""}
+                  position={athlete.position || ""}
+                  price={athlete.cost}
+                  imageUrl={`https://i.pravatar.cc/300?u=${athlete.name.toLowerCase().replace(/\s/g, "_")}`}
+                  variant="roster"
+                  onAction={() => handleRemoveFromRoster(athlete.id)}
+                />
               ))}
             </div>
           )}
@@ -102,16 +159,34 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
           <div className="flex-1">
             <p className="text-md text-gray-500 my-2">PLAYER POOL</p>
             <div className="flex flex-col gap-2">
-              {mockPlayers.map((player, index) => (
-                <DraftPlayerCard key={`${player.name}-${index}`} {...player} variant="pool" />
+              {poolAthletes.map((athlete) => (
+                <DraftPlayerCard
+                  key={athlete.id}
+                  name={athlete.name}
+                  team={athlete.team?.name || ""}
+                  position={athlete.position || ""}
+                  price={athlete.cost}
+                  imageUrl={`https://i.pravatar.cc/300?u=${athlete.name.toLowerCase().replace(/\s/g, "_")}`}
+                  variant="pool"
+                  onAction={() => handleAddToRoster(athlete.id)}
+                />
               ))}
             </div>
           </div>
           <div className="flex-1">
             <p className="text-md text-gray-500 my-2">ROSTER</p>
             <div className="flex flex-col gap-2">
-              {mockRoster.map((player, index) => (
-                <DraftPlayerCard key={`${player.name}-${index}`} {...player} variant="roster" />
+              {rosterAthletes.map((athlete) => (
+                <DraftPlayerCard
+                  key={athlete.id}
+                  name={athlete.name}
+                  team={athlete.team?.name || ""}
+                  position={athlete.position || ""}
+                  price={athlete.cost}
+                  imageUrl={`https://i.pravatar.cc/300?u=${athlete.name.toLowerCase().replace(/\s/g, "_")}`}
+                  variant="roster"
+                  onAction={() => handleRemoveFromRoster(athlete.id)}
+                />
               ))}
             </div>
           </div>

@@ -125,6 +125,14 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       return NextResponse.json({ error: "One or more athletes not in contest" }, { status: 400 });
     }
 
+    // Validate total cost of selected athletes
+    const totalCost = existingAthletes.reduce((sum, athlete) => sum + athlete.cost, 0);
+    if (totalCost > 500) {
+      // todo: don't hardcode this and update the value in the frontend
+      console.error("Total cost of selected athletes exceeds draft balance");
+      return NextResponse.json({ error: "Total cost of selected athletes exceeds draft balance of $500" }, { status: 400 });
+    }
+
     // Create roster members
     const rosterEntries: (typeof rosterMembers.$inferInsert)[] = result.data.athleteIds.map((athleteId) => ({
       contestantId: contestant.id,
