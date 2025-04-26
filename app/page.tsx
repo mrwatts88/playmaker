@@ -27,16 +27,10 @@ export default function Home() {
         <div className="flex justify-center pb-20 px-4">
           <div className="flex flex-col gap-4 w-full max-w-sm">
             <Link
-              href="/login"
+              href="/contests"
               className="w-full px-8 py-3 bg-[#FB7B1F] text-white font-semibold rounded-lg text-lg hover:bg-[#ea6c10] transition-colors text-center"
             >
-              LOGIN
-            </Link>
-            <Link
-              href="/signup"
-              className="w-full px-8 py-3 border-2 border-[#FB7B1F] text-[#FB7B1F] font-semibold rounded-lg text-lg hover:bg-[#FB7B1F] hover:text-white transition-colors text-center"
-            >
-              SIGN UP
+              Enter
             </Link>
           </div>
         </div>

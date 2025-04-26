@@ -142,6 +142,9 @@ export async function POST(request: Request) {
       if (error.message === "One or more games belong to a different league") {
         return NextResponse.json({ error: error.message }, { status: 400 });
       }
+      if (error.message === "One or more games are completed") {
+        return NextResponse.json({ error: error.message }, { status: 400 });
+      }
     }
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
