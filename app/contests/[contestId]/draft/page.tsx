@@ -4,18 +4,23 @@ import DraftPlayerCard from "@/components/DraftPlayerCard";
 import { useDraftableAthletes } from "@/app/hooks/useDraftableAthletes";
 import Link from "next/link";
 import { use, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/app/hooks/useUser";
 
 type Tab = "pool" | "roster";
 
 export default function Draft({ params }: { params: Promise<{ contestId: string }> }) {
+  const router = useRouter();
   const { contestId } = use(params);
   const [activeTab, setActiveTab] = useState<Tab>("pool");
-  const { athletes, isLoading, isError } = useDraftableAthletes(contestId);
+  const { athletes, isLoading: isLoadingAthletes, isError: athletesError } = useDraftableAthletes(contestId);
+  const { user, createAnonymousUser } = useUser();
   const [roster, setRoster] = useState<string[]>([]); // Array of athlete IDs in roster
   const [draftBalance, setDraftBalance] = useState<number>(500); // Initial draft balance of $500
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Loading state
-  if (isLoading) {
+  if (isLoadingAthletes) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FB7B1F]"></div>
@@ -24,7 +29,7 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
   }
 
   // Error state
-  if (isError) {
+  if (athletesError) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-red-500">Error loading athletes</div>
@@ -46,7 +51,6 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
 
     // Check if adding the athlete would exceed the draft balance
     if (draftBalance - athlete.cost < 0) {
-      alert("Insufficient draft balance to add this athlete!");
       return;
     }
 
@@ -60,6 +64,66 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
 
     setRoster((prev) => prev.filter((id) => id !== athleteId));
     setDraftBalance((prev) => prev + athlete.cost);
+  };
+
+  const handleSubmitRoster = async () => {
+    if (roster.length !== 5) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Create anonymous user if we don't have one
+      let currentUser = user;
+      if (!currentUser) {
+        try {
+          currentUser = await createAnonymousUser();
+        } catch (error) {
+          console.error("Failed to create anonymous user:", error);
+          alert("Failed to create user. Please try again.");
+          return;
+        }
+      }
+
+      // Create contestant by entering contest
+      const contestantResponse = await fetch(`/api/contests/${contestId}/user/${currentUser.id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!contestantResponse.ok) {
+        const error = await contestantResponse.json();
+        throw new Error(error.error || "Failed to enter contest");
+      }
+
+      const contestant = await contestantResponse.json();
+
+      // Submit roster
+      const rosterResponse = await fetch(`/api/contestants/${contestant.id}/roster`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          athleteIds: roster,
+        }),
+      });
+
+      if (!rosterResponse.ok) {
+        const error = await rosterResponse.json();
+        throw new Error(error.error || "Failed to submit roster");
+      }
+
+      // Redirect to court page
+      router.push(`/contests/${contestId}/court`);
+    } catch (error) {
+      console.error("Error submitting roster:", error);
+      alert(error instanceof Error ? error.message : "Failed to submit roster. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Calculate remaining roster spots
@@ -195,12 +259,15 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
 
       {/* Sticky Footer */}
       <div className="sticky bottom-0 px-4 py-3 shadow-[0_-1px_2px_0_rgba(0,0,0,0.05)]" style={{ backgroundColor: "var(--background-color)" }}>
-        <Link
-          href={`/contests/${contestId}/court`}
-          className=" block w-full max-w-md mx-auto text-center rounded-lg bg-[#FB7B1F] text-white px-6 py-3 text-lg font-semibold"
+        <button
+          onClick={handleSubmitRoster}
+          disabled={isSubmitting || roster.length !== 5}
+          className={`block w-full max-w-md mx-auto text-center rounded-lg px-6 py-3 text-lg font-semibold ${
+            isSubmitting || roster.length !== 5 ? "bg-gray-400 text-gray-200 cursor-not-allowed" : "bg-[#FB7B1F] text-white hover:bg-[#ea6a0e]"
+          }`}
         >
-          SUBMIT
-        </Link>
+          {isSubmitting ? "SUBMITTING..." : "SUBMIT"}
+        </button>
       </div>
     </div>
   );
