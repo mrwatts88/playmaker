@@ -1,9 +1,9 @@
 "use client";
 
-import { Contestant } from "@/app/hooks/useContestant";
+import type { ContestantWithRoster } from "@/types/api";
 
 interface StatContainerProps {
-  contestant: Contestant;
+  contestant: ContestantWithRoster;
 }
 
 export const StatContainer = ({ contestant }: StatContainerProps) => {
@@ -21,10 +21,17 @@ export const StatContainer = ({ contestant }: StatContainerProps) => {
         &nbsp;&nbsp;
         <span className="text-[#FFD84D] mr-1">XP</span>
       </div>
-      <StatBar value={contestant.statPower.points} label="PTS" labelValue={contestant.statPower.points.toString()} />
-      <StatBar value={contestant.statPower.rebounds} label="REB" labelValue={contestant.statPower.rebounds.toString()} />
-      <StatBar value={contestant.statPower.assists} label="AST" labelValue={contestant.statPower.assists.toString()} />
-      <StatBar value={contestant.statPower.defense} label="DEF" labelValue={contestant.statPower.defense.toString()} />
+      {(() => {
+        const statPower = contestant.statPower as Record<string, number>;
+        return (
+          <>
+            <StatBar value={statPower.points} label="PTS" labelValue={statPower.points?.toString() ?? "0"} />
+            <StatBar value={statPower.rebounds} label="REB" labelValue={statPower.rebounds?.toString() ?? "0"} />
+            <StatBar value={statPower.assists} label="AST" labelValue={statPower.assists?.toString() ?? "0"} />
+            <StatBar value={statPower.defense} label="DEF" labelValue={statPower.defense?.toString() ?? "0"} />
+          </>
+        );
+      })()}
     </div>
   );
 };

@@ -1,25 +1,21 @@
 import useSWR from "swr";
-import { Contest } from "./useContests";
+import type { Contest } from "./useContests";
+import type { ContestantWithRoster } from "@/types/api";
+import type { Game } from "@/types/db";
 
-interface Game {
-  id: string;
-  apiId: string;
-  dataSource: string;
-  league: "nba" | "nfl" | "nhl" | "mlb";
-  name: string;
-  startTime: string;
-  status: "upcoming" | "active" | "completed";
-  homeTeamId: string;
-  awayTeamId: string;
-  createdAt: string;
-  updatedAt: string;
+interface EventHistoryItem {
+  [key: string]: unknown;
+}
+
+interface AvailableBoost {
+  [key: string]: unknown;
 }
 
 interface ContestDetails extends Contest {
   games: Game[];
-  contestants: any[];
-  eventHistory: any[];
-  availableBoosts: any[];
+  contestants: ContestantWithRoster[];
+  eventHistory: EventHistoryItem[];
+  availableBoosts: AvailableBoost[];
 }
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());

@@ -1,4 +1,16 @@
 import useSWR from "swr";
+import type { ContestantWithRoster } from "@/types/api";
+import type { Game } from "@/types/db";
+
+interface EventHistoryItem {
+  // TODO: define fields based on your event structure
+  [key: string]: unknown;
+}
+
+interface AvailableBoost {
+  // TODO: define fields based on your boost structure
+  [key: string]: unknown;
+}
 
 export interface ContestGameState {
   id: string;
@@ -6,10 +18,10 @@ export interface ContestGameState {
   league: string;
   status: string;
   startTime: string;
-  contestants: any[];
-  eventHistory: any[];
-  availableBoosts: any[];
-  games: any[];
+  contestants: ContestantWithRoster[];
+  eventHistory: EventHistoryItem[];
+  availableBoosts: AvailableBoost[];
+  games: Game[];
   // Add more fields as needed
 }
 

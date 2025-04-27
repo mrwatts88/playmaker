@@ -1,7 +1,6 @@
 "use client";
 
 import { useContest } from "@/contexts/ContestContext";
-import Link from "next/link";
 
 export const GameFeed = () => {
   const { feedItems } = useContest();

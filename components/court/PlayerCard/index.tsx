@@ -4,11 +4,11 @@ import { AvatarContainer } from "../AvatarContainer";
 import { StatContainer } from "../StatContainer";
 import Button from "../../Button";
 import Link from "next/link";
-import type { Contestant } from "@/app/hooks/useContestant";
+import type { ContestantWithRoster } from "@/types/api";
 import { MdManageAccounts } from "react-icons/md";
 
 interface PlayerCardProps {
-  contestant: Contestant;
+  contestant: ContestantWithRoster;
   winner?: boolean;
 }
 
