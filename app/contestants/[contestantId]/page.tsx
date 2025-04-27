@@ -1,20 +1,21 @@
 "use client";
 
 import { AvatarContainer } from "@/components/court/AvatarContainer";
-import { useEffect, useRef, useState } from "react";
+import { useContestant } from "@/app/hooks/useContestant";
+import { useEffect, useState } from "react";
+import { use } from "react";
 
 const BASE_WIDTH = 1200;
 const BASE_HEIGHT = 750;
 const BASE_WIDTH_VERTICAL = 750;
 const BASE_HEIGHT_VERTICAL = 1200;
 
-export default function Contestant() {
+export default function Contestant({ params }: { params: Promise<{ contestantId: string }> }) {
+  const { contestantId } = use(params);
+  const { contestant, isLoading, isError } = useContestant(contestantId);
   const [scale, setScale] = useState(1);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isVertical, setIsVertical] = useState(false);
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(true);
-  const badgesContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -38,26 +39,31 @@ export default function Contestant() {
     return () => window.removeEventListener("resize", handleResize);
   }, [isVertical]);
 
-  const handleScroll = () => {
-    if (badgesContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = badgesContainerRef.current;
-      setShowLeftArrow(scrollLeft > 0);
-      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
-    }
-  };
+  // Loading state
+  if (isLoading || !isLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FB7B1F]"></div>
+      </div>
+    );
+  }
 
-  const scrollBadges = (direction: "left" | "right") => {
-    if (badgesContainerRef.current) {
-      const scrollAmount = 200; // Adjust this value to control scroll distance
-      badgesContainerRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  };
+  // Error state
+  if (isError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-red-500">Error loading contestant</div>
+      </div>
+    );
+  }
 
-  if (!isLoaded) {
-    return null;
+  // Not found state
+  if (!contestant) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-500">Contestant not found</div>
+      </div>
+    );
   }
 
   const baseWidth = isVertical ? BASE_WIDTH_VERTICAL : BASE_WIDTH;
@@ -130,17 +136,17 @@ export default function Contestant() {
                   <div className="mb-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h1 className="text-xl font-bold">John Smith</h1>
-                        <p className="text-sm text-gray-400">1st out of 6</p>
+                        <h1 className="text-xl font-bold">{contestant.name}</h1>
+                        <p className="text-sm text-gray-400">NBA Contestant</p>
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="bg-gray-800/50 px-3 py-1.5 rounded-lg">
                           <span className="text-xs text-gray-400">Spendable XP</span>
-                          <div className="text-lg font-bold text-green-400">1,500</div>
+                          <div className="text-lg font-bold text-green-400">{contestant.spendableXp}</div>
                         </div>
                         <div className="bg-gray-800/50 px-3 py-1.5 rounded-lg">
                           <span className="text-xs text-gray-400">Total XP</span>
-                          <div className="text-lg font-bold text-blue-400">3,750</div>
+                          <div className="text-lg font-bold text-orange-500">{contestant.totalXp}</div>
                         </div>
                       </div>
                     </div>
@@ -149,7 +155,7 @@ export default function Contestant() {
                   {/* Stat Upgrade Section */}
                   <div className="mb-6">
                     <div className="space-y-3">
-                      {/* Rushing */}
+                      {/* Points */}
                       <div className="bg-gray-800/50 p-3 rounded-lg">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center">
@@ -158,7 +164,7 @@ export default function Contestant() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                               </svg>
                             </div>
-                            <span className="font-medium">Rushing</span>
+                            <span className="font-medium">Points</span>
                           </div>
                           <button className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-lg flex items-center gap-1 transition-colors text-sm">
                             <span>+10%</span>
@@ -166,11 +172,11 @@ export default function Contestant() {
                           </button>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div className="bg-orange-500 h-2 rounded-full" style={{ width: "75%" }}></div>
+                          <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${contestant.statPower.points}%` }}></div>
                         </div>
                       </div>
 
-                      {/* Passing */}
+                      {/* Assists */}
                       <div className="bg-gray-800/50 p-3 rounded-lg">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center">
@@ -179,7 +185,7 @@ export default function Contestant() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7l4-4m0 0l4 4m-4-4v18" />
                               </svg>
                             </div>
-                            <span className="font-medium">Passing</span>
+                            <span className="font-medium">Assists</span>
                           </div>
                           <button className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-lg flex items-center gap-1 transition-colors text-sm">
                             <span>+10%</span>
@@ -187,11 +193,11 @@ export default function Contestant() {
                           </button>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div className="bg-orange-500 h-2 rounded-full" style={{ width: "60%" }}></div>
+                          <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${contestant.statPower.assists}%` }}></div>
                         </div>
                       </div>
 
-                      {/* Touchdowns */}
+                      {/* Defense */}
                       <div className="bg-gray-800/50 p-3 rounded-lg">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center">
@@ -201,11 +207,11 @@ export default function Contestant() {
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
                                   strokeWidth={2}
-                                  d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                                 />
                               </svg>
                             </div>
-                            <span className="font-medium">Touchdowns</span>
+                            <span className="font-medium">Defense</span>
                           </div>
                           <button className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-lg flex items-center gap-1 transition-colors text-sm">
                             <span>+10%</span>
@@ -213,136 +219,52 @@ export default function Contestant() {
                           </button>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div className="bg-orange-500 h-2 rounded-full" style={{ width: "45%" }}></div>
+                          <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${contestant.statPower.defense}%` }}></div>
                         </div>
                       </div>
-                    </div>
-                  </div>
 
-                  {/* Purchase Badges Section */}
-                  <div className="mb-6">
-                    <div className="grid grid-cols-3 gap-3">
-                      {/* Placeholder for purchasable badges - replace with actual badge components */}
-                      {[
-                        { icon: "M13 10V3L4 14h7v7l9-11h-7z", name: "Speed Demon", xp: 500 },
-                        {
-                          icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10",
-                          name: "Power Player",
-                          xp: 750,
-                        },
-                        {
-                          icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z",
-                          name: "Team Captain",
-                          xp: 1000,
-                        },
-                      ].map((badge, index) => (
-                        <div key={index} className="bg-gray-800/50 p-3 rounded-lg text-center">
-                          <div className="w-12 h-12 mx-auto mb-1 bg-gray-700 rounded-full flex items-center justify-center">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={badge.icon} />
-                            </svg>
-                          </div>
-                          <p className="text-xs font-medium">{badge.name}</p>
-                          <p className="text-xs text-green-400">{badge.xp} XP</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Badges Section */}
-                  <div className="mb-6">
-                    <div className="relative">
-                      {/* Left Arrow */}
-                      {showLeftArrow && (
-                        <button
-                          onClick={() => scrollBadges("left")}
-                          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/50 p-1.5 rounded-full hover:bg-black/70 transition-colors"
-                        >
-                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                          </svg>
-                        </button>
-                      )}
-
-                      {/* Badges Container */}
-                      <div
-                        ref={badgesContainerRef}
-                        onScroll={handleScroll}
-                        className="flex gap-3 overflow-x-auto scrollbar-hide"
-                        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-                      >
-                        {/* Placeholder for badges - replace with actual badge components */}
-                        {[
-                          {
-                            icon: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z",
-                            name: "Star Player",
-                          },
-                          {
-                            icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z",
-                            name: "Defense Master",
-                          },
-                          { icon: "M13 10V3L4 14h7v7l9-11h-7z", name: "Speed Demon" },
-                          {
-                            icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10",
-                            name: "Trophy Hunter",
-                          },
-                          {
-                            icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z",
-                            name: "Shield Guard",
-                          },
-                          { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", name: "Time Master" },
-                          {
-                            icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z",
-                            name: "Shield Guard",
-                          },
-                          { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", name: "Time Master" },
-                          {
-                            icon: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z",
-                            name: "Star Player",
-                          },
-                          {
-                            icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z",
-                            name: "Defense Master",
-                          },
-                        ].map((badge, index) => (
-                          <div key={index} className="flex-shrink-0 w-[100px] bg-gray-800/50 p-3 rounded-lg text-center">
-                            <div className="w-12 h-12 mx-auto mb-1 bg-gray-700 rounded-full flex items-center justify-center">
-                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={badge.icon} />
+                      {/* Rebounds */}
+                      <div className="bg-gray-800/50 p-3 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center">
+                            <div className="w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center mr-2">
+                              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                               </svg>
                             </div>
-                            <p className="text-xs">{badge.name}</p>
+                            <span className="font-medium">Rebounds</span>
                           </div>
-                        ))}
+                          <button className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-lg flex items-center gap-1 transition-colors text-sm">
+                            <span>+10%</span>
+                            <span className="text-xs">(175 XP)</span>
+                          </button>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                          <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${contestant.statPower.rebounds}%` }}></div>
+                        </div>
                       </div>
-
-                      {/* Right Arrow */}
-                      {showRightArrow && (
-                        <button
-                          onClick={() => scrollBadges("right")}
-                          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/50 p-1.5 rounded-full hover:bg-black/70 transition-colors"
-                        >
-                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </button>
-                      )}
                     </div>
                   </div>
 
                   {/* Roster Section */}
                   <div className="mb-6">
                     <div className="grid grid-cols-5 gap-3">
-                      {/* Placeholder for roster - replace with actual athlete components */}
-                      {[1, 2, 3, 4, 5].map((athlete) => (
-                        <div key={athlete} className="bg-gray-800/50 p-3 rounded-lg text-center flex flex-col items-center">
+                      {contestant.roster.map((member) => (
+                        <div key={member.athleteId} className="bg-gray-800/50 p-3 rounded-lg text-center flex flex-col items-center">
                           <img
-                            src={`https://i.pravatar.cc/150?img=${athlete + 10}`}
-                            alt={`Athlete ${athlete}`}
-                            className="w-12 h-12 rounded-full mb-2"
+                            src={`https://cdn.nba.com/headshots/nba/latest/1040x760/${member.athlete.apiId}.png`}
+                            alt={member.athlete.name}
+                            className="w-12 h-12 rounded-full mb-2 object-cover bg-gray-700"
+                            onError={(e) => {
+                              e.currentTarget.src = `https://i.pravatar.cc/150?u=${member.athlete.name.toLowerCase().replace(/\s/g, "_")}`;
+                            }}
                           />
-                          <p className="text-xs font-medium">Athlete {athlete}</p>
-                          <p className="text-xs text-gray-400">Position</p>
+                          <p className="text-xs font-medium">{member.athlete.name}</p>
+                          <div className="flex items-center gap-1 text-xs text-gray-400">
+                            <span>{member.athlete.position}</span>
+                            <span>•</span>
+                            <span>{member.athlete.team?.name}</span>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -355,17 +277,17 @@ export default function Contestant() {
                   <div className="mb-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h1 className="text-xl font-bold">John Smith</h1>
-                        <p className="text-sm text-gray-400">1st out of 6</p>
+                        <h1 className="text-xl font-bold">{contestant.name}</h1>
+                        <p className="text-sm text-gray-400">NBA Contestant</p>
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="bg-gray-800/50 px-3 py-1.5 rounded-lg">
                           <span className="text-xs text-gray-400">Spendable XP</span>
-                          <div className="text-lg font-bold text-green-400">1,500</div>
+                          <div className="text-lg font-bold text-green-400">{contestant.spendableXp}</div>
                         </div>
                         <div className="bg-gray-800/50 px-3 py-1.5 rounded-lg">
                           <span className="text-xs text-gray-400">Total XP</span>
-                          <div className="text-lg font-bold text-orange-500">3,750</div>
+                          <div className="text-lg font-bold text-orange-500">{contestant.totalXp}</div>
                         </div>
                       </div>
                     </div>
@@ -378,7 +300,7 @@ export default function Contestant() {
                       {/* Stat Upgrade Section */}
                       <div>
                         <div className="space-y-3">
-                          {/* Rushing */}
+                          {/* Points */}
                           <div className="bg-gray-800/50 p-3 rounded-lg">
                             <div className="flex items-center justify-between mb-2">
                               <div className="flex items-center">
@@ -387,7 +309,7 @@ export default function Contestant() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                                   </svg>
                                 </div>
-                                <span className="font-medium">Rushing</span>
+                                <span className="font-medium">Points</span>
                               </div>
                               <button className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-lg flex items-center gap-1 transition-colors text-sm">
                                 <span>+10%</span>
@@ -395,11 +317,11 @@ export default function Contestant() {
                               </button>
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
-                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: "75%" }}></div>
+                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${contestant.statPower.points}%` }}></div>
                             </div>
                           </div>
 
-                          {/* Passing */}
+                          {/* Assists */}
                           <div className="bg-gray-800/50 p-3 rounded-lg">
                             <div className="flex items-center justify-between mb-2">
                               <div className="flex items-center">
@@ -408,7 +330,7 @@ export default function Contestant() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7l4-4m0 0l4 4m-4-4v18" />
                                   </svg>
                                 </div>
-                                <span className="font-medium">Passing</span>
+                                <span className="font-medium">Assists</span>
                               </div>
                               <button className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-lg flex items-center gap-1 transition-colors text-sm">
                                 <span>+10%</span>
@@ -416,59 +338,7 @@ export default function Contestant() {
                               </button>
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
-                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: "60%" }}></div>
-                            </div>
-                          </div>
-
-                          {/* Touchdowns */}
-                          <div className="bg-gray-800/50 p-3 rounded-lg">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center">
-                                <div className="w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center mr-2">
-                                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-                                    />
-                                  </svg>
-                                </div>
-                                <span className="font-medium">Touchdowns</span>
-                              </div>
-                              <button className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-lg flex items-center gap-1 transition-colors text-sm">
-                                <span>+10%</span>
-                                <span className="text-xs">(200 XP)</span>
-                              </button>
-                            </div>
-                            <div className="w-full bg-gray-700 rounded-full h-2">
-                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: "45%" }}></div>
-                            </div>
-                          </div>
-
-                          {/* Special Teams */}
-                          <div className="bg-gray-800/50 p-3 rounded-lg">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center">
-                                <div className="w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center mr-2">
-                                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                                    />
-                                  </svg>
-                                </div>
-                                <span className="font-medium">Special Teams</span>
-                              </div>
-                              <button className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-lg flex items-center gap-1 transition-colors text-sm">
-                                <span>+10%</span>
-                                <span className="text-xs">(175 XP)</span>
-                              </button>
-                            </div>
-                            <div className="w-full bg-gray-700 rounded-full h-2">
-                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: "30%" }}></div>
+                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${contestant.statPower.assists}%` }}></div>
                             </div>
                           </div>
 
@@ -482,7 +352,7 @@ export default function Contestant() {
                                       strokeLinecap="round"
                                       strokeLinejoin="round"
                                       strokeWidth={2}
-                                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                                     />
                                   </svg>
                                 </div>
@@ -490,11 +360,32 @@ export default function Contestant() {
                               </div>
                               <button className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-lg flex items-center gap-1 transition-colors text-sm">
                                 <span>+10%</span>
-                                <span className="text-xs">(225 XP)</span>
+                                <span className="text-xs">(200 XP)</span>
                               </button>
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
-                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: "25%" }}></div>
+                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${contestant.statPower.defense}%` }}></div>
+                            </div>
+                          </div>
+
+                          {/* Rebounds */}
+                          <div className="bg-gray-800/50 p-3 rounded-lg">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center">
+                                <div className="w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center mr-2">
+                                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                  </svg>
+                                </div>
+                                <span className="font-medium">Rebounds</span>
+                              </div>
+                              <button className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-lg flex items-center gap-1 transition-colors text-sm">
+                                <span>+10%</span>
+                                <span className="text-xs">(175 XP)</span>
+                              </button>
+                            </div>
+                            <div className="w-full bg-gray-700 rounded-full h-2">
+                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${contestant.statPower.rebounds}%` }}></div>
                             </div>
                           </div>
                         </div>
@@ -503,130 +394,25 @@ export default function Contestant() {
 
                     {/* Right Column */}
                     <div className="space-y-6">
-                      {/* Purchase Badges Section - Moved to top */}
-                      <div>
-                        <div className="grid grid-cols-3 gap-3">
-                          {/* Placeholder for purchasable badges - replace with actual badge components */}
-                          {[
-                            { icon: "M13 10V3L4 14h7v7l9-11h-7z", name: "Speed Demon", xp: 500 },
-                            {
-                              icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10",
-                              name: "Power Player",
-                              xp: 750,
-                            },
-                            {
-                              icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z",
-                              name: "Team Captain",
-                              xp: 1000,
-                            },
-                          ].map((badge, index) => (
-                            <div key={index} className="bg-gray-800/50 p-3 rounded-lg text-center">
-                              <div className="w-12 h-12 mx-auto mb-1 bg-gray-700 rounded-full flex items-center justify-center">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={badge.icon} />
-                                </svg>
-                              </div>
-                              <p className="text-xs font-medium">{badge.name}</p>
-                              <p className="text-xs text-green-400">{badge.xp} XP</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Badges Section */}
-                      <div>
-                        <div className="relative">
-                          {/* Left Arrow */}
-                          {showLeftArrow && (
-                            <button
-                              onClick={() => scrollBadges("left")}
-                              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/50 p-1.5 rounded-full hover:bg-black/70 transition-colors"
-                            >
-                              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                              </svg>
-                            </button>
-                          )}
-
-                          {/* Badges Container */}
-                          <div
-                            ref={badgesContainerRef}
-                            onScroll={handleScroll}
-                            className="flex gap-3 overflow-x-auto scrollbar-hide"
-                            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-                          >
-                            {/* Placeholder for badges - replace with actual badge components */}
-                            {[
-                              {
-                                icon: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z",
-                                name: "Star Player",
-                              },
-                              {
-                                icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z",
-                                name: "Defense Master",
-                              },
-                              { icon: "M13 10V3L4 14h7v7l9-11h-7z", name: "Speed Demon" },
-                              {
-                                icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10",
-                                name: "Trophy Hunter",
-                              },
-                              {
-                                icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z",
-                                name: "Shield Guard",
-                              },
-                              { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", name: "Time Master" },
-                              {
-                                icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z",
-                                name: "Shield Guard",
-                              },
-                              { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", name: "Time Master" },
-                              {
-                                icon: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z",
-                                name: "Star Player",
-                              },
-                              {
-                                icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z",
-                                name: "Defense Master",
-                              },
-                            ].map((badge, index) => (
-                              <div key={index} className="flex-shrink-0 w-[100px] bg-gray-800/50 p-3 rounded-lg text-center">
-                                <div className="w-12 h-12 mx-auto mb-1 bg-gray-700 rounded-full flex items-center justify-center">
-                                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={badge.icon} />
-                                  </svg>
-                                </div>
-                                <p className="text-xs">{badge.name}</p>
-                              </div>
-                            ))}
-                          </div>
-
-                          {/* Right Arrow */}
-                          {showRightArrow && (
-                            <button
-                              onClick={() => scrollBadges("right")}
-                              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/50 p-1.5 rounded-full hover:bg-black/70 transition-colors"
-                            >
-                              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                              </svg>
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
                       {/* Roster Section */}
                       <div>
-                        <div className="grid grid-cols-5 gap-3">
-                          {/* Placeholder for roster - replace with actual athlete components */}
-                          {[1, 2, 3, 4, 5].map((athlete) => (
-                            <div key={athlete} className="bg-gray-800/50 p-3 rounded-lg text-center flex flex-col items-center">
+                        <div className="grid grid-cols-3 gap-3">
+                          {contestant.roster.map((member) => (
+                            <div key={member.athleteId} className="bg-gray-800/50 p-3 rounded-lg text-center flex flex-col items-center">
                               <img
-                                src={`https://i.pravatar.cc/150?img=${athlete + 10}`}
-                                alt={`Athlete ${athlete}`}
-                                className="w-12 h-12 rounded-full mb-2"
+                                src={`https://cdn.nba.com/headshots/nba/latest/1040x760/${member.athlete.apiId}.png`}
+                                alt={member.athlete.name}
+                                className="w-12 h-12 rounded-full mb-2 object-cover bg-gray-700"
+                                onError={(e) => {
+                                  e.currentTarget.src = `https://i.pravatar.cc/150?u=${member.athlete.name.toLowerCase().replace(/\s/g, "_")}`;
+                                }}
                               />
-                              <p className="text-xs font-medium">Athlete {athlete}</p>
-                              <p className="text-xs text-gray-400">Position</p>
+                              <p className="text-xs font-medium">{member.athlete.name}</p>
+                              <div className="flex items-center gap-1 text-xs text-gray-400">
+                                <span>{member.athlete.position}</span>
+                                <span>•</span>
+                                <span>{member.athlete.team?.name}</span>
+                              </div>
                             </div>
                           ))}
                         </div>

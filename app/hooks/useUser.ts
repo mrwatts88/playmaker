@@ -2,11 +2,25 @@ import useSWR from "swr";
 
 const USER_ID_KEY = "playmaker_user_id";
 
+interface Contestant {
+  id: string;
+  contestId: string;
+  userId: string;
+  name: string;
+  contest: {
+    id: string;
+    name: string;
+    status: "upcoming" | "active" | "completed";
+    league: "nba" | "nfl" | "nhl" | "mlb";
+  };
+}
+
 interface User {
   id: string;
   name: string;
   createdAt: string;
   updatedAt: string;
+  contestants?: Contestant[];
 }
 
 async function createAnonymousUser(): Promise<User> {

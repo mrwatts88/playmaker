@@ -237,6 +237,10 @@ export const contestsRelations = relations(contests, ({ many }) => ({
   }),
 }));
 
+export const usersRelations = relations(users, ({ many }) => ({
+  contestants: many(contestants),
+}));
+
 export const contestantBoostsRelations = relations(contestantBoosts, ({ one }) => ({
   boost: one(boosts, {
     fields: [contestantBoosts.boostId],
@@ -272,6 +276,10 @@ export const contestantsRelations = relations(contestants, ({ many, one }) => ({
     fields: [contestants.contestId],
     references: [contests.id],
     relationName: "contest_contestants",
+  }),
+  user: one(users, {
+    fields: [contestants.userId],
+    references: [users.id],
   }),
 }));
 

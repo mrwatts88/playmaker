@@ -193,7 +193,7 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
                   team={athlete.team?.name || ""}
                   position={athlete.position || ""}
                   price={athlete.cost}
-                  imageUrl={`https://i.pravatar.cc/300?u=${athlete.name.toLowerCase().replace(/\s/g, "_")}`}
+                  imageUrl={`https://cdn.nba.com/headshots/nba/latest/1040x760/${athlete.apiId}.png`}
                   variant="pool"
                   onAction={() => handleAddToRoster(athlete.id)}
                 />
@@ -209,7 +209,7 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
                   team={athlete.team?.name || ""}
                   position={athlete.position || ""}
                   price={athlete.cost}
-                  imageUrl={`https://i.pravatar.cc/300?u=${athlete.name.toLowerCase().replace(/\s/g, "_")}`}
+                  imageUrl={`https://cdn.nba.com/headshots/nba/latest/1040x760/${athlete.apiId}.png`}
                   variant="roster"
                   onAction={() => handleRemoveFromRoster(athlete.id)}
                 />
@@ -230,7 +230,8 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
                   team={athlete.team?.name || ""}
                   position={athlete.position || ""}
                   price={athlete.cost}
-                  imageUrl={`https://i.pravatar.cc/300?u=${athlete.name.toLowerCase().replace(/\s/g, "_")}`}
+                  imageUrl={`https://cdn.nba.com/headshots/nba/latest/1040x760/${athlete.apiId}.png`}
+                  fallbackImageUrl={`https://i.pravatar.cc/300?u=${athlete.name.toLowerCase().replace(/\s/g, "_")}`}
                   variant="pool"
                   onAction={() => handleAddToRoster(athlete.id)}
                 />
@@ -247,7 +248,8 @@ export default function Draft({ params }: { params: Promise<{ contestId: string 
                   team={athlete.team?.name || ""}
                   position={athlete.position || ""}
                   price={athlete.cost}
-                  imageUrl={`https://i.pravatar.cc/300?u=${athlete.name.toLowerCase().replace(/\s/g, "_")}`}
+                  imageUrl={`https://cdn.nba.com/headshots/nba/latest/1040x760/${athlete.apiId}.png`}
+                  fallbackImageUrl={`https://i.pravatar.cc/300?u=${athlete.name.toLowerCase().replace(/\s/g, "_")}`}
                   variant="roster"
                   onAction={() => handleRemoveFromRoster(athlete.id)}
                 />

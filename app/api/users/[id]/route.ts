@@ -35,6 +35,13 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
   try {
     const user = await db.query.users.findFirst({
       where: eq(users.id, result.data.id),
+      with: {
+        contestants: {
+          with: {
+            contest: true,
+          },
+        },
+      },
     });
 
     if (!user) {

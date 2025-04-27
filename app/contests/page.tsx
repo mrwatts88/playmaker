@@ -1,6 +1,7 @@
 "use client";
 
 import { useContests } from "@/app/hooks/useContests";
+import { useUser } from "@/app/hooks/useUser";
 import Link from "next/link";
 import { FaBasketballBall, FaFootballBall, FaBaseballBall } from "react-icons/fa";
 
@@ -18,9 +19,10 @@ const getLeagueIcon = (league: string) => {
 };
 
 export default function Contests() {
-  const { contests, isLoading, isError } = useContests();
+  const { contests, isLoading: isContestsLoading, isError: isContestsError } = useContests();
+  const { user, isLoading: isUserLoading, isError: isUserError } = useUser();
 
-  if (isLoading) {
+  if (isContestsLoading || isUserLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FB7B1F]"></div>
@@ -28,13 +30,16 @@ export default function Contests() {
     );
   }
 
-  if (isError) {
+  if (isContestsError || isUserError) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-red-500">Error loading contests</div>
+        <div className="text-red-500">Error loading data</div>
       </div>
     );
   }
+
+  // Create a set of contest IDs that the user is in
+  const userContestIds = new Set(user?.contestants?.map((c) => c.contestId) || []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -56,8 +61,14 @@ export default function Contests() {
         <div className="flex flex-col gap-3">
           {contests?.map((contest) => {
             const LeagueIcon = getLeagueIcon(contest.league);
+            const isUserInContest = userContestIds.has(contest.id);
+
             return (
-              <Link key={contest.id} href={`/contests/${contest.id}`} className="block bg-white rounded-lg p-4 shadow-sm">
+              <Link
+                key={contest.id}
+                href={`/contests/${contest.id}${isUserInContest ? "/court" : ""}`}
+                className="block bg-white rounded-lg p-4 shadow-sm"
+              >
                 <div className="flex justify-between items-center">
                   <div className="flex-1">
                     <div className="text-lg font-semibold mb-2">{contest.name}</div>
@@ -72,7 +83,9 @@ export default function Contests() {
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <button className="bg-[#FB7B1F] text-white px-4 py-2 rounded font-semibold">ENTER</button>
+                    <button className={`${isUserInContest ? "bg-green-600" : "bg-[#FB7B1F]"} text-white px-4 py-2 rounded font-semibold`}>
+                      {isUserInContest ? "GO TO ROOM" : "ENTER"}
+                    </button>
                   </div>
                 </div>
               </Link>

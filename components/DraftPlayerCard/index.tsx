@@ -16,9 +16,9 @@ const DraftPlayerCard: FC<DraftPlayerCardProps> = ({ name, team, position, price
   return (
     <div className="w-full flex items-center justify-between p-2 bg-white rounded-lg shadow-sm">
       <div className="flex items-center gap-3">
-        {/* <div className="relative w-12 h-12 rounded-lg overflow-hidden">
+        <div className="relative w-12 h-12 rounded-lg overflow-hidden">
           <Image src={imageUrl} alt={name} fill className="object-cover" />
-        </div> */}
+        </div>
         <div>
           <h3 className="text-black font-semibold">{name}</h3>
           <p className="text-sm text-gray-600">
