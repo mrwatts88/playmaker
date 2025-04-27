@@ -179,6 +179,30 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                         </div>
                       </div>
 
+                      {/* Rebounds */}
+                      <div className="bg-gray-800/50 p-3 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center">
+                            <div className="w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center mr-2">
+                              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                              </svg>
+                            </div>
+                            <span className="font-medium">Rebounds</span>
+                          </div>
+                          <button className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-lg flex items-center gap-1 transition-colors text-sm">
+                            <span>+10%</span>
+                            <span className="text-xs">(175 XP)</span>
+                          </button>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                          <div
+                            className="bg-orange-500 h-2 rounded-full"
+                            style={{ width: `${Math.min(contestant.statPower.rebounds * 10, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+
                       {/* Assists */}
                       <div className="bg-gray-800/50 p-3 rounded-lg">
                         <div className="flex items-center justify-between mb-2">
@@ -202,7 +226,6 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                           ></div>
                         </div>
                       </div>
-
                       {/* Defense */}
                       <div className="bg-gray-800/50 p-3 rounded-lg">
                         <div className="flex items-center justify-between mb-2">
@@ -228,30 +251,6 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                           <div
                             className="bg-orange-500 h-2 rounded-full"
                             style={{ width: `${Math.min(contestant.statPower.defense * 10, 100)}%` }}
-                          ></div>
-                        </div>
-                      </div>
-
-                      {/* Rebounds */}
-                      <div className="bg-gray-800/50 p-3 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center">
-                            <div className="w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center mr-2">
-                              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                              </svg>
-                            </div>
-                            <span className="font-medium">Rebounds</span>
-                          </div>
-                          <button className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded-lg flex items-center gap-1 transition-colors text-sm">
-                            <span>+10%</span>
-                            <span className="text-xs">(175 XP)</span>
-                          </button>
-                        </div>
-                        <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div
-                            className="bg-orange-500 h-2 rounded-full"
-                            style={{ width: `${Math.min(contestant.statPower.rebounds * 10, 100)}%` }}
                           ></div>
                         </div>
                       </div>

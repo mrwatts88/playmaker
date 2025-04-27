@@ -9,7 +9,7 @@ interface StatContainerProps {
 export const StatContainer = ({ contestant }: StatContainerProps) => {
   return (
     <div
-      className={`z-10 rounded-2xl border p-3 bg-[#0A0A0A] w-[170px] h-[150px] shadow-lg -mt-6 flex flex-col justify-center ${
+      className={`z-10 rounded-2xl border p-3 bg-[#0A0A0A] w-[170px] h-[165px] shadow-lg -mt-6 flex flex-col justify-center ${
         false ? "border-yellow-500 shadow-[0_0_1em_rgba(245,158,11,0.8)]" : "border-gray-700"
       }`}
     >
@@ -21,9 +21,10 @@ export const StatContainer = ({ contestant }: StatContainerProps) => {
         &nbsp;&nbsp;
         <span className="text-[#FFD84D] mr-1">XP</span>
       </div>
-      <StatBar value={contestant.statPower.points} label="TDS" labelValue={contestant.statPower.points.toString()} />
-      <StatBar value={contestant.statPower.rebounds} label="RSH" labelValue={contestant.statPower.rebounds.toString()} />
-      <StatBar value={contestant.statPower.assists} label="PAS" labelValue={contestant.statPower.assists.toString()} />
+      <StatBar value={contestant.statPower.points} label="PTS" labelValue={contestant.statPower.points.toString()} />
+      <StatBar value={contestant.statPower.rebounds} label="REB" labelValue={contestant.statPower.rebounds.toString()} />
+      <StatBar value={contestant.statPower.assists} label="AST" labelValue={contestant.statPower.assists.toString()} />
+      <StatBar value={contestant.statPower.defense} label="DEF" labelValue={contestant.statPower.defense.toString()} />
     </div>
   );
 };
