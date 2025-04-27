@@ -1,6 +1,7 @@
 "use client";
 
 import { useContest } from "@/contexts/ContestContext";
+import Image from "next/image";
 
 export const GameFeed = () => {
   const { feedItems } = useContest();
@@ -9,7 +10,7 @@ export const GameFeed = () => {
     <div className="absolute top-[44%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px]">
       {/* Logo */}
       <div className="mb-[-50px] flex justify-center">
-        <img src="/images/DraftXP-logo.png" alt="DraftXP Logo" className="w-auto h-[200px] object-contain" />
+        <Image src="/images/DraftXP-logo.png" alt="DraftXP Logo" className="w-auto h-[200px] object-contain" width={200} height={200} />
       </div>
 
       {/* Feed items with opacity gradient */}

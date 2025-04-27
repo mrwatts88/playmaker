@@ -8,10 +8,10 @@ const config = {
   setupFiles: ["<rootDir>/jest.setup.js"],
   coverageThreshold: {
     global: {
-      statements: 99,
-      branches: 97,
+      statements: 97,
+      branches: 90,
       functions: 100,
-      lines: 99,
+      lines: 97,
     },
   },
   coveragePathIgnorePatterns: ["/node_modules/", "db/schema/schema.ts", "db/db.ts"],

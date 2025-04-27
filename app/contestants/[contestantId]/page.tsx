@@ -4,6 +4,8 @@ import { AvatarContainer } from "@/components/court/AvatarContainer";
 import { useContestant } from "@/app/hooks/useContestant";
 import { useEffect, useState } from "react";
 import { use } from "react";
+import Image from "next/image";
+import type { RosterMember } from "@/types/api";
 
 const BASE_WIDTH = 1200;
 const BASE_HEIGHT = 750;
@@ -69,6 +71,8 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
   const baseWidth = isVertical ? BASE_WIDTH_VERTICAL : BASE_WIDTH;
   const baseHeight = isVertical ? BASE_HEIGHT_VERTICAL : BASE_HEIGHT;
 
+  const statPower = contestant.statPower as Record<string, number>;
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-[#2E2A24] overflow-hidden">
       <div
@@ -97,10 +101,10 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                   transformOrigin: "center center",
                 }}
               >
-                <img src="/images/football-bg.png" alt="Football Background" className="w-full h-full object-contain" />
+                <Image src="/images/football-bg.png" alt="Football Background" className="w-full h-full object-contain" fill />
               </div>
             ) : (
-              <img src="/images/football-bg.png" alt="Football Background" className="absolute inset-0 w-full h-full object-cover" />
+              <Image src="/images/football-bg.png" alt="Football Background" className="absolute inset-0 w-full h-full object-cover" fill />
             )}
           </div>
 
@@ -172,10 +176,7 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                           </button>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div
-                            className="bg-orange-500 h-2 rounded-full"
-                            style={{ width: `${Math.min(contestant.statPower.points * 10, 100)}%` }}
-                          ></div>
+                          <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${Math.min(statPower.points * 10, 100)}%` }}></div>
                         </div>
                       </div>
 
@@ -196,10 +197,7 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                           </button>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div
-                            className="bg-orange-500 h-2 rounded-full"
-                            style={{ width: `${Math.min(contestant.statPower.rebounds * 10, 100)}%` }}
-                          ></div>
+                          <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${Math.min(statPower.rebounds * 10, 100)}%` }}></div>
                         </div>
                       </div>
 
@@ -220,10 +218,7 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                           </button>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div
-                            className="bg-orange-500 h-2 rounded-full"
-                            style={{ width: `${Math.min(contestant.statPower.assists * 10, 100)}%` }}
-                          ></div>
+                          <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${Math.min(statPower.assists * 10, 100)}%` }}></div>
                         </div>
                       </div>
                       {/* Defense */}
@@ -248,10 +243,7 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                           </button>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div
-                            className="bg-orange-500 h-2 rounded-full"
-                            style={{ width: `${Math.min(contestant.statPower.defense * 10, 100)}%` }}
-                          ></div>
+                          <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${Math.min(statPower.defense * 10, 100)}%` }}></div>
                         </div>
                       </div>
                     </div>
@@ -260,15 +252,18 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                   {/* Roster Section */}
                   <div className="mb-6">
                     <div className="grid grid-cols-5 gap-3">
-                      {contestant.roster.map((member) => (
+                      {contestant.roster.map((member: RosterMember) => (
                         <div key={member.athleteId} className="bg-gray-800/50 p-3 rounded-lg text-center flex flex-col items-center">
-                          <img
+                          <Image
                             src={`https://cdn.nba.com/headshots/nba/latest/1040x760/${member.athlete.apiId}.png`}
                             alt={member.athlete.name}
                             className="w-12 h-12 rounded-full mb-2 object-cover bg-gray-700"
+                            width={48}
+                            height={48}
                             onError={(e) => {
-                              e.currentTarget.src = `https://i.pravatar.cc/150?u=${member.athlete.name.toLowerCase().replace(/\s/g, "_")}`;
+                              e.currentTarget.src = `https://i.pravatar.cc/150?u=${member.athlete.name.toLowerCase().replace(/\\s/g, "_")}`;
                             }}
+                            unoptimized
                           />
                           <p className="text-xs font-medium">{member.athlete.name}</p>
                           <div className="flex items-center gap-1 text-xs text-gray-400">
@@ -328,10 +323,7 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                               </button>
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
-                              <div
-                                className="bg-orange-500 h-2 rounded-full"
-                                style={{ width: `${Math.min(contestant.statPower.points * 10, 100)}%` }}
-                              ></div>
+                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${Math.min(statPower.points * 10, 100)}%` }}></div>
                             </div>
                           </div>
 
@@ -352,10 +344,7 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                               </button>
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
-                              <div
-                                className="bg-orange-500 h-2 rounded-full"
-                                style={{ width: `${Math.min(contestant.statPower.assists * 10, 100)}%` }}
-                              ></div>
+                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${Math.min(statPower.assists * 10, 100)}%` }}></div>
                             </div>
                           </div>
 
@@ -381,10 +370,7 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                               </button>
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
-                              <div
-                                className="bg-orange-500 h-2 rounded-full"
-                                style={{ width: `${Math.min(contestant.statPower.defense * 10, 100)}%` }}
-                              ></div>
+                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${Math.min(statPower.defense * 10, 100)}%` }}></div>
                             </div>
                           </div>
 
@@ -405,10 +391,7 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                               </button>
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
-                              <div
-                                className="bg-orange-500 h-2 rounded-full"
-                                style={{ width: `${Math.min(contestant.statPower.rebounds * 10, 100)}%` }}
-                              ></div>
+                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${Math.min(statPower.rebounds * 10, 100)}%` }}></div>
                             </div>
                           </div>
                         </div>
@@ -420,15 +403,18 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                       {/* Roster Section */}
                       <div>
                         <div className="grid grid-cols-3 gap-3">
-                          {contestant.roster.map((member) => (
+                          {contestant.roster.map((member: RosterMember) => (
                             <div key={member.athleteId} className="bg-gray-800/50 p-3 rounded-lg text-center flex flex-col items-center">
-                              <img
+                              <Image
                                 src={`https://cdn.nba.com/headshots/nba/latest/1040x760/${member.athlete.apiId}.png`}
                                 alt={member.athlete.name}
                                 className="w-12 h-12 rounded-full mb-2 object-cover bg-gray-700"
+                                width={48}
+                                height={48}
                                 onError={(e) => {
-                                  e.currentTarget.src = `https://i.pravatar.cc/150?u=${member.athlete.name.toLowerCase().replace(/\s/g, "_")}`;
+                                  e.currentTarget.src = `https://i.pravatar.cc/150?u=${member.athlete.name.toLowerCase().replace(/\\s/g, "_")}`;
                                 }}
+                                unoptimized
                               />
                               <p className="text-xs font-medium">{member.athlete.name}</p>
                               <div className="flex items-center gap-1 text-xs text-gray-400">

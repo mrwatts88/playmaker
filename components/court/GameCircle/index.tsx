@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { PlayerCard } from "../PlayerCard";
 import { GameFeed } from "../GameFeed";
 import { ContestGameState } from "@/app/hooks/useContestGameState";
+import Image from "next/image";
 
 const BASE_WIDTH = 1200;
 const BASE_HEIGHT = 750;
@@ -63,7 +64,7 @@ export function GameCircle({ contest }: GameCircleProps) {
         }}
       >
         {/* Background */}
-        <img src="/images/football-bg.png" alt="Football Background" className="absolute inset-0 w-full h-full object-cover z-0" />
+        <Image src="/images/football-bg.png" alt="Football Background" className="absolute inset-0 w-full h-full object-cover z-0" fill />
         {/* Game Feed */}
         <GameFeed />
         {/* Player cards */}

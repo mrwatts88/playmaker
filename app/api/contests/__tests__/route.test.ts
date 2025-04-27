@@ -446,8 +446,9 @@ describe("POST /api/contests", () => {
       gameIds: [game1.id],
     };
 
-    // Mock db.transaction to throw an error
-    db.transaction = jest.fn().mockImplementation(() => {
+    // Mock db.insert to throw an error
+    const originalInsert = db.insert;
+    db.insert = jest.fn().mockImplementation(() => {
       throw new Error("Database error");
     });
 
@@ -463,6 +464,9 @@ describe("POST /api/contests", () => {
     expect(response.status).toBe(500);
     const responseData = await response.json();
     expect(responseData).toEqual({ error: "Internal Server Error" });
+
+    // Restore db.insert
+    db.insert = originalInsert;
 
     // Clean up
     await db.delete(games).where(eq(games.id, game1.id));

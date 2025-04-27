@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { PlayerCard } from "../PlayerCard";
 import { GameFeed } from "../GameFeed";
 import { ContestGameState } from "@/app/hooks/useContestGameState";
+import Image from "next/image";
 
 const BASE_WIDTH = 750;
 const BASE_HEIGHT = 1200;
@@ -71,7 +72,7 @@ export function GameCircleVertical({ contest }: GameCircleVerticalProps) {
               transformOrigin: "center center",
             }}
           >
-            <img src="/images/football-bg.png" alt="Football Background" className="w-full h-full object-contain" />
+            <Image src="/images/football-bg.png" alt="Football Background" className="w-full h-full object-contain" fill />
           </div>
         </div>
         <GameFeed />

@@ -14,7 +14,7 @@
     "test": "NODE_ENV=test jest --coverage",
     "nba:sync-lineups": "DOTENV_CONFIG_PATH=.env npx tsx -r dotenv/config scripts/nba/sync-lineups.ts",
     "nba:sync-game-events": "DOTENV_CONFIG_PATH=.env npx tsx -r dotenv/config scripts/nba/sync-game-events.ts",
-    "sanity": "npm run lint && npm i --legacy-peer-deps && npm run build && npm test && npm run start"
+    "sanity": "npm run lint && npm i && npm run build && npm test && npm run start"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
