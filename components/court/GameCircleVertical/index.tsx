@@ -2,16 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { PlayerCard } from "../PlayerCard";
-import { useContest } from "@/contexts/ContestContext";
 import { GameFeed } from "../GameFeed";
+import { ContestGameState } from "@/app/hooks/useContestGameState";
 
 const BASE_WIDTH = 750;
 const BASE_HEIGHT = 1200;
 
-export const GameCircleVertical = () => {
+interface GameCircleVerticalProps {
+  contest: ContestGameState;
+}
+
+export function GameCircleVertical({ contest }: GameCircleVerticalProps) {
   const [scale, setScale] = useState(1);
   const [isLoaded, setIsLoaded] = useState(false);
-  const { contestants } = useContest();
 
   useEffect(() => {
     const handleResize = () => {
@@ -23,15 +26,24 @@ export const GameCircleVertical = () => {
       setScale(newScale);
       setIsLoaded(true);
     };
-
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  if (!isLoaded || !contestants.length) {
+  if (!isLoaded || !contest?.contestants?.length) {
     return null;
   }
+
+  // Position classes for up to 6 contestants
+  const positions = [
+    "absolute top-[20px] left-1/2 -translate-x-1/2",
+    "absolute top-[250px] left-[20px]",
+    "absolute top-[250px] right-[20px]",
+    "absolute bottom-[250px] left-[20px]",
+    "absolute bottom-[250px] right-[20px]",
+    "absolute bottom-[20px] left-1/2 -translate-x-1/2",
+  ];
 
   return (
     <div
@@ -62,42 +74,13 @@ export const GameCircleVertical = () => {
             <img src="/images/football-bg.png" alt="Football Background" className="w-full h-full object-contain" />
           </div>
         </div>
-
-        {/* Game Feed */}
         <GameFeed />
-
-        {/* Player cards - Adjusted for vertical layout */}
-        {contestants.length > 0 && (
-          <div className="absolute top-[20px] left-1/2 -translate-x-1/2">
-            <PlayerCard contestantId={0} winner />
+        {contest.contestants.map((contestant, idx) => (
+          <div key={contestant.id} className={positions[idx] || ""}>
+            <PlayerCard contestant={contestant} />
           </div>
-        )}
-        {contestants.length > 1 && (
-          <div className="absolute top-[250px] left-[20px]">
-            <PlayerCard contestantId={1} />
-          </div>
-        )}
-        {contestants.length > 2 && (
-          <div className="absolute top-[250px] right-[20px]">
-            <PlayerCard contestantId={2} />
-          </div>
-        )}
-        {contestants.length > 3 && (
-          <div className="absolute bottom-[250px] left-[20px]">
-            <PlayerCard contestantId={3} winner />
-          </div>
-        )}
-        {contestants.length > 4 && (
-          <div className="absolute bottom-[250px] right-[20px]">
-            <PlayerCard contestantId={4} />
-          </div>
-        )}
-        {contestants.length > 5 && (
-          <div className="absolute bottom-[20px] left-1/2 -translate-x-1/2">
-            <PlayerCard contestantId={5} />
-          </div>
-        )}
+        ))}
       </div>
     </div>
   );
-};
+}

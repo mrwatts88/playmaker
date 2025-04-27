@@ -1,36 +1,29 @@
 "use client";
 
-import { useContest } from "@/contexts/ContestContext";
+import { Contestant } from "@/app/hooks/useContestant";
 
 interface StatContainerProps {
-  contestantId: number;
-  isWinner?: boolean;
+  contestant: Contestant;
 }
 
-export const StatContainer = ({ contestantId, isWinner }: StatContainerProps) => {
-  const { contestants } = useContest();
-  const contestant = contestants[contestantId];
-
-  if (!contestant) {
-    return null;
-  }
-
+export const StatContainer = ({ contestant }: StatContainerProps) => {
   return (
     <div
       className={`z-10 rounded-2xl border p-3 bg-[#0A0A0A] w-[170px] h-[150px] shadow-lg -mt-6 flex flex-col justify-center ${
-        isWinner ? "border-yellow-500 shadow-[0_0_1em_rgba(245,158,11,0.8)]" : "border-gray-700"
+        false ? "border-yellow-500 shadow-[0_0_1em_rgba(245,158,11,0.8)]" : "border-gray-700"
       }`}
     >
-      <div className="text-white text-center text-2xl mb-1">{contestant.name}</div>
+      <div className="text-white text-center text-xl mb-1 truncate max-w-full w-full">{contestant.name}</div>
       <div className="flex items-center justify-center mb-1 text-sm text-white">
-        <span className="text-[#FFD84D] mr-1">SXP:</span>
-        <span className="text-lg">{contestant.sxp}</span>&nbsp;&nbsp;
-        <span className="text-[#FFD84D] mr-1">XP:</span>
-        <span className="text-lg">{contestant.xp}</span>
+        <span className="text-lg text-green-500">{contestant.spendableXp}&nbsp;&nbsp;</span>
+        <span className="text-lg text-gray-500">/&nbsp;&nbsp;</span>
+        <span className="text-lg text-orange-500">{contestant.totalXp}</span>
+        &nbsp;&nbsp;
+        <span className="text-[#FFD84D] mr-1">XP</span>
       </div>
-      <StatBar value={contestant.points} label="TDS" labelValue={contestant.points.toString()} />
-      <StatBar value={contestant.rebounds} label="RSH" labelValue={contestant.rebounds.toString()} />
-      <StatBar value={contestant.assists} label="PAS" labelValue={contestant.assists.toString()} />
+      <StatBar value={contestant.statPower.points} label="TDS" labelValue={contestant.statPower.points.toString()} />
+      <StatBar value={contestant.statPower.rebounds} label="RSH" labelValue={contestant.statPower.rebounds.toString()} />
+      <StatBar value={contestant.statPower.assists} label="PAS" labelValue={contestant.statPower.assists.toString()} />
     </div>
   );
 };

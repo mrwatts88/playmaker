@@ -172,7 +172,10 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                           </button>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${contestant.statPower.points}%` }}></div>
+                          <div
+                            className="bg-orange-500 h-2 rounded-full"
+                            style={{ width: `${Math.min(contestant.statPower.points * 10, 100)}%` }}
+                          ></div>
                         </div>
                       </div>
 
@@ -193,7 +196,10 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                           </button>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${contestant.statPower.assists}%` }}></div>
+                          <div
+                            className="bg-orange-500 h-2 rounded-full"
+                            style={{ width: `${Math.min(contestant.statPower.assists * 10, 100)}%` }}
+                          ></div>
                         </div>
                       </div>
 
@@ -219,7 +225,10 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                           </button>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${contestant.statPower.defense}%` }}></div>
+                          <div
+                            className="bg-orange-500 h-2 rounded-full"
+                            style={{ width: `${Math.min(contestant.statPower.defense * 10, 100)}%` }}
+                          ></div>
                         </div>
                       </div>
 
@@ -240,7 +249,10 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                           </button>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${contestant.statPower.rebounds}%` }}></div>
+                          <div
+                            className="bg-orange-500 h-2 rounded-full"
+                            style={{ width: `${Math.min(contestant.statPower.rebounds * 10, 100)}%` }}
+                          ></div>
                         </div>
                       </div>
                     </div>
@@ -317,7 +329,10 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                               </button>
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
-                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${contestant.statPower.points}%` }}></div>
+                              <div
+                                className="bg-orange-500 h-2 rounded-full"
+                                style={{ width: `${Math.min(contestant.statPower.points * 10, 100)}%` }}
+                              ></div>
                             </div>
                           </div>
 
@@ -338,7 +353,10 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                               </button>
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
-                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${contestant.statPower.assists}%` }}></div>
+                              <div
+                                className="bg-orange-500 h-2 rounded-full"
+                                style={{ width: `${Math.min(contestant.statPower.assists * 10, 100)}%` }}
+                              ></div>
                             </div>
                           </div>
 
@@ -364,7 +382,10 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                               </button>
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
-                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${contestant.statPower.defense}%` }}></div>
+                              <div
+                                className="bg-orange-500 h-2 rounded-full"
+                                style={{ width: `${Math.min(contestant.statPower.defense * 10, 100)}%` }}
+                              ></div>
                             </div>
                           </div>
 
@@ -385,7 +406,10 @@ export default function Contestant({ params }: { params: Promise<{ contestantId:
                               </button>
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
-                              <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${contestant.statPower.rebounds}%` }}></div>
+                              <div
+                                className="bg-orange-500 h-2 rounded-full"
+                                style={{ width: `${Math.min(contestant.statPower.rebounds * 10, 100)}%` }}
+                              ></div>
                             </div>
                           </div>
                         </div>
