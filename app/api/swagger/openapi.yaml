@@ -98,30 +98,6 @@ paths:
         "200":
           description: List of athletes
 
-  /contestants/{id}/roster:
-    post:
-      summary: Submit drafted roster
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                athleteIds:
-                  type: array
-                  items:
-                    type: string
-      responses:
-        "201":
-          description: Roster submitted
-
   /contests/{id}/game:
     get:
       summary: Get full contest state (polling)

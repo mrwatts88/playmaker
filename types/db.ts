@@ -1,18 +1,5 @@
+import { athletes, boosts, contestantBoosts, contestants, contestGames, contests, gameEvents, games, teams, users } from "@/db/schema/schema";
 import type { InferModel } from "drizzle-orm";
-import {
-  teams,
-  athletes,
-  boosts,
-  games,
-  gameEvents,
-  contests,
-  contestGames,
-  users,
-  contestants,
-  rosterMembers,
-  contestantBoosts,
-  contestBoosts,
-} from "@/db/schema/schema";
 
 export type Team = InferModel<typeof teams>;
 export type Athlete = InferModel<typeof athletes>;
@@ -23,6 +10,4 @@ export type Contest = InferModel<typeof contests>;
 export type ContestGame = InferModel<typeof contestGames>;
 export type User = InferModel<typeof users>;
 export type Contestant = InferModel<typeof contestants>;
-export type RosterMember = InferModel<typeof rosterMembers>;
 export type ContestantBoost = InferModel<typeof contestantBoosts>;
-export type ContestBoost = InferModel<typeof contestBoosts>;

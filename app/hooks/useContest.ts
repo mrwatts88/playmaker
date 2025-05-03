@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import type { Contest } from "./useContests";
-import type { ContestantWithRoster } from "@/types/api";
+import type { Contestant } from "@/types/api";
 import type { Game } from "@/types/db";
 
 interface EventHistoryItem {
@@ -13,7 +13,7 @@ interface AvailableBoost {
 
 interface ContestDetails extends Contest {
   games: Game[];
-  contestants: ContestantWithRoster[];
+  contestants: Contestant[];
   eventHistory: EventHistoryItem[];
   availableBoosts: AvailableBoost[];
 }

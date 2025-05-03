@@ -36,9 +36,9 @@ import { NextResponse } from "next/server";
  *       500:
  *         description: Internal Server Error
  */
-export async function POST(request: Request, context: { params: Promise<{ id: string; userId: string }> }) {
-  const { id, userId } = await context.params;
-  const result = enterContestSchema.safeParse({ id, userId });
+export async function POST(request: Request, context: { params: Promise<{ id: string; userId: string; teamId: string }> }) {
+  const { id, userId, teamId } = await context.params;
+  const result = enterContestSchema.safeParse({ id, userId, teamId });
 
   if (!result.success) {
     console.error("Invalid request parameters");
@@ -81,6 +81,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
         totalXp: startingContestantXp,
         spendableXp: startingContestantXp,
         statPower: leagueStatPower[contest.league],
+        teamId: result.data.teamId,
       })
       .returning();
 

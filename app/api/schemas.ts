@@ -29,10 +29,7 @@ export const contestQuerySchema = z.object({
 export const enterContestSchema = z.object({
   id: z.string().uuid("Contest ID must be a valid UUID"),
   userId: z.string().uuid("User ID must be a valid UUID"),
-});
-
-export const submitRosterSchema = z.object({
-  athleteIds: z.array(z.string().min(1, "Athlete ID must not be empty")).length(5, "Exactly 5 athletes are required"),
+  teamId: z.string().uuid("Team ID must be a valid UUID"),
 });
 
 export const uuidSchema = z.string().uuid();

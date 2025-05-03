@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import type { ContestantWithRoster } from "@/types/api";
+import type { Contestant } from "@/types/api";
 import type { Game } from "@/types/db";
 
 interface EventHistoryItem {
@@ -18,7 +18,7 @@ export interface ContestGameState {
   league: string;
   status: string;
   startTime: string;
-  contestants: ContestantWithRoster[];
+  contestants: Contestant[];
   eventHistory: EventHistoryItem[];
   availableBoosts: AvailableBoost[];
   games: Game[];

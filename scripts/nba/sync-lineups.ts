@@ -146,7 +146,6 @@ export const syncLineups = async (date: string) => {
               name: player.playerName,
               teamId: teamUuids[team.teamId],
               position: player.position || "",
-              cost: 100, // Default cost, can be updated later
               dataSource: "nbacom",
               league: "nba",
             })

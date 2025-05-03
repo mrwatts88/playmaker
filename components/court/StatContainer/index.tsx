@@ -1,9 +1,9 @@
 "use client";
 
-import type { ContestantWithRoster } from "@/types/api";
+import type { Contestant } from "@/types/api";
 
 interface StatContainerProps {
-  contestant: ContestantWithRoster;
+  contestant: Contestant;
 }
 
 export const StatContainer = ({ contestant }: StatContainerProps) => {

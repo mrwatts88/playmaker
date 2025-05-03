@@ -161,27 +161,12 @@ export const contestants = pgTable(
     statPower: jsonb("stat_power").default({}).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
+    teamId: uuid("team_id")
+      .references(() => teams.id)
+      .notNull(),
   },
   (t) => ({
     uniqueUserContest: unique().on(t.userId, t.contestId),
-  })
-);
-
-// transactional table
-export const rosterMembers = pgTable(
-  "roster_members",
-  {
-    contestantId: uuid("contestant_id")
-      .references(() => contestants.id, { onDelete: "cascade" })
-      .notNull(),
-    athleteId: uuid("athlete_id")
-      .references(() => athletes.id, { onDelete: "cascade" })
-      .notNull(),
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at").defaultNow(),
-  },
-  (t) => ({
-    pk: primaryKey(t.contestantId, t.athleteId),
   })
 );
 
@@ -190,20 +175,6 @@ export const contestantBoosts = pgTable("contestant_boosts", {
   id: uuid("id").primaryKey().defaultRandom(),
   contestantId: uuid("contestant_id")
     .references(() => contestants.id, { onDelete: "cascade" })
-    .notNull(),
-  boostId: uuid("boost_id")
-    .references(() => boosts.id, { onDelete: "cascade" })
-    .notNull(),
-  expiresAt: timestamp("expires_at"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// cron job transactional table
-export const contestBoosts = pgTable("contest_boosts", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  contestId: uuid("contest_id")
-    .references(() => contests.id, { onDelete: "cascade" })
     .notNull(),
   boostId: uuid("boost_id")
     .references(() => boosts.id, { onDelete: "cascade" })
@@ -229,10 +200,6 @@ export const contestsRelations = relations(contests, ({ many }) => ({
   contestGames: many(contestGames),
   contestants: many(contestants, {
     relationName: "contest_contestants",
-  }),
-  contestBoosts: many(contestBoosts),
-  roster: many(rosterMembers, {
-    relationName: "contest_roster",
   }),
 }));
 
@@ -269,8 +236,7 @@ export const contestGamesRelations = relations(contestGames, ({ one }) => ({
   }),
 }));
 
-export const contestantsRelations = relations(contestants, ({ many, one }) => ({
-  roster: many(rosterMembers),
+export const contestantsRelations = relations(contestants, ({ one }) => ({
   contest: one(contests, {
     fields: [contestants.contestId],
     references: [contests.id],
@@ -280,32 +246,9 @@ export const contestantsRelations = relations(contestants, ({ many, one }) => ({
     fields: [contestants.userId],
     references: [users.id],
   }),
-}));
-
-export const rosterMembersRelations = relations(rosterMembers, ({ one }) => ({
-  contestant: one(contestants, {
-    fields: [rosterMembers.contestantId],
-    references: [contestants.id],
-  }),
-  athlete: one(athletes, {
-    fields: [rosterMembers.athleteId],
-    references: [athletes.id],
-  }),
-  contest: one(contests, {
-    fields: [rosterMembers.contestantId],
-    references: [contests.id],
-    relationName: "contest_roster",
-  }),
-}));
-
-export const contestBoostsRelations = relations(contestBoosts, ({ one }) => ({
-  boost: one(boosts, {
-    fields: [contestBoosts.boostId],
-    references: [boosts.id],
-  }),
-  contest: one(contests, {
-    fields: [contestBoosts.contestId],
-    references: [contests.id],
+  team: one(teams, {
+    fields: [contestants.teamId],
+    references: [teams.id],
   }),
 }));
 // End Relations //

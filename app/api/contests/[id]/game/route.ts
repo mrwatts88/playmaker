@@ -1,6 +1,6 @@
 import { contestIdSchema } from "@/app/api/schemas";
 import { db } from "@/db/db";
-import { contestantBoosts, contestants, contestBoosts, contestGames, contests, gameEvents, rosterMembers } from "@/db/schema/schema";
+import { contestantBoosts, contestants, contestGames, contests, gameEvents, teams } from "@/db/schema/schema";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -61,14 +61,6 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
       },
     });
 
-    // Get all contest boosts
-    const availableBoosts = await db.query.contestBoosts.findMany({
-      where: eq(contestBoosts.contestId, id),
-      with: {
-        boost: true,
-      },
-    });
-
     // Get all game events for these games
     const gameEventList = await db.query.gameEvents.findMany({
       where: and(
@@ -81,16 +73,13 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
       limit: 20,
     });
 
-    // For each contestant, get their roster and boosts
+    // For each contestant, get their team and boosts
     const contestantsWithDetails = await Promise.all(
       contestantList.map(async (contestant) => {
-        const [roster, currentBoosts] = await Promise.all([
-          // Get roster
-          db.query.rosterMembers.findMany({
-            where: eq(rosterMembers.contestantId, contestant.id),
-            with: {
-              athlete: true,
-            },
+        const [team, currentBoosts] = await Promise.all([
+          // Get team
+          db.query.teams.findFirst({
+            where: eq(teams.id, contestant.teamId),
           }),
           // Get boosts
           db.query.contestantBoosts.findMany({
@@ -103,7 +92,7 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
 
         return {
           ...contestant,
-          roster: roster.map((r) => r.athlete),
+          team,
           currentBoosts: currentBoosts.map((cb) => cb.boost),
         };
       })
@@ -114,7 +103,6 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
       ...contest,
       contestants: contestantsWithDetails,
       eventHistory: gameEventList,
-      availableBoosts: availableBoosts.map((cb) => cb.boost),
       games: contestGameList.map((cg) => cg.game),
     };
 

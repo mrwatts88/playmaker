@@ -1,7 +1,6 @@
 import { contestIdSchema } from "@/app/api/schemas";
-import { getDraftableAthletes } from "@/service/contest";
 import { db } from "@/db/db";
-import { contests } from "@/db/schema/schema";
+import { contestGames, contests } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -23,7 +22,7 @@ import { NextResponse } from "next/server";
  *           type: string
  *     responses:
  *       200:
- *         description: List of athletes
+ *         description: List of teams
  *       404:
  *         description: Contest not found
  *       500:
@@ -49,8 +48,26 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
       return NextResponse.json({ error: "Contest not found" }, { status: 404 });
     }
 
-    const draftableAthletes = await getDraftableAthletes(id);
-    return NextResponse.json(draftableAthletes);
+    // get all teams for the contest. contest has games with have a hometeam and away team reference
+    const contestGamesWithGamesWithTeams = await db.query.contestGames.findMany({
+      where: eq(contestGames.contestId, id),
+      with: {
+        game: {
+          with: {
+            homeTeam: true,
+            awayTeam: true,
+          },
+        },
+      },
+    });
+
+    const teams = contestGamesWithGamesWithTeams
+      .map((cg) => {
+        return [cg.game.homeTeam, cg.game.awayTeam];
+      })
+      .flatMap((t) => t);
+
+    return NextResponse.json(teams);
   } catch (error) {
     console.error("Error fetching draftable athletes:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
