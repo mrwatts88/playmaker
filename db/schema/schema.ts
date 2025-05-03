@@ -38,7 +38,6 @@ export const athletes = pgTable(
       .references(() => teams.id)
       .notNull(),
     position: text("position"),
-    cost: integer("cost").notNull(),
   },
   (t) => ({
     uniqueDataSourceApiId: unique().on(t.league, t.dataSource, t.apiId),
