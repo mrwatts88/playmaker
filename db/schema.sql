@@ -116,13 +116,13 @@ CREATE TABLE contestants (
 );
 
 -- Created when a contestant drafts an athlete
-CREATE TABLE roster_members (
-    contestant_id TEXT REFERENCES contestants(id),
-    athlete_id TEXT REFERENCES athletes(id),
-    PRIMARY KEY (contestant_id, athlete_id),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- CREATE TABLE roster_members (
+--     contestant_id TEXT REFERENCES contestants(id),
+--     athlete_id TEXT REFERENCES athletes(id),
+--     PRIMARY KEY (contestant_id, athlete_id),
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
 
 -- All available boosts
 -- A boost is a mechanism that changes the accumulation rate of XP for a contestant.

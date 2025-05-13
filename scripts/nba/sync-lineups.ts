@@ -60,7 +60,9 @@ interface NBALineupsResponse {
   games: NBAGame[];
 }
 
-const getGameStatus = (gameStatus: number): "upcoming" | "active" | "completed" => {
+const getGameStatus = (
+  gameStatus: number
+): "upcoming" | "active" | "completed" => {
   // NBA API status codes:
   // 1 = Not Started
   // 2 = In Progress
@@ -87,7 +89,9 @@ const parseGameTime = (statusText: string, gameDate: string): Date | null => {
   const day = parseInt(gameDate.substring(6, 8));
 
   // Create date in ET
-  const date = new Date(Date.UTC(year, month, day, hour + 4, parseInt(minutes), 0, 0)); // ET is UTC-4
+  const date = new Date(
+    Date.UTC(year, month, day, hour + 4, parseInt(minutes), 0, 0)
+  ); // ET is UTC-4
   return date;
 };
 
@@ -100,14 +104,20 @@ export const syncLineups = async (date: string) => {
     // Process each game
     for (const game of data.games) {
       // Skip if game is final or doesn't have a valid start time
-      if (game.gameStatus === 3 || !game.gameStatusText || game.gameStatusText.includes("Final")) {
+      if (
+        game.gameStatus === 3 ||
+        !game.gameStatusText ||
+        game.gameStatusText.includes("Final")
+      ) {
         console.log(`Skipping game ${game.gameId} - ${game.gameStatusText}`);
         continue;
       }
 
       const startTime = parseGameTime(game.gameStatusText, date);
       if (!startTime) {
-        console.log(`Skipping game ${game.gameId} - invalid start time: ${game.gameStatusText}`);
+        console.log(
+          `Skipping game ${game.gameId} - invalid start time: ${game.gameStatusText}`
+        );
         continue;
       }
 
@@ -130,7 +140,12 @@ export const syncLineups = async (date: string) => {
         } else {
           // If team already exists, get its UUID
           const existingTeam = await db.query.teams.findFirst({
-            where: (teams, { eq, and }) => and(eq(teams.apiId, team.teamId.toString()), eq(teams.league, "nba"), eq(teams.dataSource, "nbacom")),
+            where: (teams, { eq, and }) =>
+              and(
+                eq(teams.apiId, team.teamId.toString()),
+                eq(teams.league, "nba"),
+                eq(teams.dataSource, "nbacom")
+              ),
           });
           if (existingTeam) {
             teamUuids[team.teamId] = existingTeam.id;

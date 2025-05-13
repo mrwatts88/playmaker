@@ -28,13 +28,19 @@ import { NextResponse } from "next/server";
  *       500:
  *         description: Internal Server Error
  */
-export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
+export async function GET(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
   const { id } = await context.params;
   const result = contestIdSchema.safeParse({ id });
 
   if (!result.success) {
     console.error("Invalid request parameters");
-    return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
+    return NextResponse.json(
+      { error: result.error.issues[0].message },
+      { status: 400 }
+    );
   }
 
   try {
@@ -50,6 +56,9 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
     return NextResponse.json(contest);
   } catch (error) {
     console.error("Error fetching contest:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

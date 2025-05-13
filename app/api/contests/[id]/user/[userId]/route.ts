@@ -36,13 +36,24 @@ import { NextResponse } from "next/server";
  *       500:
  *         description: Internal Server Error
  */
-export async function POST(request: Request, context: { params: Promise<{ id: string; userId: string; teamId: string }> }) {
-  const { id, userId, teamId } = await context.params;
+export async function POST(
+  request: Request,
+  context: { params: Promise<{ id: string; userId: string }> }
+) {
+  console.log("here2")
+  const { id, userId } = await context.params;
+  const { teamId } = await request.json();
+  console.log(teamId, "teamId");
+  console.log(userId, "userId");
+  console.log(id, "id");
   const result = enterContestSchema.safeParse({ id, userId, teamId });
 
   if (!result.success) {
     console.error("Invalid request parameters");
-    return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
+    return NextResponse.json(
+      { error: result.error.issues[0].message },
+      { status: 400 }
+    );
   }
 
   try {
@@ -58,7 +69,10 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
 
     if (contest.status !== "upcoming") {
       console.error("Contest is not joinable");
-      return NextResponse.json({ error: "Contest is not joinable" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Contest is not joinable" },
+        { status: 400 }
+      );
     }
 
     // Check if user exists
@@ -89,8 +103,14 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   } catch (error) {
     // Check if error is due to unique constraint violation
     if (error instanceof Error && error.message.includes("unique constraint")) {
-      return NextResponse.json({ error: "User already in this contest" }, { status: 400 });
+      return NextResponse.json(
+        { error: "User already in this contest" },
+        { status: 400 }
+      );
     }
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

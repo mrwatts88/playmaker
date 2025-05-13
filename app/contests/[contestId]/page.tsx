@@ -4,7 +4,11 @@ import { useContest } from "@/app/hooks/useContest";
 import Link from "next/link";
 import { use } from "react";
 
-export default function ContestLobby({ params }: { params: Promise<{ contestId: string }> }) {
+export default function ContestLobby({
+  params,
+}: {
+  params: Promise<{ contestId: string }>;
+}) {
   const { contestId } = use(params);
   const { contest, isLoading, isError } = useContest(contestId);
 
@@ -24,7 +28,14 @@ export default function ContestLobby({ params }: { params: Promise<{ contestId: 
     );
   }
 
-  const { name, league, status, startTime, games = [], contestants = [] } = contest;
+  const {
+    name,
+    league,
+    status,
+    startTime,
+    games = [],
+    contestants = [],
+  } = contest;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -40,7 +51,11 @@ export default function ContestLobby({ params }: { params: Promise<{ contestId: 
               stroke="currentColor"
               className="w-6 h-6 text-gray-600"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 19.5L8.25 12l7.5-7.5"
+              />
             </svg>
           </Link>
           <div className="flex items-center">
@@ -67,7 +82,9 @@ export default function ContestLobby({ params }: { params: Promise<{ contestId: 
               </div>
               <div>
                 <p className="text-gray-600">Start Time</p>
-                <p className="font-semibold">{new Date(startTime).toLocaleString()}</p>
+                <p className="font-semibold">
+                  {new Date(startTime).toLocaleString()}
+                </p>
               </div>
               <div>
                 <p className="text-gray-600">Contestants</p>
@@ -82,16 +99,23 @@ export default function ContestLobby({ params }: { params: Promise<{ contestId: 
               <h2 className="text-xl font-semibold mb-4">Games</h2>
               <div className="space-y-4">
                 {games.map((game) => (
-                  <div key={game.id} className="grid grid-cols-3 items-center p-2 hover:bg-gray-50 rounded-lg">
+                  <div
+                    key={game.id}
+                    className="grid grid-cols-3 items-center p-2 hover:bg-gray-50 rounded-lg"
+                  >
                     {/* Game Info */}
                     <div className="col-span-2">
                       <p className="font-medium">{game.name}</p>
-                      <p className="text-sm text-gray-600 capitalize">{game.status}</p>
+                      <p className="text-sm text-gray-600 capitalize">
+                        {game.status}
+                      </p>
                     </div>
 
                     {/* Time */}
                     <div className="text-right">
-                      <p className="text-sm font-medium">{new Date(game.startTime).toLocaleTimeString()}</p>
+                      <p className="text-sm font-medium">
+                        {new Date(game.startTime).toLocaleTimeString()}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -105,7 +129,10 @@ export default function ContestLobby({ params }: { params: Promise<{ contestId: 
               <h2 className="text-xl font-semibold mb-4">Contestants</h2>
               <div className="space-y-4">
                 {contestants.map((contestant) => (
-                  <div key={contestant.id} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg">
+                  <div
+                    key={contestant.id}
+                    className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg"
+                  >
                     <div className="flex items-center gap-3">
                       <div>
                         <p className="font-medium">{contestant.name}</p>
@@ -120,7 +147,10 @@ export default function ContestLobby({ params }: { params: Promise<{ contestId: 
       </div>
 
       {/* Footer */}
-      <div className="sticky bottom-0 py-3 px-4 shadow-[0_-1px_2px_0_rgba(0,0,0,0.05)]" style={{ backgroundColor: "var(--background-color)" }}>
+      <div
+        className="sticky bottom-0 py-3 px-4 shadow-[0_-1px_2px_0_rgba(0,0,0,0.05)]"
+        style={{ backgroundColor: "var(--background-color)" }}
+      >
         <Link
           href={`/contests/${contestId}/draft`}
           className="block w-full max-w-md mx-auto text-center rounded-lg bg-[#FB7B1F] text-white px-6 py-3 text-lg font-semibold"

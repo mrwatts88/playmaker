@@ -7,22 +7,18 @@ type GameWithTeams = typeof games.$inferSelect & {
   awayTeam: { league: string };
 };
 
-export const createContestWithGames = async (contestName: string, gameIds: string[], league: "nba" | "nfl" | "nhl" | "mlb") => {
+export const createContestWithGames = async (
+  contestName: string,
+  gameIds: string[],
+  league: "nba" | "nfl" | "nhl" | "mlb"
+) => {
   try {
     // Fetch all games with their team information to verify they exist and belong to the same league
     const existingGames = (await db.query.games.findMany({
       where: inArray(games.id, gameIds),
       with: {
-        homeTeam: {
-          columns: {
-            league: true,
-          },
-        },
-        awayTeam: {
-          columns: {
-            league: true,
-          },
-        },
+        homeTeam: {},
+        awayTeam: {},
       },
     })) as GameWithTeams[];
 
@@ -31,14 +27,19 @@ export const createContestWithGames = async (contestName: string, gameIds: strin
     }
 
     // Verify all games belong to the same league
-    const invalidLeagueGames = existingGames.filter((game) => game.homeTeam.league !== league || game.awayTeam.league !== league);
+    const invalidLeagueGames = existingGames.filter(
+      (game) =>
+        game.homeTeam.league !== league || game.awayTeam.league !== league
+    );
 
     if (invalidLeagueGames.length > 0) {
       throw new Error("One or more games belong to a different league");
     }
 
     // verify all games are not completed
-    const completedGames = existingGames.filter((game) => game.status === "completed");
+    const completedGames = existingGames.filter(
+      (game) => game.status === "completed"
+    );
     if (completedGames.length > 0) {
       throw new Error("One or more games are completed");
     }
@@ -49,7 +50,9 @@ export const createContestWithGames = async (contestName: string, gameIds: strin
       .values({
         name: contestName,
         league,
-        status: existingGames.some((game) => game.status === "active") ? "active" : "upcoming",
+        status: existingGames.some((game) => game.status === "active")
+          ? "active"
+          : "upcoming",
         startTime: existingGames[0].startTime,
       })
       .returning();
@@ -98,7 +101,10 @@ export const getDraftableAthletes = async (contestId: string) => {
     .where(eq(contestGames.contestId, contestId));
 
   // Extract all valid team IDs from the contest's games
-  const validTeamIds = contestGamesWithTeams.flatMap((game) => [game.homeTeamId, game.awayTeamId]);
+  const validTeamIds = contestGamesWithTeams.flatMap((game) => [
+    game.homeTeamId,
+    game.awayTeamId,
+  ]);
 
   // Get all athletes from these teams
   return await db.query.athletes.findMany({

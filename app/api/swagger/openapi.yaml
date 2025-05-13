@@ -98,6 +98,19 @@ paths:
         "200":
           description: List of athletes
 
+  /contests/{id}/contestants:
+    get:
+      summary: Get all contestants of a contest
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of contestants
+
   /contests/{id}/game:
     get:
       summary: Get full contest state (polling)
