@@ -9,15 +9,12 @@ CREATE TYPE event_type AS ENUM (
     'rebounds',
     'assists',
     'steals',
-    'blocks'
+    'blocks',
 );
 
 CREATE TYPE boost_type AS ENUM (
-    'multiplicative',
-    'additive',
-    'conditional',
-    'instant',
-    'action'
+    'team',
+    'athlete',
 );
 
 CREATE TYPE stat_type AS ENUM (
@@ -25,7 +22,11 @@ CREATE TYPE stat_type AS ENUM (
     'rebounds',
     'assists',
     'steals',
-    'blocks'
+    'blocks',
+    '3 pointers',
+    'foul',
+    'turnover',
+    'free throw made'
 );
 
 CREATE TYPE boost_action AS ENUM ('extraPlayer', 'stealPlayer');

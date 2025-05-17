@@ -1,14 +1,59 @@
-import { pgTable, text, integer, timestamp, primaryKey, jsonb, numeric, pgEnum, unique, uuid } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  integer,
+  timestamp,
+  primaryKey,
+  jsonb,
+  numeric,
+  pgEnum,
+  unique,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const leagueType = pgEnum("league_type", ["nba", "nfl", "nhl", "mlb"]);
-export const contestStatus = pgEnum("contest_status", ["upcoming", "active", "completed"]);
-export const gameStatus = pgEnum("game_status", ["upcoming", "active", "completed"]);
-export const eventType = pgEnum("event_type", ["points", "rebounds", "assists", "steals", "blocks", "gamestart", "gameend"]);
-export const boostType = pgEnum("boost_type", ["multiplicative", "additive", "conditional", "instant", "action"]);
-export const statType = pgEnum("stat_type", ["points", "rebounds", "assists", "steals", "blocks"]);
-export const boostAction = pgEnum("boost_action", ["extraPlayer", "stealPlayer"]);
-export const dataSource = pgEnum("data_source", ["espncom", "nbacom", "sportradar", "manual"]);
+export const contestStatus = pgEnum("contest_status", [
+  "upcoming",
+  "active",
+  "completed",
+]);
+export const gameStatus = pgEnum("game_status", [
+  "upcoming",
+  "active",
+  "completed",
+]);
+export const eventType = pgEnum("event_type", [
+  "points",
+  "rebounds",
+  "assists",
+  "steals",
+  "blocks",
+  "gamestart",
+  "gameend",
+]);
+export const boostType = pgEnum("boost_type", ["team", "athlete"]);
+export const statType = pgEnum("stat_type", [
+  "points",
+  "rebounds",
+  "assists",
+  "steals",
+  "blocks",
+  "3 pointers",
+  "foul",
+  "turnover",
+  "free throw made",
+]);
+export const boostAction = pgEnum("boost_action", [
+  "extraPlayer",
+  "stealPlayer",
+]);
+export const dataSource = pgEnum("data_source", [
+  "espncom",
+  "nbacom",
+  "sportradar",
+  "manual",
+]);
 
 // reference table (from sports api)
 export const teams = pgTable(
@@ -94,7 +139,9 @@ export const gameEvents = pgTable(
     gameId: uuid("game_id")
       .references(() => games.id, { onDelete: "cascade" })
       .notNull(),
-    athleteId: uuid("athlete_id").references(() => athletes.id, { onDelete: "cascade" }),
+    athleteId: uuid("athlete_id").references(() => athletes.id, {
+      onDelete: "cascade",
+    }),
     eventType: eventType("event_type").notNull(),
     value: integer("value"),
     createdAt: timestamp("created_at").defaultNow(),
@@ -204,16 +251,19 @@ export const usersRelations = relations(users, ({ many }) => ({
   contestants: many(contestants),
 }));
 
-export const contestantBoostsRelations = relations(contestantBoosts, ({ one }) => ({
-  boost: one(boosts, {
-    fields: [contestantBoosts.boostId],
-    references: [boosts.id],
-  }),
-  contestant: one(contestants, {
-    fields: [contestantBoosts.contestantId],
-    references: [contestants.id],
-  }),
-}));
+export const contestantBoostsRelations = relations(
+  contestantBoosts,
+  ({ one }) => ({
+    boost: one(boosts, {
+      fields: [contestantBoosts.boostId],
+      references: [boosts.id],
+    }),
+    contestant: one(contestants, {
+      fields: [contestantBoosts.contestantId],
+      references: [contestants.id],
+    }),
+  })
+);
 
 export const athletesRelations = relations(athletes, ({ one }) => ({
   team: one(teams, {

@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useContestGameState } from "@/app/hooks/useContestGameState";
 import { useParams } from "next/navigation";
-import { GameCircle } from "@/components/court/GameCircle";
 import { GameCircleVertical } from "@/components/court/GameCircleVertical";
+import GameRoom from "@/components/court/GameRoom";
 
 export default function GamePage() {
   const [isVertical, setIsVertical] = useState(false);
@@ -26,6 +26,8 @@ export default function GamePage() {
     return () => window.removeEventListener("resize", checkOrientation);
   }, []);
 
+  console.log(contestGameState)
+
   if (isLoading) {
     return <div className="flex justify-center items-center min-h-screen bg-[#2E2A24] text-white">Loading...</div>;
   }
@@ -34,8 +36,8 @@ export default function GamePage() {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-[#2E2A24] overflow-hidden">
-      {isVertical ? <GameCircleVertical contest={contestGameState} /> : <GameCircle contest={contestGameState} />}
+    <div className="flex justify-center items-center bg-[#2E2A24] min-h-screen overflow-hidden">
+      {isVertical ? <GameCircleVertical contest={contestGameState} /> : <GameRoom contest={contestGameState}/>}
     </div>
   );
 }

@@ -1,7 +1,13 @@
 import { enterContestSchema } from "@/app/api/schemas";
 import { leagueStatPower, startingContestantXp } from "@/constants/statPower";
 import { db } from "@/db/db";
-import { contestants, contests, users } from "@/db/schema/schema";
+import {
+  boosts,
+  contestantBoosts,
+  contestants,
+  contests,
+  users,
+} from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -40,12 +46,8 @@ export async function POST(
   request: Request,
   context: { params: Promise<{ id: string; userId: string }> }
 ) {
-  console.log("here2")
   const { id, userId } = await context.params;
   const { teamId } = await request.json();
-  console.log(teamId, "teamId");
-  console.log(userId, "userId");
-  console.log(id, "id");
   const result = enterContestSchema.safeParse({ id, userId, teamId });
 
   if (!result.success) {
@@ -97,6 +99,29 @@ export async function POST(
         statPower: leagueStatPower[contest.league],
         teamId: result.data.teamId,
       })
+      .returning();
+
+    const requiredBoosts = await db.query.boosts.findMany({
+      where: eq(boosts.cost, 0),
+    });
+    console.log(requiredBoosts, "requiredBoosts");
+    
+    await db
+      .insert(contestantBoosts)
+      .values([
+        {
+          contestantId: contestant?.id,
+          boostId: requiredBoosts?.[0]?.id,
+        },
+        {
+          contestantId: contestant?.id,
+          boostId: requiredBoosts[1]?.id,
+        },
+        {
+          contestantId: contestant?.id,
+          boostId: requiredBoosts[2]?.id,
+        },
+      ])
       .returning();
 
     return NextResponse.json(contestant, { status: 201 });

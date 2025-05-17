@@ -1,6 +1,6 @@
 import useSWR from "swr";
-import type { Contestant } from "@/types/api";
 import type { Game } from "@/types/db";
+import { Contestant } from "@/components/court/GameRoom";
 
 interface EventHistoryItem {
   // TODO: define fields based on your event structure
