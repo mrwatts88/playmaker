@@ -136,10 +136,10 @@ export async function GET(
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const contestantId = params.id;
+    const { id } = await context.params;
     const body = await req.json();
 
     if (!body.boostIds || !Array.isArray(body.boostIds)) {
@@ -158,7 +158,7 @@ export async function POST(
     }
 
     const contestant = await db.query.contestants.findFirst({
-      where: eq(contestants.id, contestantId),
+      where: eq(contestants.id, id),
     });
 
     if (!contestant) {
@@ -201,11 +201,11 @@ export async function POST(
         spendableXp: contestant.spendableXp - totalCost,
         updatedAt: new Date(),
       })
-      .where(eq(contestants.id, contestantId));
+      .where(eq(contestants.id, id));
 
     if (selectedBoosts.length > 0) {
       const boostRecords = selectedBoosts.map((boost) => ({
-        contestantId,
+        contestantId: id,
         boostId: boost.id,
         createdAt: new Date(),
         // expiresAt: boost.duration ? new Date(Date.now() + boost.duration * 1000) : null,
@@ -232,10 +232,10 @@ export async function POST(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const contestantId = params.id;
+    const { id } = await context.params;
     const body = await req.json();
     const { boostId } = body;
 
@@ -247,7 +247,7 @@ export async function DELETE(
     }
 
     const contestant = await db.query.contestants.findFirst({
-      where: eq(contestants.id, contestantId),
+      where: eq(contestants.id, id),
     });
 
     if (!contestant) {
@@ -259,7 +259,7 @@ export async function DELETE(
 
     const contestantBoost = await db.query.contestantBoosts.findFirst({
       where: and(
-        eq(contestantBoosts.contestantId, contestantId),
+        eq(contestantBoosts.contestantId, id),
         eq(contestantBoosts.boostId, boostId)
       ),
     });

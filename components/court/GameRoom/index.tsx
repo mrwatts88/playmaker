@@ -57,15 +57,15 @@ interface Stat {
 }
 
 const mappedMessage: Stat = {
-  rebounds: "Team Stat - Rebound",
-  assists: "Team Stat - Assists",
-  points: "Team Stat - Points",
-  blocks: "Team Stat - Blocks",
-  steals: "Team Stat - Steals",
-  turnover: "Team Stat - Turnover",
-  foul: "Team Stat - Foul",
-  "3 pointers": "Team Stat - 3 pointers",
-  "free throw made": "Team Stat - Free throw made",
+  rebounds: "Rebound",
+  assists: "Assists",
+  points: "Points",
+  blocks: "Blocks",
+  steals: "Steals",
+  turnover: "Turnover",
+  foul: "Foul",
+  "3 pointers": "3 pointers",
+  "free throw made": "Free throw made",
 };
 
 // Current Event Component
@@ -278,7 +278,11 @@ const ContestantRow: React.FC<{ contestant: Contestant; index: number }> = ({
             boostId={boost.id}
             contestantId={contestant.id}
             boostIcon={<BoostIcon key={index} boost={boost} />}
-            message={mappedMessage[boost?.stat || ""]}
+            message={
+              boost?.type === "team"
+                ? `Team Stat - ${mappedMessage[boost?.stat || ""]}`
+                : `${boost?.name} - ${mappedMessage[boost?.stat || ""]}`
+            }
           />
         ))}
       </div>
