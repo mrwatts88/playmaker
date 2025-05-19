@@ -1,19 +1,21 @@
 import { Boost } from "@/types/db";
-import { Ban, FlagTriangleRight, LoaderPinwheel, RefreshCw, ShoppingBasket, SquareArrowDownLeft } from "lucide-react";
+import {
+  Ban,
+  FlagTriangleRight,
+  LoaderPinwheel,
+  RefreshCw,
+  ShoppingBasket,
+  SquareArrowDownLeft,
+} from "lucide-react";
 import Image from "next/image";
 import { Dispatch, SetStateAction, useEffect } from "react";
 
 const SelectBoost: React.FC<{
   boost: Boost;
-  className?: string;
+  bgColor?: string;
   setSelectedBoost: Dispatch<SetStateAction<string[]>>;
   selectedBoost: string[];
-}> = ({
-  boost,
-  className = "bg-[#FB7B1F]",
-  setSelectedBoost,
-  selectedBoost,
-}) => {
+}> = ({ boost, bgColor, setSelectedBoost, selectedBoost }) => {
   const handleAddBoost = (boostId: string) => {
     const isAlreadyIncluded = selectedBoost.includes(boostId);
     if (isAlreadyIncluded) {
@@ -24,7 +26,7 @@ const SelectBoost: React.FC<{
     }
   };
 
-  const isSelected = selectedBoost.includes(boost.id);
+  const isSelected = selectedBoost.includes(boost?.id);
 
   useEffect(() => {
     setSelectedBoost([]);
@@ -80,8 +82,8 @@ const SelectBoost: React.FC<{
   return (
     <div
       onClick={() => handleAddBoost(boost.id)}
-      className={`w-12 h-12 rounded-full flex items-center justify-center ${className} ${
-        isSelected && "bg-[#FB7B1F]"
+      className={`w-12 h-12 rounded-full flex items-center justify-center ${
+        isSelected ? "bg-[#4ED7F1]" : bgColor
       }`}
     >
       <div className="w-8 h-8 text-gray-900">{getIconPath()}</div>

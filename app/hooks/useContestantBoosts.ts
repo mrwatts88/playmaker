@@ -13,7 +13,7 @@ export function useContestantBoosts(contestantId: string | null) {
 
     const timer = setInterval(() => {
       setRefreshKey((prev) => prev + 1);
-    }, 5 * 60 * 1000);
+    }, 60 * 1000);
 
     return () => clearInterval(timer);
   }, [contestantId]);
@@ -26,8 +26,8 @@ export function useContestantBoosts(contestantId: string | null) {
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-      refreshInterval: 5 * 60 * 1000,
-      dedupingInterval: 5 * 60 * 1000 - 1000,
+      refreshInterval: 60 * 1000,
+      dedupingInterval: 60 * 1000 - 1000,
     }
   );
 

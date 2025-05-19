@@ -21,7 +21,7 @@
  */
 import { eq } from "drizzle-orm";
 import { db } from "../../db/db";
-import { athletes, gameEvents } from "../../db/schema/schema";
+import { gameEvents } from "../../db/schema/schema";
 
 const ALLOWED_ACTION_TYPES = new Set(["3pt", "2pt", "rebound", "steal", "block", "freethrow", "game", "period"]);
 

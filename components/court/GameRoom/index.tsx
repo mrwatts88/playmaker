@@ -40,6 +40,7 @@ interface TooltipComponentProps {
   boostId?: string;
   contestantId?: string;
   isDelete?: boolean;
+  showDelete?: boolean;
 }
 
 interface GameCircleVerticalProps {
@@ -75,6 +76,7 @@ const TooltipComponent: React.FC<TooltipComponentProps> = ({
   boostId,
   contestantId,
   isDelete = true,
+  showDelete = false,
 }) => {
   const handleDelete = async () => {
     if (!boostId) return;
@@ -109,7 +111,7 @@ const TooltipComponent: React.FC<TooltipComponentProps> = ({
           >
             <div className="flex items-center justify-between gap-4">
               {message}{" "}
-              {isDelete && (
+              {isDelete && showDelete && (
                 <Trash2
                   onClick={handleDelete}
                   className="text-red-500 h-4 w-4 cursor-pointer"
@@ -123,6 +125,7 @@ const TooltipComponent: React.FC<TooltipComponentProps> = ({
     </Tooltip.Provider>
   );
 };
+
 const CurrentEvent: React.FC<EventProps> = ({ name, boosts, contestantId }) => {
   const [isLoading, setIsLoding] = useState(false);
   const [selectedBoost, setSelectedBoost] = useState<string[]>([]);
@@ -130,7 +133,7 @@ const CurrentEvent: React.FC<EventProps> = ({ name, boosts, contestantId }) => {
   const handleBuyBoost = async () => {
     setIsLoding(true);
     const contestantResponse = await fetch(
-      `/api/contestants/${contestantId}/boost`,
+      `/api/contestants/${contestantId}/buy-boost`,
       {
         method: "POST",
         headers: {
@@ -169,7 +172,7 @@ const CurrentEvent: React.FC<EventProps> = ({ name, boosts, contestantId }) => {
                     boost={boost}
                     setSelectedBoost={setSelectedBoost}
                     selectedBoost={selectedBoost}
-                    className="bg-[#9198a8]"
+                    bgColor="bg-[#9198a8]"
                   />
                 }
                 isDelete={false}
@@ -195,8 +198,8 @@ const BoostIcon: React.FC<{ boost: Boost; className?: string }> = ({
   className = "bg-[#FB7B1F]",
 }) => {
   const getIconPath = () => {
-    const type = boost?.stat;
-    switch (type) {
+    const stat = boost?.stat;
+    switch (stat) {
       case "points":
         return (
           <Image
@@ -277,7 +280,16 @@ const ContestantRow: React.FC<{ contestant: Contestant; index: number }> = ({
             key={index}
             boostId={boost.id}
             contestantId={contestant.id}
-            boostIcon={<BoostIcon key={index} boost={boost} />}
+            boostIcon={
+              <BoostIcon
+                key={index}
+                boost={boost}
+                className={
+                  boost?.type === "team" ? "bg-[#FB7B1F]" : "bg-[#4ED7F1]"
+                }
+              />
+            }
+            showDelete={boost?.cost !== 0}
             message={
               boost?.type === "team"
                 ? `Team Stat - ${mappedMessage[boost?.stat || ""]}`
