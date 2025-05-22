@@ -1,10 +1,6 @@
 import { db } from "@/db/db";
-import {
-  boosts,
-  contestantBoosts,
-  contestants,
-} from "@/db/schema/schema";
-import { eq, inArray } from "drizzle-orm";
+import { boosts, contestantBoosts, contestants } from "@/db/schema/schema";
+import { and, eq, inArray } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
@@ -83,6 +79,24 @@ export async function POST(
       return NextResponse.json(
         { error: "Contestant not found" },
         { status: 404 }
+      );
+    }
+
+    const existingBoosts = await db.query.contestantBoosts.findMany({
+      where: and(
+        eq(contestantBoosts.contestantId, id),
+        inArray(contestantBoosts.boostId, boostIds)
+      ),
+    });
+
+    if (existingBoosts.length > 0) {
+      const duplicateBoostIds = existingBoosts.map((boost) => boost.boostId);
+      return NextResponse.json(
+        {
+          error: "One or more boosts are already owned by this contestant",
+          duplicateBoosts: duplicateBoostIds,
+        },
+        { status: 400 }
       );
     }
 

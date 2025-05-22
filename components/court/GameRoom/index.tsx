@@ -148,6 +148,7 @@ const CurrentEvent: React.FC<EventProps> = ({ name, boosts, contestantId }) => {
       const error = await contestantResponse.json();
       toast.error(error.error || "Failed to buy boosts");
     }
+    
     setSelectedBoost([]);
   };
 
