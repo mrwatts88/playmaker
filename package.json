@@ -12,7 +12,9 @@
     "db:push:test": "tsx scripts/push-test-db.ts",
     "db:studio": "drizzle-kit studio",
     "nba:sync-lineups": "cross-env DOTENV_CONFIG_PATH=.env npx tsx -r dotenv/config scripts/nba/sync-lineups.ts",
-    "nba:sync-game-events": "DOTENV_CONFIG_PATH=.env npx tsx -r dotenv/config scripts/nba/sync-game-events.ts",
+    "nba:sync-completed": "cross-env DOTENV_CONFIG_PATH=.env npx tsx -r dotenv/config scripts/nba/sync-completed.ts",
+    "nba:sync-events-boost": "cross-env DOTENV_CONFIG_PATH=.env npx tsx -r dotenv/config scripts/nba/sync-events-boost.ts",
+    "nba:sync-game-events": "cross-env DOTENV_CONFIG_PATH=.env npx tsx -r dotenv/config scripts/nba/sync-game-events.ts",
     "sanity": "npm run lint && npm i && npm run build && npm run start"
   },
   "dependencies": {

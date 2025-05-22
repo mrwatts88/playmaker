@@ -28,9 +28,16 @@ type MLBStatPower = {
   outfield: number;
 };
 
-type LeagueStatPower = NBAStatPower | NFLStatPower | NHLStatPower | MLBStatPower;
+type LeagueStatPower =
+  | NBAStatPower
+  | NFLStatPower
+  | NHLStatPower
+  | MLBStatPower;
 
-export const leagueStatPower: Record<(typeof leagueType.enumValues)[number], LeagueStatPower> = {
+export const leagueStatPower: Record<
+  (typeof leagueType.enumValues)[number],
+  LeagueStatPower
+> = {
   nba: {
     points: 0,
     rebounds: 0,
@@ -57,4 +64,4 @@ export const leagueStatPower: Record<(typeof leagueType.enumValues)[number], Lea
   },
 };
 
-export const startingContestantXp = 1000;
+export const startingContestantXp = 5000;

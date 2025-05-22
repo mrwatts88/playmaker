@@ -36,13 +36,13 @@ export const createContestWithGames = async (
       throw new Error("One or more games belong to a different league");
     }
 
-    // verify all games are not completed
-    const completedGames = existingGames.filter(
-      (game) => game.status === "completed"
-    );
-    if (completedGames.length > 0) {
-      throw new Error("One or more games are completed");
-    }
+    // verify all games are not completed -----> Added comments as we need to check completed games
+    // const completedGames = existingGames.filter(
+    //   (game) => game.status === "completed"
+    // );
+    // if (completedGames.length > 0) {
+    //   throw new Error("One or more games are completed");
+    // }
 
     // Create contest
     const [contest] = await db

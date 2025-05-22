@@ -94,7 +94,7 @@ export async function POST(
         userId: result.data.userId,
         name: user.name,
         contestId: result.data.id,
-        totalXp: startingContestantXp,
+        totalXp: 0,
         spendableXp: startingContestantXp,
         statPower: leagueStatPower[contest.league],
         teamId: result.data.teamId,
@@ -105,7 +105,7 @@ export async function POST(
       where: eq(boosts.cost, 0),
     });
     console.log(requiredBoosts, "requiredBoosts");
-    
+
     await db
       .insert(contestantBoosts)
       .values([

@@ -228,6 +228,27 @@ export const contestantBoosts = pgTable("contestant_boosts", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const processedGameEvents = pgTable(
+  "processed_game_events",
+  {
+    gameEventId: uuid("game_event_id")
+      .notNull()
+      .references(() => gameEvents.id),
+    contestantId: uuid("contestant_id")
+      .notNull()
+      .references(() => contestants.id),
+    gameId: uuid("game_id")
+      .notNull()
+      .references(() => games.id),
+    processedAt: timestamp("processed_at").notNull().defaultNow(),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({ columns: [table.gameEventId, table.contestantId] }),
+    };
+  }
+);
+
 // Relations //
 export const gamesRelations = relations(games, ({ one }) => ({
   homeTeam: one(teams, {

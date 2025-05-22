@@ -1,13 +1,8 @@
-CREATE TYPE boost_type_new AS ENUM ('team', 'athlete');
-
-ALTER TABLE boosts
-ALTER COLUMN type TYPE boost_type_new
-USING type::text::boost_type_new;
-
-DROP TYPE boost_type;
-
-ALTER TYPE boost_type_new RENAME TO boost_type;
-ALTER TYPE stat_type ADD VALUE IF NOT EXISTS '3 pointers';
-ALTER TYPE stat_type ADD VALUE IF NOT EXISTS 'foul';
-ALTER TYPE stat_type ADD VALUE IF NOT EXISTS 'turnover';
-ALTER TYPE stat_type ADD VALUE IF NOT EXISTS 'free throw made';
+CREATE TABLE IF NOT EXISTS processed_game_events (
+  game_event_id UUID NOT NULL REFERENCES game_events(id),
+  contestant_id UUID NOT NULL REFERENCES contestants(id),
+  game_id UUID NOT NULL REFERENCES games(id),
+  processed_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (game_event_id, contestant_id)
+);
+CREATE INDEX IF NOT EXISTS idx_processed_game_events_game_id ON processed_game_events(game_id);

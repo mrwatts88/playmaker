@@ -116,6 +116,14 @@ CREATE TABLE contestants (
     UNIQUE (user_id, contest_id)
 );
 
+CREATE TABLE IF NOT EXISTS processed_game_events (
+  game_event_id UUID NOT NULL REFERENCES game_events(id),
+  contestant_id UUID NOT NULL REFERENCES contestants(id),
+  game_id UUID NOT NULL REFERENCES games(id),
+  processed_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (game_event_id, contestant_id)
+);
+
 -- Created when a contestant drafts an athlete
 -- CREATE TABLE roster_members (
 --     contestant_id TEXT REFERENCES contestants(id),
