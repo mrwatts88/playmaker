@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import Avatar from "../../../public/images/avatar.png";
 import { ContestGameState } from "@/app/hooks/useContestGameState";
@@ -6,12 +6,10 @@ import { Boost } from "@/types/db";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { useContestantBoosts } from "@/app/hooks/useContestantBoosts";
 import { getCookie } from "cookies-next";
-import ShowStat from "./ShowStat";
-import SelectBoost from "./SelectBoost";
+
 import {
   Ban,
   FlagTriangleRight,
-  LoaderCircle,
   LoaderPinwheel,
   RefreshCw,
   ShoppingBasket,
@@ -19,6 +17,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { toast } from "react-toastify";
+import CurrentEvent from "./CurrentEvent";
+import { useGameEvents } from "@/app/hooks/useGameEvents";
 
 export interface Contestant {
   id: string;
@@ -47,12 +47,6 @@ interface GameCircleVerticalProps {
   contest: ContestGameState;
 }
 
-interface EventProps {
-  name: string;
-  boosts: Boost[];
-  contestantId: string;
-}
-
 interface Stat {
   [key: string]: string;
 }
@@ -70,7 +64,7 @@ const mappedMessage: Stat = {
 };
 
 // Current Event Component
-const TooltipComponent: React.FC<TooltipComponentProps> = ({
+export const TooltipComponent: React.FC<TooltipComponentProps> = ({
   boostIcon,
   message,
   boostId,
@@ -126,75 +120,8 @@ const TooltipComponent: React.FC<TooltipComponentProps> = ({
   );
 };
 
-const CurrentEvent: React.FC<EventProps> = ({ name, boosts, contestantId }) => {
-  const [isLoading, setIsLoding] = useState(false);
-  const [selectedBoost, setSelectedBoost] = useState<string[]>([]);
-
-  const handleBuyBoost = async () => {
-    setIsLoding(true);
-    const contestantResponse = await fetch(
-      `/api/contestants/${contestantId}/buy-boost`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ boostIds: selectedBoost }),
-      }
-    );
-    setIsLoding(false);
-
-    if (!contestantResponse.ok) {
-      const error = await contestantResponse.json();
-      toast.error(error.error || "Failed to buy boosts");
-    }
-    
-    setSelectedBoost([]);
-  };
-
-  return (
-    <div className="flex flex-col items-center bg-gray-900 p-4 h-full rounded-r-lg">
-      <div className="text-gray-400 text-lg mb-2">Current Event</div>
-      <div className="text-white text-3xl font-bold">{name}</div>
-
-      <div className="mt-auto flex flex-col items-center gap-4">
-        <h3>Available Boosts</h3>
-        {boosts?.length === 0 && (
-          <LoaderCircle className="animate-spin h-10 text-center w-full" />
-        )}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-          {boosts?.map((boost, index) => {
-            return (
-              <TooltipComponent
-                key={index}
-                boostIcon={
-                  <SelectBoost
-                    key={index}
-                    boost={boost}
-                    setSelectedBoost={setSelectedBoost}
-                    selectedBoost={selectedBoost}
-                    bgColor="bg-[#9198a8]"
-                  />
-                }
-                isDelete={false}
-                message={<ShowStat boost={boost} />}
-              />
-            );
-          })}
-        </div>
-        <button
-          onClick={handleBuyBoost}
-          className="h-9 px-4 rounded-full bg-[#FB7B1F] hover:bg-[#eb853c] text-white font-medium cursor-pointer"
-        >
-          {isLoading ? <LoaderCircle className="animate-spin" /> : "Buy Boost"}
-        </button>
-      </div>
-    </div>
-  );
-};
-
 // Boost Icon Component
-const BoostIcon: React.FC<{ boost: Boost; className?: string }> = ({
+export const BoostIcon: React.FC<{ boost: Boost; className?: string }> = ({
   boost,
   className = "bg-[#FB7B1F]",
 }) => {
@@ -233,7 +160,7 @@ const BoostIcon: React.FC<{ boost: Boost; className?: string }> = ({
       case "steals":
         return <RefreshCw className="w-8 h-8" />;
       case "turnover":
-        return <SquareArrowDownLeft className="w-8 h-12" />;
+        return <SquareArrowDownLeft className="w-8 h-8" />;
       case "3 pointers":
         return <ShoppingBasket className="w-8 h-8" />;
       case "foul":
@@ -275,7 +202,7 @@ const ContestantRow: React.FC<{ contestant: Contestant; index: number }> = ({
         </div>
       </div>
 
-      <div className="flex justify-start flex-1 gap-2">
+      <div className="flex justify-start flex-1 gap-x-2 overflow-y-hidden overflow-x-auto">
         {contestant?.currentBoosts.map((boost: Boost, index: number) => (
           <TooltipComponent
             key={index}
@@ -311,9 +238,10 @@ const GameRoom = ({ contest }: GameCircleVerticalProps) => {
   const { contestants } = contest;
   const contestantId = contestants.find((item) => item.userId === userId)?.id;
   const { boost } = useContestantBoosts(contestantId || null);
+  const { gameEvents } = useGameEvents(contest.id);
 
   return (
-    <div className="flex w-full h-screen text-white p-12">
+    <div className="flex w-full h-screen text-white p-0 lg:p-12">
       <div className="flex-1 overflow-y-auto bg-white rounded-s-lg">
         {contestants.map((contestant, index) => (
           <ContestantRow
@@ -323,9 +251,9 @@ const GameRoom = ({ contest }: GameCircleVerticalProps) => {
           />
         ))}
       </div>
-      <div className="w-[20%] border-l border-gray-800">
+      <div className="w-[32%] md:w-[26%] xl:w-[20%] border-l border-gray-800">
         <CurrentEvent
-          name="Rebound Event"
+          gameEvents={gameEvents || []}
           boosts={boost || []}
           contestantId={contestantId || ""}
         />

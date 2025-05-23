@@ -304,6 +304,17 @@ export const contestGamesRelations = relations(contestGames, ({ one }) => ({
   }),
 }));
 
+export const gameEventsRelations = relations(gameEvents, ({ one }) => ({
+  game: one(games, {
+    fields: [gameEvents.gameId],
+    references: [games.id],
+  }),
+  athlete: one(athletes, {
+    fields: [gameEvents.athleteId],
+    references: [athletes.id],
+  }),
+}));
+
 export const contestantsRelations = relations(contestants, ({ one }) => ({
   contest: one(contests, {
     fields: [contestants.contestId],

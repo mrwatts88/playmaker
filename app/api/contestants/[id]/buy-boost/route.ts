@@ -18,7 +18,7 @@ import { NextRequest, NextResponse } from "next/server";
  *             required:
  *               - boostIds
  *             properties:
- *               gameIds:
+ *               boostIds:
  *                 type: array
  *                 items:
  *                   type: string
