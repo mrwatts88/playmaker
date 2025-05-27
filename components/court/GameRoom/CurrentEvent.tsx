@@ -45,17 +45,19 @@ const CurrentEvent: React.FC<EventProps> = ({
 
   return (
     <div className="flex flex-col items-center bg-gray-900 p-4 h-full rounded-r-lg overflow-y-auto">
-      <div className="text-gray-400 text-xl lg:text-3xl mb-1 lg:mb-8">Current Event</div>
       <div className="flex flex-col gap-y-1 md:gap-y-2 lg:gap-y-4">
         {gameEvents?.length === 0 ? (
           <LoaderCircle className="animate-spin h-10 text-center w-full" />
         ) : (
           gameEvents?.map((item) => {
+            const convertedName = item.athlete.name
+              .split(" ")
+              .map((word, index) => (index === 0 ? word[0] : word))
+              .join(" ");
+            const isPoints = item.eventType.includes("point");
             return (
-              <p key={item.id} className="text-sm lg:text-[16px]">
-                <strong className="text-[#FB7B1F]">{item.eventType}</strong>{" "}
-                event performed by{" "}
-                <strong className="text-[#FB7B1F]">{item.athlete.name}</strong>
+              <p key={item.id} className="text-[12px] md:text-sm lg:text-[16px] font-semibold">
+                {convertedName}{" "}{isPoints ? item.value + "pts" : item.eventType}
               </p>
             );
           })
@@ -63,11 +65,10 @@ const CurrentEvent: React.FC<EventProps> = ({
       </div>
 
       <div className="mt-auto flex flex-col items-center gap-4">
-        <h3 className="hidden md:block">Available Boosts</h3>
         {boosts?.length === 0 && (
           <LoaderCircle className="animate-spin h-10 text-center w-full" />
         )}
-        <div className="grid grid-cols-3 gap-2 md:gap-4 lg:gap-6">
+        <div className="grid grid-cols-2 gap-2 md:gap-4 lg:gap-6">
           {boosts?.map((boost, index) => {
             return (
               <TooltipComponent
@@ -78,7 +79,7 @@ const CurrentEvent: React.FC<EventProps> = ({
                     boost={boost}
                     setSelectedBoost={setSelectedBoost}
                     selectedBoost={selectedBoost}
-                    bgColor="bg-[#9198a8]"
+                    bgColor="bg-white"
                   />
                 }
                 isDelete={false}
@@ -89,7 +90,8 @@ const CurrentEvent: React.FC<EventProps> = ({
         </div>
         <button
           onClick={handleBuyBoost}
-          className="h-9 px-4 rounded-full bg-[#FB7B1F] hover:bg-[#eb853c] text-white font-medium cursor-pointer"
+          disabled={selectedBoost.length === 0}
+          className={`h-9 px-4 text-sm rounded-full bg-[#FB7B1F] hover:bg-[#eb853c] text-white font-medium cursor-pointer ${selectedBoost.length === 0 && "bg-gray-500"} `}
         >
           {isLoading ? <LoaderCircle className="animate-spin" /> : "Buy Boost"}
         </button>

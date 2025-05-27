@@ -442,7 +442,6 @@ async function calculateContestantXP(
   newGameEvents: (typeof gameEvents.$inferSelect)[]
 ) {
   try {
-    // Find all contests that include this game
     const contestsWithGame = await db.query.contestGames.findMany({
       where: eq(contestGames.gameId, gameId),
       with: {
@@ -476,7 +475,6 @@ async function calculateContestantXP(
       `Found ${allContestants.length} contestants to process for XP calculations`
     );
 
-    // Get all active boosts for these contestants
     const now = new Date();
     const contestantBoostsData = await db.query.contestantBoosts.findMany({
       where: (cb, { inArray, or, isNull, gt }) =>
@@ -493,7 +491,6 @@ async function calculateContestantXP(
       },
     });
 
-    // Get all athletes for reference
     const athletesData = await db.query.athletes.findMany({
       where: (a, { eq }) => eq(a.league, "nba"),
       with: {
@@ -501,22 +498,18 @@ async function calculateContestantXP(
       },
     });
 
-    // Create a map of athlete IDs to athlete data for faster lookup
     const athleteMap = new Map(
       athletesData.map((athlete) => [athlete.id, athlete])
     );
 
-    // Get already processed events for this game to avoid duplicate XP calculations
     const alreadyProcessedEvents = await db.query.processedGameEvents.findMany({
       where: (pge, { eq }) => eq(pge.gameId, gameId),
     });
 
-    // Create a set of already processed event-contestant combinations for quick lookup
     const processedSet = new Set(
       alreadyProcessedEvents.map((pe) => `${pe.gameEventId}-${pe.contestantId}`)
     );
 
-    // Process each contestant
     const processedEvents: ProcessedEvent[] = [];
     const xpUpdates: Record<string, number> = {};
     const newProcessedGameEvents: {
@@ -526,9 +519,7 @@ async function calculateContestantXP(
       processedAt: Date;
     }[] = [];
 
-    // Process each game event for each contestant
     for (const gameEvent of newGameEvents) {
-      // Skip events that don't have an associated athlete or are not stat events
       if (
         !gameEvent.eventType ||
         !eventToStatMapping[gameEvent.eventType] ||
@@ -541,32 +532,27 @@ async function calculateContestantXP(
         continue;
       }
 
-      // Get the athlete associated with this event
       const athlete = gameEvent.athleteId
         ? athleteMap.get(gameEvent.athleteId)
         : null;
       if (!athlete) {
-        continue; // Skip events without a valid athlete
+        continue;
       }
 
       const correspondingStat = eventToStatMapping[gameEvent.eventType];
 
-      // For each contestant in the contests associated with this game
       for (const contestant of allContestants) {
-        // Check if this contestant is enrolled in this game through their contest
         const contestWithGame = contestsWithGame.find(
           (cg) => cg.contestId === contestant.contestId
         );
         if (!contestWithGame) {
-          continue; // Skip if contestant is not enrolled in this game
+          continue;
         }
 
-        // Check if the event is from the contestant's team
         if (contestant.teamId !== athlete.teamId) {
-          continue; // Skip if the athlete is not on the contestant's team
+          continue; 
         }
 
-        // Check if this event has already been processed for this contestant
         const processedKey = `${gameEvent.id}-${contestant.id}`;
         if (processedSet.has(processedKey)) {
           console.log(
@@ -575,13 +561,11 @@ async function calculateContestantXP(
           continue;
         }
 
-        // Track that we've processed this event for this contestant
         processedEvents.push({
           eventId: gameEvent.id,
           contestantId: contestant.id,
         });
 
-        // Record this event-contestant combination as processed
         newProcessedGameEvents.push({
           gameEventId: gameEvent.id,
           contestantId: contestant.id,
@@ -589,14 +573,12 @@ async function calculateContestantXP(
           processedAt: new Date(),
         });
 
-        // Initialize XP for this contestant if not already done
         if (!xpUpdates[contestant.id]) {
           xpUpdates[contestant.id] = 0;
         }
 
         let totalXpForEvent = 0;
 
-        // Check for team-type boosts that apply to this stat
         const teamBoosts = contestantBoostsData.find(
           (cb) =>
             cb.contestantId === contestant.id &&
@@ -604,7 +586,6 @@ async function calculateContestantXP(
             cb.boost.stat === correspondingStat
         );
 
-        // Add XP from team boosts
         if (teamBoosts) {
           const boostValue =
             parseFloat(teamBoosts?.boost.value ?? "".toString()) || 0;
@@ -615,7 +596,6 @@ async function calculateContestantXP(
           );
         }
 
-        // Check for athlete-type boosts that apply to this specific athlete
         const athleteBoost = contestantBoostsData.find(
           (cb) =>
             cb.contestantId === contestant.id &&
@@ -624,7 +604,6 @@ async function calculateContestantXP(
             cb.boost.stat === correspondingStat
         );
 
-        // Add XP from athlete boosts
         if (athleteBoost) {
           const boostValue =
             parseFloat((athleteBoost.boost.value ?? "").toString()) || 0;
@@ -639,7 +618,6 @@ async function calculateContestantXP(
       }
     }
 
-    // Save all new processed event records
     if (newProcessedGameEvents.length > 0) {
       console.log(
         `Recording ${newProcessedGameEvents.length} new processed event records`
@@ -647,11 +625,9 @@ async function calculateContestantXP(
       await db.insert(processedGameEvents).values(newProcessedGameEvents);
     }
 
-    // Perform batch updates for all contestants
     for (const [contestantId, xpToAdd] of Object.entries(xpUpdates)) {
       if (xpToAdd > 0) {
         console.log(`Updating contestant ${contestantId} with ${xpToAdd} XP`);
-        // Get current contestant values
         const currentContestant = await db.query.contestants.findFirst({
           where: eq(contestants.id, contestantId),
         });

@@ -82,12 +82,25 @@ export async function POST(
       );
     }
 
+    const totalBoosts = await db.query.contestantBoosts.findMany({
+      where: and(eq(contestantBoosts.contestantId, id)),
+    });
+    console.log(totalBoosts, "totalBoosts");
     const existingBoosts = await db.query.contestantBoosts.findMany({
       where: and(
         eq(contestantBoosts.contestantId, id),
         inArray(contestantBoosts.boostId, boostIds)
       ),
     });
+
+    if (totalBoosts.length + boostIds.length > 10) {
+      return NextResponse.json(
+        {
+          error: "Contestant can have maximum 10 boost only",
+        },
+        { status: 400 }
+      );
+    }
 
     if (existingBoosts.length > 0) {
       const duplicateBoostIds = existingBoosts.map((boost) => boost.boostId);

@@ -1,6 +1,13 @@
 import { contestIdSchema } from "@/app/api/schemas";
 import { db } from "@/db/db";
-import { contestantBoosts, contestants, contestGames, contests, gameEvents, teams } from "@/db/schema/schema";
+import {
+  contestantBoosts,
+  contestants,
+  contestGames,
+  contests,
+  gameEvents,
+  teams,
+} from "@/db/schema/schema";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -28,14 +35,20 @@ import { NextResponse } from "next/server";
  *       500:
  *         description: Internal Server Error
  */
-export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
+export async function GET(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
     // Validate contest ID
     const { id } = await context.params;
     const contestIdResult = contestIdSchema.safeParse({ id });
     if (!contestIdResult.success) {
       console.error("Invalid contest ID:", contestIdResult.error);
-      return NextResponse.json({ error: contestIdResult.error.issues[0].message }, { status: 400 });
+      return NextResponse.json(
+        { error: contestIdResult.error.issues[0].message },
+        { status: 400 }
+      );
     }
 
     // Get contest details
@@ -51,6 +64,7 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
     // Get all contestants for this contest
     const contestantList = await db.query.contestants.findMany({
       where: eq(contestants.contestId, id),
+      orderBy: contestants.createdAt,
     });
 
     // Get all contest games
@@ -109,6 +123,9 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
     return NextResponse.json(response);
   } catch (error) {
     console.error("Error fetching contest game state:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

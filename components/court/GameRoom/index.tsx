@@ -1,6 +1,4 @@
 import React from "react";
-import Image from "next/image";
-import Avatar from "../../../public/images/avatar.png";
 import { ContestGameState } from "@/app/hooks/useContestGameState";
 import { Boost } from "@/types/db";
 import * as Tooltip from "@radix-ui/react-tooltip";
@@ -10,15 +8,19 @@ import { getCookie } from "cookies-next";
 import {
   Ban,
   FlagTriangleRight,
+  Handshake,
   LoaderPinwheel,
   RefreshCw,
+  RotateCcw,
   ShoppingBasket,
   SquareArrowDownLeft,
   Trash2,
+  Volleyball,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import CurrentEvent from "./CurrentEvent";
 import { useGameEvents } from "@/app/hooks/useGameEvents";
+import { useResponsiveDimensions } from "@/app/hooks/useScreenSize";
 
 export interface Contestant {
   id: string;
@@ -43,7 +45,7 @@ interface TooltipComponentProps {
   showDelete?: boolean;
 }
 
-interface GameCircleVerticalProps {
+interface GameRoomProps {
   contest: ContestGameState;
 }
 
@@ -61,6 +63,22 @@ const mappedMessage: Stat = {
   foul: "Foul",
   "3 pointers": "3 pointers",
   "free throw made": "Free throw made",
+};
+
+const screenMapping = {
+  1: "w-12 h-12",
+  0: "w-10 h-10",
+  "-1": "w-8 h-8",
+};
+const heightMapping = {
+  1: "h-24",
+  0: "h-20",
+  "-1": "h-16",
+};
+const sizeMapping = {
+  1: "text-[16px]",
+  0: "text-sm",
+  "-1": "text-[12px]",
 };
 
 // Current Event Component
@@ -91,33 +109,36 @@ export const TooltipComponent: React.FC<TooltipComponentProps> = ({
     toast.success("Boost removed successfully");
   };
 
-  return (
-    <Tooltip.Provider delayDuration={100}>
-      <Tooltip.Root>
-        <Tooltip.Trigger className="cursor-pointer" asChild>
-          <span>{boostIcon}</span>
-        </Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Content
-            side="top"
-            align="center"
-            className="bg-gray-800 text-white text-sm px-3 py-1 rounded shadow-md"
-          >
-            <div className="flex items-center justify-between gap-4">
-              {message}{" "}
-              {isDelete && showDelete && (
-                <Trash2
-                  onClick={handleDelete}
-                  className="text-red-500 h-4 w-4 cursor-pointer"
-                />
-              )}
-            </div>
-            <Tooltip.Arrow className="fill-gray-800" />
-          </Tooltip.Content>
-        </Tooltip.Portal>
-      </Tooltip.Root>
-    </Tooltip.Provider>
-  );
+  if (boostId !== "none") {
+    return (
+      <Tooltip.Provider delayDuration={100}>
+        <Tooltip.Root>
+          <Tooltip.Trigger className="cursor-pointer" asChild>
+            <span>{boostIcon}</span>
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content
+              side="top"
+              align="center"
+              className="bg-gray-800 text-white text-sm px-3 py-1 rounded shadow-md"
+            >
+              <div className="flex items-center justify-between gap-4">
+                {message}{" "}
+                {isDelete && showDelete && (
+                  <Trash2
+                    onClick={handleDelete}
+                    className="text-red-500 h-4 w-4 cursor-pointer"
+                  />
+                )}
+              </div>
+              <Tooltip.Arrow className="fill-gray-800" />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>
+    );
+  }
+  return <span>{boostIcon}</span>;
 };
 
 // Boost Icon Component
@@ -125,58 +146,47 @@ export const BoostIcon: React.FC<{ boost: Boost; className?: string }> = ({
   boost,
   className = "bg-[#FB7B1F]",
 }) => {
+  const { screenSize, dimensions } = useResponsiveDimensions();
+  const stat = boost?.stat || "none";
+
   const getIconPath = () => {
-    const stat = boost?.stat;
     switch (stat) {
       case "points":
-        return (
-          <Image
-            src={"/images/basketball.svg"}
-            alt="basketball"
-            width={48}
-            height={48}
-          />
-        );
+        return <Volleyball className={`${dimensions} lg:w-8 md:h-8`} />;
       case "rebounds":
-        return (
-          <Image
-            src={"/images/bounce.svg"}
-            alt="basketball"
-            width={48}
-            height={48}
-          />
-        );
+        return <RotateCcw className={`${dimensions} lg:w-8 lg:h-8`} />;
       case "assists":
-        return (
-          <Image
-            src={"/images/hand.svg"}
-            alt="basketball"
-            width={48}
-            height={48}
-          />
-        );
+        return <Handshake className={`${dimensions} lg:w-8 lg:h-8`} />;
       case "blocks":
-        return <Ban className="w-8 h-8" />;
+        return <Ban className={`${dimensions} lg:w-8 lg:h-8`} />;
       case "steals":
-        return <RefreshCw className="w-8 h-8" />;
+        return <RefreshCw className={`${dimensions} lg:w-8 lg:h-8`} />;
       case "turnover":
-        return <SquareArrowDownLeft className="w-8 h-8" />;
+        return (
+          <SquareArrowDownLeft className={`${dimensions} lg:w-8 lg:h-8`} />
+        );
       case "3 pointers":
-        return <ShoppingBasket className="w-8 h-8" />;
+        return <ShoppingBasket className={`${dimensions} lg:w-8 lg:h-8`} />;
       case "foul":
-        return <FlagTriangleRight className="w-8 h-8" />;
+        return <FlagTriangleRight className={`${dimensions} lg:w-8 lg:h-8`} />;
       case "free throw made":
-        return <LoaderPinwheel className="w-8 h-8" />;
+        return <LoaderPinwheel className={`${dimensions} lg:w-8 lg:h-8`} />;
+      case "none":
+        return <div className={`${dimensions} rounded-full`} />;
       default:
-        return <div className="w-6 h-6 rounded-full bg-gray-700" />;
+        return <div className={`${dimensions} rounded-full bg-gray-700`} />;
     }
   };
 
   return (
     <div
-      className={`w-12 h-12 rounded-full flex items-center justify-center ${className}`}
+      className={`${
+        screenMapping[screenSize]
+      } rounded-full flex items-center justify-center ${
+        stat !== "none" ? className : "bg-gray-200 border border-gray-700"
+      }`}
     >
-      <div className="w-8 h-8 text-gray-900">{getIconPath()}</div>
+      <div className="text-gray-900">{getIconPath()}</div>
     </div>
   );
 };
@@ -185,52 +195,63 @@ const ContestantRow: React.FC<{ contestant: Contestant; index: number }> = ({
   contestant,
   index,
 }) => {
+  const { screenSize } = useResponsiveDimensions();
   return (
-    <div
-      className={`flex items-center p-4 gap-4 border-b border-[#FB7B1F] ${
-        index % 2 === 0 ? "bg-[#ffecde]" : "bg-[#fdd0b0]"
-      }`}
-    >
-      <div className="w-14 h-14 rounded-full overflow-hidden border border-gray-700 bg-white flex items-start justify-center">
+    <div className={`flex ${heightMapping[screenSize]}`}>
+      <div className="w-16 text-white bg-gray-900 text-3xl flex items-center justify-center m-1 mb-0">
+        {index + 1}
+      </div>
+      <div
+        className={`flex flex-1 items-center p-4 pr-0 gap-4 border-b border-[#FB7B1F] ${
+          index % 2 === 0 ? "bg-white" : "bg-[#fdd0b0]"
+        }`}
+      >
+        {/* <div className="w-14 h-14 rounded-full overflow-hidden border border-gray-700 bg-white flex items-start justify-center">
         <Image src={Avatar} alt={contestant.name} width={50} height={50} />
-      </div>
+      </div> */}
 
-      <div className="flex flex-col justify-between items-start mb-2 mr-6">
-        <div className="text-black font-semibold">{contestant.name}</div>
-        <div className="text-gray-700">
-          {contestant.spendableXp} XP / {contestant.totalXp} XP
+        <div
+          className={`flex flex-col ${sizeMapping[screenSize]} justify-between items-start mb-2 mr-2`}
+        >
+          <div className="text-gray-700 font-bold">
+            {contestant.spendableXp} XP
+          </div>
+          <div className="text-gray-700">Score: {contestant.totalXp}</div>
         </div>
-      </div>
 
-      <div className="flex justify-start flex-1 gap-x-2 overflow-y-hidden overflow-x-auto">
-        {contestant?.currentBoosts.map((boost: Boost, index: number) => (
-          <TooltipComponent
-            key={index}
-            boostId={boost.id}
-            contestantId={contestant.id}
-            boostIcon={
-              <BoostIcon
+        <div className="flex justify-start flex-1 gap-x-2 overflow-hidden">
+          {Array.from({ length: 10 }, (_, index) => {
+            const boost = contestant?.currentBoosts?.[index];
+            return (
+              <TooltipComponent
                 key={index}
-                boost={boost}
-                className={
-                  boost?.type === "team" ? "bg-[#FB7B1F]" : "bg-[#4ED7F1]"
+                boostId={boost?.id || "none"}
+                contestantId={contestant?.id}
+                boostIcon={
+                  <BoostIcon
+                    key={index}
+                    boost={boost}
+                    className={
+                      boost?.type === "team" ? "bg-[#FB7B1F]" : "bg-[#4ED7F1]"
+                    }
+                  />
+                }
+                showDelete={boost?.cost !== 0}
+                message={
+                  boost?.type === "team"
+                    ? `Team Stat - ${mappedMessage[boost?.stat || ""]}`
+                    : `${boost?.name} - ${mappedMessage[boost?.stat || ""]}`
                 }
               />
-            }
-            showDelete={boost?.cost !== 0}
-            message={
-              boost?.type === "team"
-                ? `Team Stat - ${mappedMessage[boost?.stat || ""]}`
-                : `${boost?.name} - ${mappedMessage[boost?.stat || ""]}`
-            }
-          />
-        ))}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
 };
 
-const GameRoom = ({ contest }: GameCircleVerticalProps) => {
+const GameRoom = ({ contest }: GameRoomProps) => {
   const userId =
     typeof window !== "undefined"
       ? (getCookie("playmaker_user_id") as string | undefined)
@@ -251,7 +272,7 @@ const GameRoom = ({ contest }: GameCircleVerticalProps) => {
           />
         ))}
       </div>
-      <div className="w-[32%] md:w-[26%] xl:w-[20%] border-l border-gray-800">
+      <div className="w-[20%] lg:w-[15%] border-l border-gray-800">
         <CurrentEvent
           gameEvents={gameEvents || []}
           boosts={boost || []}
