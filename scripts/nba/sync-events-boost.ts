@@ -23,6 +23,7 @@
  * npm run nba:sync-game-events GAME_ID
  * Example: npm run nba:sync-game-events 0022300001
  */
+
 import { eq, and, inArray } from "drizzle-orm";
 import { db } from "../../db/db";
 import {
@@ -52,7 +53,6 @@ const ALLOWED_ACTION_TYPES = new Set([
   "period",
 ]);
 
-// Track processed events to avoid duplicate XP calculations
 interface ProcessedEvent {
   eventId: string;
   contestantId: string;
@@ -66,7 +66,6 @@ async function main() {
   }
 
   try {
-    // First, get the game's UUID from the API ID
     const game = await db.query.games.findFirst({
       where: (games, { eq, and }) =>
         and(
@@ -83,12 +82,10 @@ async function main() {
       process.exit(1);
     }
 
-    // Get the latest action number for this game
     const events = await db.query.gameEvents.findMany({
       where: eq(gameEvents.gameId, game.id),
     });
 
-    // Find the highest action number by parsing them as numbers
     const latestActionNumber =
       events.length > 0
         ? Math.max(...events.map((e) => parseInt(e.apiId.split("_")[0])))
@@ -234,7 +231,6 @@ async function main() {
 
         if (pointsValue > 0) {
           if (!action.personId) {
-            // Handle points event without an athlete
             console.log(
               `Inserting points event without athlete for action ${action.actionNumber}`
             );
@@ -294,7 +290,6 @@ async function main() {
           }
         }
 
-        // Create assist event if there's an assist and we have the athlete
         if (action.assistPersonId) {
           const assistAthlete = await db.query.athletes.findFirst({
             where: (athletes, { eq, and }) =>
@@ -550,7 +545,7 @@ async function calculateContestantXP(
         }
 
         if (contestant.teamId !== athlete.teamId) {
-          continue; 
+          continue;
         }
 
         const processedKey = `${gameEvent.id}-${contestant.id}`;

@@ -11,12 +11,14 @@ interface EventProps {
   gameEvents: GameEvent[];
   boosts: Boost[];
   contestantId: string;
+  eventLoading: boolean;
 }
 
 const CurrentEvent: React.FC<EventProps> = ({
   gameEvents,
   boosts,
   contestantId,
+  eventLoading
 }) => {
   const [isLoading, setIsLoding] = useState(false);
   const [selectedBoost, setSelectedBoost] = useState<string[]>([]);
@@ -46,18 +48,22 @@ const CurrentEvent: React.FC<EventProps> = ({
   return (
     <div className="flex flex-col items-center bg-gray-900 p-4 h-full rounded-r-lg overflow-y-auto">
       <div className="flex flex-col gap-y-1 md:gap-y-2 lg:gap-y-4">
-        {gameEvents?.length === 0 ? (
+        {eventLoading ? (
           <LoaderCircle className="animate-spin h-10 text-center w-full" />
         ) : (
           gameEvents?.map((item) => {
-            const convertedName = item.athlete.name
+            const convertedName = item?.athlete?.name
               .split(" ")
               .map((word, index) => (index === 0 ? word[0] : word))
               .join(" ");
-            const isPoints = item.eventType.includes("point");
+            const isPoints = item?.eventType.includes("point");
             return (
-              <p key={item.id} className="text-[12px] md:text-sm lg:text-[16px] font-semibold">
-                {convertedName}{" "}{isPoints ? item.value + "pts" : item.eventType}
+              <p
+                key={item.id}
+                className="text-[12px] md:text-sm lg:text-[16px] font-semibold"
+              >
+                {convertedName}{" "}
+                {isPoints ? item?.value + "pts" : item?.eventType}
               </p>
             );
           })
@@ -91,7 +97,9 @@ const CurrentEvent: React.FC<EventProps> = ({
         <button
           onClick={handleBuyBoost}
           disabled={selectedBoost.length === 0}
-          className={`h-9 px-4 text-sm rounded-full bg-[#FB7B1F] hover:bg-[#eb853c] text-white font-medium cursor-pointer ${selectedBoost.length === 0 && "bg-gray-500"} `}
+          className={`h-9 px-4 text-sm rounded-full bg-[#FB7B1F] text-white font-medium cursor-pointer ${
+            selectedBoost.length === 0 && "bg-gray-500"
+          } `}
         >
           {isLoading ? <LoaderCircle className="animate-spin" /> : "Buy Boost"}
         </button>

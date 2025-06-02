@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ContestGameState } from "@/app/hooks/useContestGameState";
 import { Boost } from "@/types/db";
 import * as Tooltip from "@radix-ui/react-tooltip";
@@ -257,24 +257,84 @@ const GameRoom = ({ contest }: GameRoomProps) => {
       ? (getCookie("playmaker_user_id") as string | undefined)
       : undefined;
   const { contestants } = contest;
-  const contestantId = contestants.find((item) => item.userId === userId)?.id;
+  const [gameId, setGameId] = useState("");
+  const contestantId = contestants?.find((item) => item.userId === userId)?.id;
   const { boost } = useContestantBoosts(contestantId || null);
-  const { gameEvents } = useGameEvents(contest.id);
+  const { gameEvents, isLoading: eventLoading } = useGameEvents(contest.id);
+
+  const handleXPCalculation = async (
+    gameId: string,
+    eventToProcess: number
+  ) => {
+    const gemeEventResponse = await fetch(`/api/game-events`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ gameId, eventToProcess }),
+    });
+
+    if (!gemeEventResponse.ok) {
+      const error = await gemeEventResponse.json();
+      toast.error(error.error || "Failed to ");
+    } else {
+      toast.success("Events processed successfully");
+    }
+  };
 
   return (
     <div className="flex w-full h-screen text-white p-0 lg:p-12">
-      <div className="flex-1 overflow-y-auto bg-white rounded-s-lg">
-        {contestants.map((contestant, index) => (
-          <ContestantRow
-            key={contestant.id}
-            contestant={contestant}
-            index={index}
+      <div className="flex-1 flex flex-col justify-between overflow-y-auto bg-white rounded-s-lg">
+        <div>
+          {contestants.map((contestant, index) => (
+            <ContestantRow
+              key={contestant.id}
+              contestant={contestant}
+              index={index}
+            />
+          ))}
+        </div>
+        <div className="flex gap-4 p-4 bg-gray-900">
+          <input
+            type="text"
+            value={gameId}
+            onChange={(e) => setGameId(e.target.value)}
+            placeholder="Enter gameId"
+            className="bg-white text-black p-1"
           />
-        ))}
+          <button
+            onClick={() => handleXPCalculation(gameId, 1)}
+            disabled={gameId === ""}
+            className={`h-9 px-4 text-sm rounded-full bg-[#FB7B1F] text-white font-medium cursor-pointer ${
+              gameId === "" && "bg-gray-500"
+            }`}
+          >
+            1 Event
+          </button>
+          <button
+            onClick={() => handleXPCalculation(gameId, 10)}
+            disabled={gameId === ""}
+            className={`h-9 px-4 text-sm rounded-full bg-[#FB7B1F] text-white font-medium cursor-pointer ${
+              gameId === "" && "bg-gray-500"
+            }`}
+          >
+            10 Event
+          </button>
+          <button
+            onClick={() => handleXPCalculation(gameId, 50)}
+            disabled={gameId === ""}
+            className={`h-9 px-4 text-sm rounded-full bg-[#FB7B1F] text-white font-medium cursor-pointer ${
+              gameId === "" && "bg-gray-500"
+            }`}
+          >
+            50 Event
+          </button>
+        </div>
       </div>
       <div className="w-[20%] lg:w-[15%] border-l border-gray-800">
         <CurrentEvent
           gameEvents={gameEvents || []}
+          eventLoading={eventLoading}
           boosts={boost || []}
           contestantId={contestantId || ""}
         />
