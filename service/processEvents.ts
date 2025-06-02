@@ -105,6 +105,7 @@ export async function calculateContestantXP(
         and(
           eq(ge.gameId, gameId),
           ne(ge.eventType, "gamestart"),
+          ne(ge.eventType, "gameend"),
           processedGameEventIds.size > 0
             ? notInArray(ge.id, Array.from(processedGameEventIds))
             : undefined
@@ -122,6 +123,7 @@ export async function calculateContestantXP(
         processed: 0,
         remaining: 0,
         totalXpAwarded: 0,
+        message: "No more events left to process",
       };
     }
 
@@ -158,7 +160,7 @@ export async function calculateContestantXP(
     );
 
     const processedSet = new Set(
-      alreadyProcessedEvents.map((pe) => `${pe.gameEventId}-${pe.contestantId}`)
+      alreadyProcessedEvents.map((pe) => `${pe.gameEventId}`)
     );
 
     const processedEvents: ProcessedEvent[] = [];
@@ -197,7 +199,14 @@ export async function calculateContestantXP(
       const correspondingStat = eventToStatMapping[gameEvent.eventType];
 
       for (const contestant of allContestants) {
-        const processedKey = `${gameEvent.id}-${contestant.id}`;
+        const contestWithGame = contestsWithGame.find(
+          (cg) => cg.contestId === contestant.contestId
+        );
+        if (!contestWithGame) {
+          continue;
+        }
+
+        const processedKey = `${gameEvent.id}`;
         if (processedSet.has(processedKey)) {
           console.log(
             `Skipping already processed event ${gameEvent.id} for contestant ${contestant.id}`
@@ -216,12 +225,6 @@ export async function calculateContestantXP(
           gameId: gameId,
           processedAt: new Date(),
         });
-        const contestWithGame = contestsWithGame.find(
-          (cg) => cg.contestId === contestant.contestId
-        );
-        if (!contestWithGame) {
-          continue;
-        }
 
         if (contestant.teamId !== athlete?.teamId) {
           continue;
@@ -274,10 +277,15 @@ export async function calculateContestantXP(
     }
 
     if (newProcessedGameEvents.length > 0) {
-      console.log(
-        `Recording ${newProcessedGameEvents.length} new processed event records`
+      const uniqueProcessedEvents = newProcessedGameEvents.filter(
+        (event, index, self) =>
+          index === self.findIndex((e) => e.gameEventId === event.gameEventId)
       );
-      await db.insert(processedGameEvents).values(newProcessedGameEvents);
+
+      console.log(
+        `Recording ${uniqueProcessedEvents.length} unique processed event records (filtered from ${newProcessedGameEvents.length} total)`
+      );
+      await db.insert(processedGameEvents).values(uniqueProcessedEvents);
     }
 
     for (const [contestantId, xpToAdd] of Object.entries(xpUpdates)) {

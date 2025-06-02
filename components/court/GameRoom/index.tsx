@@ -274,11 +274,13 @@ const GameRoom = ({ contest }: GameRoomProps) => {
       body: JSON.stringify({ gameId, eventToProcess }),
     });
 
+    const data = await gemeEventResponse.json();
+
     if (!gemeEventResponse.ok) {
       const error = await gemeEventResponse.json();
       toast.error(error.error || "Failed to ");
     } else {
-      toast.success("Events processed successfully");
+      toast.success(data?.message || "Events processed successfully");
     }
   };
 
