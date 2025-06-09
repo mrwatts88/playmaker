@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { ContestGameState } from "@/app/hooks/useContestGameState";
 import { Boost } from "@/types/db";
 import * as Tooltip from "@radix-ui/react-tooltip";
@@ -258,22 +258,21 @@ const GameRoom = ({ contest }: GameRoomProps) => {
       ? (getCookie("playmaker_user_id") as string | undefined)
       : undefined;
   const { contestants } = contest;
-  const [gameId, setGameId] = useState("");
   const contestantId = contestants?.find((item) => item.userId === userId)?.id;
   const { boost } = useContestantBoosts(contestantId || null);
   const { gameEvents, isLoading: eventLoading } = useGameEvents(contest.id);
 
-  const handleXPCalculation = async (
-    gameId: string,
-    eventToProcess: number
-  ) => {
-    const gemeEventResponse = await fetch(`/api/game-events`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ gameId, eventToProcess }),
-    });
+  const handleXPCalculation = async (eventToProcess: number) => {
+    const gemeEventResponse = await fetch(
+      `/api/contests/${contest.id}/game-events`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ contestId: contest.id, eventToProcess }),
+      }
+    );
 
     const data = await gemeEventResponse.json();
 
@@ -298,38 +297,22 @@ const GameRoom = ({ contest }: GameRoomProps) => {
           ))}
         </div>
         <div className="flex gap-4 p-4 bg-gray-900">
-          <input
-            type="text"
-            value={gameId}
-            onChange={(e) => setGameId(e.target.value)}
-            placeholder="Enter gameId"
-            className="bg-white text-black p-1"
-          />
           <Button
             variant="submit"
-            onClick={() => handleXPCalculation(gameId, 1)}
-            disabled={gameId === ""}
-            className={`h-9 px-4 text-sm rounded-full bg-[#FB7B1F] text-white font-medium cursor-pointer ${
-              gameId === "" && "bg-gray-500"
-            }`}
+            onClick={() => handleXPCalculation(1)}
+            className={`h-9 px-4 text-sm rounded-full bg-[#FB7B1F] text-white font-medium cursor-pointer `}
           >
             1 Event
           </Button>
           <button
-            onClick={() => handleXPCalculation(gameId, 10)}
-            disabled={gameId === ""}
-            className={`h-9 px-4 text-sm rounded-full bg-[#FB7B1F] text-white font-medium cursor-pointer ${
-              gameId === "" && "bg-gray-500"
-            }`}
+            onClick={() => handleXPCalculation(10)}
+            className={`h-9 px-4 text-sm rounded-full bg-[#FB7B1F] text-white font-medium cursor-pointer`}
           >
             10 Event
           </button>
           <button
-            onClick={() => handleXPCalculation(gameId, 50)}
-            disabled={gameId === ""}
-            className={`h-9 px-4 text-sm rounded-full bg-[#FB7B1F] text-white font-medium cursor-pointer ${
-              gameId === "" && "bg-gray-500"
-            }`}
+            onClick={() => handleXPCalculation(50)}
+            className={`h-9 px-4 text-sm rounded-full bg-[#FB7B1F] text-white font-medium cursor-pointer`}
           >
             50 Event
           </button>

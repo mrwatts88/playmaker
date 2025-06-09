@@ -1,28 +1,3 @@
-/**
- * NBA Game Events Sync Script
- *
- * This script syncs NBA game events (points, rebounds, assists, steals, blocks) from the NBA stats API
- * for a given game and calculates XP for contestants based on these events.
- *
- * It performs the following operations:
- *
- * 1. Fetches play-by-play data from the NBA stats API for the specified game ID
- * 2. For each action in the play-by-play data:
- *    - Maps NBA action types to our game event types (points, rebounds, assists, steals, blocks)
- *    - Creates game events in the database for relevant actions
- *    - Sets appropriate values for each event type (e.g., points scored, number of rebounds)
- * 3. Calculates and updates contestant XP based on:
- *    - Contestant's enrolled game
- *    - Contestant's team
- *    - Contestant's active boosts (team and athlete types)
- *    - Game events matching the contestant's interests
- *
- * The script tracks processed events to prevent duplicate XP calculations on subsequent runs.
- *
- * Usage:
- * npm run nba:sync-game-events GAME_ID
- * Example: npm run nba:sync-game-events 0022300001
- */
 import { eq, and, inArray } from "drizzle-orm";
 import {
   contestants,
@@ -36,7 +11,6 @@ import * as schema from "../db/schema/schema";
 if (!process.env.DATABASE_URL) {
   throw new Error("DATABASE_URL is not set");
 }
-console.log(process.env.DATABASE_URL, "dB url");
 
 const sql = neon(process.env.DATABASE_URL);
 export const db = drizzle(sql, { schema });

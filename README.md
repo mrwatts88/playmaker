@@ -50,8 +50,8 @@ Follow these steps to set up and run the Playmaker web app locally.
    - Those boost will be added to your boost list
 
 7. **Calculate XP**
-   - Enter GameId in the input box for processing game events related to that game.
-   - Then click on one of the 3 buttons accordingly to process the game events.
+   - There are 3 buttons on contest game page - 1 Event, 10 Event, 50 Event.
+   - Click on one of the 3 buttons accordingly to process the game events.
 
 ## 🛠️ Available Scripts
 
