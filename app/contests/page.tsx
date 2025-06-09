@@ -2,7 +2,11 @@
 
 import { useContests } from "@/app/hooks/useContests";
 import { useUser } from "@/app/hooks/useUser";
+import Button from "@/components/Button";
+import AddContest from "@/components/contest/AddContest";
+import { Plus } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
   FaBasketballBall,
   FaFootballBall,
@@ -27,13 +31,16 @@ export default function Contests() {
     contests,
     isLoading: isContestsLoading,
     isError: isContestsError,
+    mutate,
   } = useContests();
-  const {
-    user,
-    isLoading: isUserLoading,
-    isError: isUserError,
-  } = useUser();
-  console.log(user,"user")
+  const { user, isLoading: isUserLoading, isError: isUserError } = useUser();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isModalOpen) {
+      mutate();
+    }
+  }, [isModalOpen, mutate]);
 
   if (isContestsLoading || isUserLoading) {
     return (
@@ -122,6 +129,12 @@ export default function Contests() {
           })}
         </div>
       </div>
+      <div className="p-8 ml-auto">
+        <Button onClick={() => setIsModalOpen(true)} variant="submit">
+          <Plus /> Create Contest
+        </Button>
+      </div>
+      <AddContest setIsModalOpen={setIsModalOpen} isModalOpen={isModalOpen} />
     </div>
   );
 }

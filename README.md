@@ -26,14 +26,12 @@ Follow these steps to set up and run the Playmaker web app locally.
 2. **Load Game Data**
 
    ```bash
-   # Sync games for specific date
    npm run nba:sync-lineups 20250510
    ```
 
 3. **Create Contest**
 
-   - Visit `http://localhost:3000/docs`
-   - Create a new contest via API
+   - Create a new contest by clicking on Create contest button and filling required details
 
 4. **Join Contest**
 
@@ -43,7 +41,6 @@ Follow these steps to set up and run the Playmaker web app locally.
 5. **Sync Live Events**
 
    ```bash
-   # Load events for specific game (use correct apiId)
    npm run nba:sync-game-events 0042400132
    ```
 

@@ -5,19 +5,31 @@ interface ButtonProps {
   variant?: "add" | "remove" | "submit" | "xp";
   onClick?: () => void;
   className?: string;
+  disabled?: boolean;
 }
 
-const Button: FC<ButtonProps> = ({ children, variant = "add", onClick, className = "" }) => {
+const Button: FC<ButtonProps> = ({
+  children,
+  variant = "add",
+  onClick,
+  className = "",
+  disabled = false
+}) => {
   const baseStyles = "flex items-center justify-center rounded-full";
   const variantStyles = {
     add: "bg-orange-500 text-white w-8 h-8 text-xl",
     remove: "bg-gray-200 text-gray-600 w-8 h-8 text-xl",
-    submit: "bg-orange-500 text-white px-6 py-3 text-lg font-semibold",
+    submit:
+      "bg-orange-500 text-white px-6 py-3 text-lg font-semibold cursor-pointer",
     xp: "bg-[#FFD84D] hover:bg-[#FFE066] text-black px-4 py-1 text-sm font-bold shadow-md border border-yellow-500 transition-colors",
   };
 
   return (
-    <button onClick={onClick} className={`${baseStyles} ${variantStyles[variant]} ${className}`}>
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`${baseStyles} ${variantStyles[variant]} ${className}`}
+    >
       {variant === "add" && "+"}
       {variant === "remove" && "-"}
       {variant === "submit" && children}

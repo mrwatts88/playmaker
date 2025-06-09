@@ -21,6 +21,7 @@ import { toast } from "react-toastify";
 import CurrentEvent from "./CurrentEvent";
 import { useGameEvents } from "@/app/hooks/useGameEvents";
 import { useResponsiveDimensions } from "@/app/hooks/useScreenSize";
+import Button from "@/components/Button";
 
 export interface Contestant {
   id: string;
@@ -304,7 +305,8 @@ const GameRoom = ({ contest }: GameRoomProps) => {
             placeholder="Enter gameId"
             className="bg-white text-black p-1"
           />
-          <button
+          <Button
+            variant="submit"
             onClick={() => handleXPCalculation(gameId, 1)}
             disabled={gameId === ""}
             className={`h-9 px-4 text-sm rounded-full bg-[#FB7B1F] text-white font-medium cursor-pointer ${
@@ -312,7 +314,7 @@ const GameRoom = ({ contest }: GameRoomProps) => {
             }`}
           >
             1 Event
-          </button>
+          </Button>
           <button
             onClick={() => handleXPCalculation(gameId, 10)}
             disabled={gameId === ""}
