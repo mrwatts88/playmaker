@@ -71,11 +71,11 @@ const screenMapping = {
   0: "w-10 h-10",
   "-1": "w-8 h-8",
 };
-const heightMapping = {
-  1: "h-24",
-  0: "h-20",
-  "-1": "h-16",
-};
+// const heightMapping = {
+//   1: "h-24",
+//   0: "h-20",
+//   "-1": "h-16",
+// };
 const sizeMapping = {
   1: "text-[16px]",
   0: "text-sm",
@@ -192,20 +192,21 @@ export const BoostIcon: React.FC<{ boost: Boost; className?: string }> = ({
   );
 };
 
-const ContestantRow: React.FC<{ contestant: Contestant; index: number }> = ({
-  contestant,
-  index,
-}) => {
+const ContestantRow: React.FC<{
+  contestant: Contestant;
+  index: number;
+  contestantId: string;
+}> = ({ contestant, index, contestantId }) => {
   const { screenSize } = useResponsiveDimensions();
   return (
-    <div className={`flex ${heightMapping[screenSize]}`}>
+    <div className={`flex h-[25%]`}>
       <div className="w-16 text-white bg-gray-900 text-3xl flex items-center justify-center m-1 mb-0">
         {index + 1}
       </div>
       <div
-        className={`flex flex-1 items-center p-4 pr-0 gap-4 border-b border-[#FB7B1F] ${
+        className={`flex flex-1 items-center p-4 pr-0 gap-4 ${
           index % 2 === 0 ? "bg-white" : "bg-[#fdd0b0]"
-        }`}
+        } ${contestantId === contestant.id && "border-3 border-[#FB7B1F]"}`}
       >
         {/* <div className="w-14 h-14 rounded-full overflow-hidden border border-gray-700 bg-white flex items-start justify-center">
         <Image src={Avatar} alt={contestant.name} width={50} height={50} />
@@ -260,7 +261,11 @@ const GameRoom = ({ contest }: GameRoomProps) => {
   const { contestants } = contest;
   const contestantId = contestants?.find((item) => item.userId === userId)?.id;
   const { boost } = useContestantBoosts(contestantId || null);
-  const { gameEvents, isLoading: eventLoading } = useGameEvents(contest.id);
+  const {
+    gameEvents,
+    isLoading: eventLoading,
+    mutate,
+  } = useGameEvents(contest.id);
 
   const handleXPCalculation = async (eventToProcess: number) => {
     const gemeEventResponse = await fetch(
@@ -282,16 +287,18 @@ const GameRoom = ({ contest }: GameRoomProps) => {
     } else {
       toast.success(data?.message || "Events processed successfully");
     }
+    mutate();
   };
 
   return (
     <div className="flex w-full h-screen text-white p-0 lg:p-12">
       <div className="flex-1 flex flex-col justify-between overflow-y-auto bg-white rounded-s-lg">
-        <div>
+        <div className="h-full">
           {contestants.map((contestant, index) => (
             <ContestantRow
               key={contestant.id}
               contestant={contestant}
+              contestantId={contestantId || ""}
               index={index}
             />
           ))}

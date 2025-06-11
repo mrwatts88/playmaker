@@ -31,7 +31,7 @@ export function useGameEvents(contestId: string) {
     return () => clearInterval(timer);
   }, [contestId]);
 
-  const { data, error, isLoading } = useSWR<GameEvent[]>(
+  const { data, error, isLoading, mutate } = useSWR<GameEvent[]>(
     contestId ? [`/api/contests/${contestId}/events`, refreshKey] : null,
     ([url]) => fetcher(url),
     {
@@ -46,5 +46,6 @@ export function useGameEvents(contestId: string) {
     gameEvents: data,
     isLoading,
     isError: error,
+    mutate
   };
 }

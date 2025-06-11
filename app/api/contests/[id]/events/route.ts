@@ -1,6 +1,11 @@
 import { contestIdSchema } from "@/app/api/schemas";
 import { db } from "@/db/db";
-import { contestGames, contests, gameEvents } from "@/db/schema/schema";
+import {
+  contestGames,
+  contests,
+  gameEvents,
+  processedGameEvents,
+} from "@/db/schema/schema";
 import { desc, eq, inArray } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -68,10 +73,16 @@ export async function GET(
       });
     }
 
-    const latestEvents = await db.query.gameEvents.findMany({
-      where: inArray(gameEvents.gameId, gameIds),
-      orderBy: [desc(gameEvents.createdAt)],
+    const latestProcessedEvents = await db.query.processedGameEvents.findMany({
+      orderBy: [desc(processedGameEvents.processedAt)],
       limit: 3,
+    });
+
+    const gameEventIds = latestProcessedEvents.map(
+      (event) => event.gameEventId
+    );
+    const latestEvents = await db.query.gameEvents.findMany({
+      where: inArray(gameEvents.id, gameEventIds),
       with: {
         athlete: true,
       },

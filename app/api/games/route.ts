@@ -23,7 +23,6 @@ export async function GET() {
     if (!allGames) {
       return NextResponse.json({ error: "No games found" }, { status: 404 });
     }
-    console.log(allGames, "allGames");
 
     return NextResponse.json({
       success: true,
